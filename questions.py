@@ -43,10 +43,10 @@ def question(operation, difficulty):
     '''
 
     if operation not in range(1,5):
-        raise IOError 'operation is 1-4'
+        raise IOError('operation is 1-4')
 
     if difficulty not in range(1,3):
-        raise IOError 'difficulty is 1-2'
+        raise IOError('difficulty is 1-2')
 
     if operation is 1:
         # Addition, the result is the SUM
