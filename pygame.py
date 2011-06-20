@@ -2,31 +2,28 @@ from random import choice
 
 def main():
     operations, difficulty = levelselector()
-    print "randomly selecting from the choices you made 1 for addition 2 for sub...:" + str(choice(operations))
-    print "randomly selecting from the choices you made 1 for addition 2 for sub...:" + str(choice(operations))
-    print "randomly selecting from the choices you made 1 for addition 2 for sub...:" + str(choice(operations))
-    print "randomly selecting from the choices you made 1 for addition 2 for sub...:" + str(choice(operations))
-    print "randomly selecting from the choices you made 1 for addition 2 for sub...:" + str(choice(operations))
-    print "randomly selecting from the choices you made 1 for addition 2 for sub...:" + str(choice(operations))
+    print "randomly selecting from the choices you made 1 for addition 2 for sub... :"
+
+    print "you are going to anwser a question about:" + str(choice(operations))
     
 def levelselector():
     operations = []
     awesome_factor = 0
-    if ask_ok("Do you want to work on Addition?"):
+    if ask_ok("Do you want to work on Addition? "):
         operations.append(1)
         awesome_factor = awesome_factor + 1
-    if ask_ok("Do you want to work on Subtraction?"):
+    if ask_ok("Do you want to work on Subtraction? "):
         operations.append(2)
         awesome_factor = awesome_factor + 1
-    if ask_ok("Work on Multiplication?"):
+    if ask_ok("Work on Multiplication? "):
         operations.append(3)
         awesome_factor = awesome_factor + 1
-    if ask_ok("Devision?"):
+    if ask_ok("Devision? "):
         operations.append(4)
         awesome_factor = awesome_factor + 1
     if awesome_factor is 4:
         print("WOW! everything!")
-    if ask_ok("Do you want to do the hard stuff?"):
+    if ask_ok("Do you want to do the hard stuff? "):
         difficulty = 2
     else:
         difficulty = 1
