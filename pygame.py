@@ -5,6 +5,11 @@ def main():
     print "randomly selecting from the choices you made 1 for addition 2 for sub... :"
 
     print "you are going to anwser a question about:" + str(choice(operations))
+    print "you are going to anwser a question about:" + str(choice(operations))
+    print "you are going to anwser a question about:" + str(choice(operations))
+    print "you are going to anwser a question about:" + str(choice(operations))
+    print "you are going to anwser a question about:" + str(choice(operations))
+    
     
 def levelselector():
     operations = []
