@@ -1,0 +1,7 @@
+[Activity]
+name = %(name)s 
+activity_version = 1
+host_version = 1
+service_name = %(service)s
+icon = activity
+exec = sugar-activity activity.Activity
