@@ -11,6 +11,7 @@ log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
 
+
 # -- Attributes
 # Set speed vector
 class MovingTextObject(textsprite.TextSprite):
@@ -127,9 +128,9 @@ class TheOpponent():
         
     def spawn_badguys(self, screensize):
         """I will make more enemys for you"""
-        for i in range(3):
+        for i in range(4):
             self.enemys.append(BadGuy(egen(screensize, i)))
-            group.add(self.enemys[i])
+            self.group.add(self.enemys[i])
 
 
 def main():
@@ -189,7 +190,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3:
-                        spen
+                        opponent.spawn_badguys(size)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):

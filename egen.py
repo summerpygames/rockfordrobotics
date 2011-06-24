@@ -23,13 +23,17 @@ def egen(size, i, offset = 0):
     elif size[1] <= 650:
         if i == 0:
             position[0] = floor(size[0]-100+offset)
+            print 1
         elif i == 1:
             position[0] = floor(size[0]-100+offset)
             position[1] = floor(size[1]-100)
+            print 2
         elif i == 2:
             position[0] = floor(size[0]-200+offset)
             position[1] = floor(size[1]/2+size[1]/4-100)
+            print 3
         elif i == 3:
             position[0] = floor(size[0]-200+offset)
-            position[1] = floor(size[1]/2-size[1]/4-200)
+            position[1] = floor(size[1]/2-size[1]/4)
+            print 4
     return (position[0],position[1])
