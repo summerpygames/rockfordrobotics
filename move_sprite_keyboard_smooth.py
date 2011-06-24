@@ -101,6 +101,8 @@ def keys(event, action):
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
 
+sp=5
+
 def main():
     """The mainlook which is specified in the activity.py file
     
@@ -133,6 +135,7 @@ def main():
         #MESS WITH THIS^^^^^^^^^^^^^^^
         # Event-management loop with support for pausing after X seconds (20 here)
         events = pausescreen.get_events()
+        clock.tick(25)
         # Now the main event-processing loop
         if events:
             for event in events:
@@ -144,26 +147,26 @@ def main():
                     if keys(event, 'escape'):
                         running = False
                     if keys(event, 'left'):
-                        player.changespeed(-1,0)
+                        player.changespeed(-sp,0)
                     if keys(event, 'right'):
-                        player.changespeed(1,0)
+                        player.changespeed(sp,0)
                     if keys(event, 'up'):
-                        player.changespeed(0,-1)
+                        player.changespeed(0,-sp)
                     if keys(event, 'down'):
-                        player.changespeed(0,1)
+                        player.changespeed(0,sp)
                     if keys(event, 'space'):
                         player.shoot()
 
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
-                        player.changespeed(1,0)
+                        player.changespeed(sp,0)
                     if keys(event, 'right'):
-                        player.changespeed(-1,0)
+                        player.changespeed(-sp,0)
                     if keys(event, 'up'):
-                        player.changespeed(0,1)
+                        player.changespeed(0,sp)
                     if keys(event, 'down'):
-                        player.changespeed(0,-1)
+                        player.changespeed(0,-sp)
         for j in bullets:
             j.update()
             if j.rect.left > 800:
@@ -175,7 +178,7 @@ def main():
         player.update()
         group.draw( screen )
         pygame.display.flip()
-        clock.tick(500)
+#        clock.tick(500)
 
     pygame.quit()
 
