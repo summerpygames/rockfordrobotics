@@ -37,7 +37,7 @@ class MovingTextObject(textsprite.TextSprite):
 
 class MovingSvgObject(svgsprite.SVGSprite):
     """This is a moving svg object, you can make it do all sorts of stuff."""
-    def __init__(self, position = (0,0), svg=None, size=None):
+    def __init__(self, position = (0, 0), svg=None, size=None):
         data = open(svg).read()
         super(MovingSvgObject, self).__init__(data, size)
         self.rect.top = position[1]
@@ -54,6 +54,22 @@ class MovingSvgObject(svgsprite.SVGSprite):
     def update(self):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
+
+class Enemy(MovingSvgObject):
+    """This is a nonfriendly moving object this will be booth a question and a
+    bad guy"""
+    def __init__(self, svg, position, speed = -1):
+        self.position = position
+        super(Enemy, self).__init__(position = self.position, svg = svg, size =
+                                    (100, 100))
+        self.change_x = speed
+    
+class BadGuy(Enemy):
+    """You can shoot all bad guys, unlike incorrect enemys"""
+    def __init__(self, position):
+        self.position = position
+        super(BadGuy, self).__init__(position = self.position, svg =
+                                     "activity.svg")
 
 class Player(MovingSvgObject):
     """This is the good guy, the one that can shoot the lasers and kill the bad
@@ -74,7 +90,6 @@ class FlyingSaucer(Player):
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
-        
 
 class Bullet(MovingSvgObject):
     def __init__(self, pos, svg = 'laser.svg', size = (25, 25), speed=30):
@@ -103,11 +118,16 @@ def keys(event, action):
 
 sp=5
 
+def spawn_badguys():
+    """docstring for spawn_badguys"""
+    pass
+
 def main():
     """The mainlook which is specified in the activity.py file
     
     "main" is the assumed function name"""
     bullets = []
+    enemys = []
     
     size = (800,600)
     if olpcgames.ACTIVITY:
@@ -120,11 +140,12 @@ def main():
 #        color = (255,255,255),
 #        size = 20,
 #    )
-
+    enemy = BadGuy((700, 90))
     player = FlyingSaucer(bullets)
-    group = pygame.sprite.RenderUpdates()
     
-    group.add( player )
+    group = pygame.sprite.RenderUpdates()
+    group.add(player)
+    group.add(enemy)
     
     clock = pygame.time.Clock()
 
@@ -157,7 +178,6 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
 
-
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
                         player.changespeed(sp,0)
@@ -167,6 +187,7 @@ def main():
                         player.changespeed(0,sp)
                     if keys(event, 'down'):
                         player.changespeed(0,-sp)
+
         for j in bullets:
             j.update()
             if j.rect.left > 800:
@@ -176,6 +197,7 @@ def main():
         for j in bullets:
                 j.add(group)
         player.update()
+        enemy.update()
         group.draw( screen )
         pygame.display.flip()
 #        clock.tick(500)
