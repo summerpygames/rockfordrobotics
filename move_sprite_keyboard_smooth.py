@@ -81,7 +81,25 @@ class Bullet(MovingSvgObject):
         super(Bullet, self).__init__(pos, svg, size)
         self.change_x = speed
     
-        
+def keys(event, action):
+    if action == 'escape':
+        if event.key == pygame.K_ESCAPE:
+            return True
+    if action == 'left':
+        if event.key == pygame.K_KP4 or event.key == pygame.K_LEFT:
+            return True
+    if action == 'right':
+        if event.key == pygame.K_KP6 or event.key == pygame.K_RIGHT:
+            return True
+    if action == 'up':
+        if event.key == pygame.K_KP8 or event.key == pygame.K_UP:
+            return True
+    if action == 'down':
+        if event.key == pygame.K_KP2 or event.key == pygame.K_DOWN:
+            return True
+    if action == 'space':
+        if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
+            return True
 
 def main():
     """The mainlook which is specified in the activity.py file
@@ -111,41 +129,40 @@ def main():
     running = True
     while running:
         screen.fill( (0,0,128))
-        milliseconds = clock.tick(25) # maximum number of frames per second
-        
+#        milliseconds = clock.tick(100) # maximum number of frames per second
+        #MESS WITH THIS^^^^^^^^^^^^^^^
         # Event-management loop with support for pausing after X seconds (20 here)
         events = pausescreen.get_events()
         # Now the main event-processing loop
         if events:
             for event in events:
                 log.debug( "Event: %s", event )
-
                 if event.type == pygame.QUIT:
                     running = False
 
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                    if keys(event, 'escape'):
                         running = False
-                    if event.key == pygame.K_KP4 or event.key == pygame.K_LEFT:
+                    if keys(event, 'left'):
                         player.changespeed(-1,0)
-                    if event.key == pygame.K_KP6 or event.key == pygame.K_RIGHT:
+                    if keys(event, 'right'):
                         player.changespeed(1,0)
-                    if event.key == pygame.K_KP8 or event.key == pygame.K_UP:
+                    if keys(event, 'up'):
                         player.changespeed(0,-1)
-                    if event.key == pygame.K_KP2 or event.key == pygame.K_DOWN:
+                    if keys(event, 'down'):
                         player.changespeed(0,1)
-                    if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
+                    if keys(event, 'space'):
                         player.shoot()
 
 
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_KP4 or event.key == pygame.K_LEFT:
+                    if keys(event, 'left'):
                         player.changespeed(1,0)
-                    if event.key == pygame.K_KP6 or event.key == pygame.K_RIGHT:
+                    if keys(event, 'right'):
                         player.changespeed(-1,0)
-                    if event.key == pygame.K_KP8 or event.key == pygame.K_UP:
+                    if keys(event, 'up'):
                         player.changespeed(0,1)
-                    if event.key == pygame.K_KP2 or event.key == pygame.K_DOWN:
+                    if keys(event, 'down'):
                         player.changespeed(0,-1)
         for j in bullets:
             j.update()
