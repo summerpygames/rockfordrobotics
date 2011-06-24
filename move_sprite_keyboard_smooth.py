@@ -126,27 +126,27 @@ def main():
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
-                    if event.key == pygame.K_KP4:
-                        player.changespeed(-10,0)
-                    if event.key == pygame.K_KP6:
-                        player.changespeed(10,0)
-                    if event.key == pygame.K_KP8:
-                        player.changespeed(0,-10)
-                    if event.key == pygame.K_KP2:
-                        player.changespeed(0,10)
-                    if event.key == pygame.K_KP1:
+                    if event.key == pygame.K_KP4 or event.key == pygame.K_LEFT:
+                        player.changespeed(-1,0)
+                    if event.key == pygame.K_KP6 or event.key == pygame.K_RIGHT:
+                        player.changespeed(1,0)
+                    if event.key == pygame.K_KP8 or event.key == pygame.K_UP:
+                        player.changespeed(0,-1)
+                    if event.key == pygame.K_KP2 or event.key == pygame.K_DOWN:
+                        player.changespeed(0,1)
+                    if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
                         player.shoot()
 
 
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_KP4:
-                        player.changespeed(10,0)
-                    if event.key == pygame.K_KP6:
-                        player.changespeed(-10,0)
-                    if event.key == pygame.K_KP8:
-                        player.changespeed(0,10)
-                    if event.key == pygame.K_KP2:
-                        player.changespeed(0,-10)
+                    if event.key == pygame.K_KP4 or event.key == pygame.K_LEFT:
+                        player.changespeed(1,0)
+                    if event.key == pygame.K_KP6 or event.key == pygame.K_RIGHT:
+                        player.changespeed(-1,0)
+                    if event.key == pygame.K_KP8 or event.key == pygame.K_UP:
+                        player.changespeed(0,1)
+                    if event.key == pygame.K_KP2 or event.key == pygame.K_DOWN:
+                        player.changespeed(0,-1)
         for j in bullets:
             j.update()
             if j.rect.left > 800:
@@ -158,7 +158,7 @@ def main():
         player.update()
         group.draw( screen )
         pygame.display.flip()
-        clock.tick(140)
+        clock.tick(500)
 
     pygame.quit()
 
