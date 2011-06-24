@@ -4,7 +4,7 @@ Created on Fri Jun 24 15:41:01 2011
 
 @author: lucas
 """
-from math import *
+from math import floor
 
 def egen(size, i, offset = 0):
     position=[0,0]
