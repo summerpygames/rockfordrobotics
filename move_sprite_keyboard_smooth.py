@@ -6,6 +6,7 @@ import olpcgames, pygame, logging
 from olpcgames import pausescreen, textsprite, svgsprite
 from gettext import gettext as _
 import resources as r
+from egen import egen as egen
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
@@ -118,9 +119,18 @@ def keys(event, action):
 
 sp=5
 
-def spawn_badguys():
-    """docstring for spawn_badguys"""
-    pass
+class TheOpponent():
+    """Contains things about the enemy you only wished you knew"""
+    def __init__(self, enemys, group):
+        self.enemys = enemys
+        self.group = group
+        
+    def spawn_badguys(self, screensize):
+        """I will make more enemys for you"""
+        for i in range(3):
+            self.enemys.append(BadGuy(egen(screensize, i)))
+            group.add(self.enemys[i])
+
 
 def main():
     """The mainlook which is specified in the activity.py file
@@ -128,7 +138,8 @@ def main():
     "main" is the assumed function name"""
     bullets = []
     enemys = []
-    
+
+        
     size = (800,600)
     if olpcgames.ACTIVITY:
         size = olpcgames.ACTIVITY.game_size
@@ -145,8 +156,8 @@ def main():
     
     group = pygame.sprite.RenderUpdates()
     group.add(player)
-    group.add(enemy)
-    
+    opponent = TheOpponent(enemys, group)
+
     clock = pygame.time.Clock()
 
     running = True
@@ -177,6 +188,8 @@ def main():
                         player.changespeed(0,sp)
                     if keys(event, 'space'):
                         player.shoot()
+                    if event.key == pygame.K_KP3:
+                        spen
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
