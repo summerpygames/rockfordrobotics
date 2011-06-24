@@ -28,7 +28,7 @@ def egen(size, i, offset = 0):
             position[1] = floor(size[1]-100)
         elif i == 2:
             position[0] = floor(size[0]-200+offset)
-            position[1] = floor(size[1]*3/4-100)
+            position[1] = floor(size[1]/2+size[1]/4-100)
         elif i == 3:
             position[0] = floor(size[0]-200+offset)
             position[1] = floor(size[1]/2-size[1]/4-200)
