@@ -60,7 +60,12 @@ def positions(room, n, size, side, offset_x, offset_y):
             if n == rem+before and multiple(n,side) == False:
                 x = 0
                 r = rem
-                interval = (room[0]-r*side)/(2*r)
+                if even(r+1) == False:
+                    c = r + 2
+                else:
+                    c = r + 1
+                odev = c - 1
+                interval = (room[0]-odev*side)/c
                 y = interval
                 for i in range(int(r/2)):
                     positions.append((int(x + offset_x),int(y + offset_y)))
