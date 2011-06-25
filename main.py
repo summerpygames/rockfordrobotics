@@ -169,7 +169,7 @@ class Player(MovingSvgObject):
     guys and get the math problems"""
     def __init__(self, svg, lasercannon):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
-                                     (100, 100))
+                                     (150, 150))
         self.cannon = lasercannon
 
     def shoot(self, position):
@@ -188,7 +188,7 @@ class FlyingSaucer(Player):
         super(FlyingSaucer, self).shoot(self.rect.center)
 
 class Bullet(MovingSvgObject):
-    def __init__(self, pos, svg = 'laser.svg', size = (25, 25), speed=30):
+    def __init__(self, pos, svg = 'laser.svg', size = (50, 50), speed=30):
         super(Bullet, self).__init__(pos, svg, size)
         self.change_x = speed
     
