@@ -58,10 +58,9 @@ def positions(room, n, size, side, offset_x, offset_y):
         rem = n
         for i in range(int(n + sqrt(n))):
             if n == rem+before and multiple(n,side) == False:
-                x = 0
+                x = room[0]-size*floor(n/side)
                 r = rem
                 interval = (room[0]-r*size)/2
-                print interval
                 y = interval
                 for i in range(int(r/2)):
                     positions.append((int(x + offset_x),int(y + offset_y)))
@@ -84,8 +83,5 @@ def positions(room, n, size, side, offset_x, offset_y):
             else:
                 x -= size
                 y = 0
-    print side
-    print size
-    print positions
     return ((size, size), positions)
 egen((400, 400), 17)
