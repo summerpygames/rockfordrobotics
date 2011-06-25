@@ -68,12 +68,12 @@ def positions(room, n, size, side, offset_x, offset_y):
                 interval = (room[0]-odev*size)/c
                 y = interval
                 for i in range(int(r/2)):
-                    positions.append((int(x + offset_x),int(y + offset_y)))
+                    positions.append((int(x + offset_x),int(y + interval + offset_y)))
                     y += size + interval
                     rem -= 1
                 y = room[0]-size/(side/2)-size
                 for i in range(int(r/2)):
-                    positions.append((int(x + offset_x),int(y + offset_y)))
+                    positions.append((int(x + offset_x),int(y + interval + offset_y)))
                     y -= size - interval
                     rem -= 1
                 if rem == 1:
