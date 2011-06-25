@@ -80,8 +80,10 @@ class BadGuy(Enemy):
     def update(self):
         """This will update the bad guy and make sure it is not touching any
         bullets or the other wall."""
-        pygame.sprite.spritecollide(self, self.bulletgroup)
-        
+        collisions = pygame.sprite.spritecollide(self, self.bulletgroup, True,
+                                                 pygame.sprite.collide_mask)
+        if len(collisions) > 0:
+            self.kill()
 
 class LaserCannon(pygame.sprite.Sprite):
 
@@ -156,7 +158,7 @@ class LaserCannon(pygame.sprite.Sprite):
             self.redness.fill(self.color_finder(self.heat))
         self.image.blit(self.redness, (0, 0, self.heat, 15))
         self.image.blit(self.blackness, (self.heat, 0, 75 -
-                                                    self.heat, 0)) 
+                                         self.heat, 0)) 
         for i in self.bullets:
             i.update()
             if i.rect.left > 800:
@@ -256,7 +258,7 @@ def main():
     group = pygame.sprite.OrderedUpdates()
     group.add(player)
     group.add(lasercannon)
-    opponent = TheOpponent(enemys, group, bullets)
+    opponent = TheOpponent(enemys, group, bullets, lasercannon.bulletgroup)
 
     clock = pygame.time.Clock()
 
