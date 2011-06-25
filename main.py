@@ -74,7 +74,7 @@ class BadGuy(Enemy):
         self.size = size
         self.bulletgroup = bulletgroup
         super(BadGuy, self).__init__(position = self.position, size = self.size, svg =
-                                     "activity.svg")
+                                     "enemy1.svg")
         self.mask = pygame.mask.from_surface(self.image, 127)
 
     def update(self):
