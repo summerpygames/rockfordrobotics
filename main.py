@@ -72,6 +72,11 @@ class BadGuy(Enemy):
         self.position = position
         super(BadGuy, self).__init__(position = self.position, svg =
                                      "activity.svg")
+
+    def update(self):
+        """This will update the bad guy and make sure it is not touching any
+        bullets or the other wall."""
+        pass
 class LaserCannon(pygame.sprite.Sprite):
 
     # -- Attributes
@@ -139,11 +144,13 @@ class LaserCannon(pygame.sprite.Sprite):
         elif self.overheated == True:
             self.overheated = False
             print 'COOL'
-        self.redness.fill(self.color_finder(self.heat))
+        if self.overheated:
+            self.redness.fill((255, 0, 0))
+        else:
+            self.redness.fill(self.color_finder(self.heat))
         self.image.blit(self.redness, (0, 0, self.heat, 15))
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                                     self.heat, 0)) 
-        print self.heat
         for i in self.bullets:
             i.update()
             if i.rect.left > 800:
