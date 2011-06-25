@@ -60,23 +60,27 @@ class MovingSvgObject(svgsprite.SVGSprite):
 class Enemy(MovingSvgObject):
     """This is a nonfriendly moving object this will be booth a question and a
     bad guy"""
-    def __init__(self, svg, position, speed = -1):
+    def __init__(self, size, svg, position, speed = -1):
         self.position = position
+        self.size = size
         super(Enemy, self).__init__(position = self.position, svg = svg, size =
-                                    (100, 100))
+                                    self.size)
         self.change_x = speed
     
 class BadGuy(Enemy):
     """You can shoot all bad guys, unlike incorrect enemys"""
-    def __init__(self, position):
+    def __init__(self, position, size, bullets):
         self.position = position
-        super(BadGuy, self).__init__(position = self.position, svg =
+        self.size = size
+        super(BadGuy, self).__init__(position = self.position, size = self.size, svg =
                                      "activity.svg")
-
+        self.mask = pygame.mask.from_surface(self.image
+                                            )
     def update(self):
         """This will update the bad guy and make sure it is not touching any
         bullets or the other wall."""
-        pass
+        
+
 class LaserCannon(pygame.sprite.Sprite):
 
     # -- Attributes
@@ -210,15 +214,17 @@ def keys(event, action):
 
 class TheOpponent():
     """Contains things about the enemy you only wished you knew"""
-    def __init__(self, enemys, group):
+    def __init__(self, enemys, group, bullets):
         self.enemys = enemys
         self.group = group
-        
-    def spawn_badguys(self, screensize):
+        self.bullets = bullets
+
+    def spawn_badguys(self, screensize, number):
         """I will make more enemys for you"""
-        for i in range(4):
-            self.enemys.append(BadGuy(egen(screensize, i)))
-            self.group.add(self.enemys[i])
+        self.size, self.positions = egen(screensize, number)
+        for i in range(len(self.positions)):
+            self.enemys.append(BadGuy(self.positions[i], self.size, self.bullets))
+            self.group.add(self.enemys[-1])
 
 
 def main():
@@ -242,13 +248,12 @@ def main():
 #        size = 20,
 #    )
     lasercannon = LaserCannon(bullets)
-    enemy = BadGuy((700, 90))
     player = FlyingSaucer(lasercannon)
     
     group = pygame.sprite.OrderedUpdates()
     group.add(player)
     group.add(lasercannon)
-    opponent = TheOpponent(enemys, group)
+    opponent = TheOpponent(enemys, group, bullets)
 
     clock = pygame.time.Clock()
 
@@ -281,7 +286,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3:
-                        opponent.spawn_badguys(size)
+                        opponent.spawn_badguys((400, 400), 8)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
