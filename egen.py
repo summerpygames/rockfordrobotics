@@ -29,7 +29,7 @@ def egen(room,n):
         room = (room[0],room[0])
     if square(n):
         side = sqrt(n)
-    elif even(n):
+    else:
         after = n
         while square(after) == False:
             after += 1
@@ -49,7 +49,7 @@ def positions(room,n,size,side):
             else:
                 x -= size
                 y = 0
-    elif even(n):
+    else:
         before = n
         while multiple(before,side) == False:
             before -= 1
@@ -82,4 +82,6 @@ def positions(room,n,size,side):
             else:
                 x -= size
                 y = 0
+    print size
+    print positions
     return ((size,size),positions)
