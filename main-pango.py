@@ -3,7 +3,7 @@
 # http://cs.simpson.edu
 
 import olpcgames, pygame, logging 
-from olpcgames import pausescreen, textsprite, svgsprite
+from olpcgames import pausescreen, svgsprite
 from gettext import gettext as _
 import resources as r
 from egen import egen as egen
@@ -12,30 +12,6 @@ log.setLevel( logging.DEBUG )
 
 
 
-# -- Attributes
-# Set speed vector
-class MovingTextObject(textsprite.TextSprite):
-    """docstring for somehting"""
-    def __init__(self, text=None, family=None, size=None, bold=False,
-                 italic=False, color=None, background=None):
-
-        super(MovingTextObject, self).__init__(text, family, size,
-                                        bold, italic, color,
-                                        background)
-        self.change_y = 0
-        self.change_x = 0
-
-
-            
-    # Change the speed of the player
-    def changespeed(self, x, y):
-        self.change_x+=x
-        self.change_y+=y
-        
-    # Find a new position for the player
-    def update(self):
-        self.rect.top += self.change_y
-        self.rect.left += self.change_x
 
 class MovingSvgObject(svgsprite.SVGSprite):
     """This is a moving svg object, you can make it do all sorts of stuff."""
@@ -142,7 +118,7 @@ class LaserCannon(pygame.sprite.Sprite):
         self.redness.fill(self.color_finder(self.heat))
         self.image.blit(self.redness, (0, 0, self.heat, 15))
         self.image.blit(self.blackness, (self.heat, 0, 75 -
-                                                    self.heat, 0)) 
+                                         self.heat, 0)) 
         print self.heat
         for i in self.bullets:
             i.update()
