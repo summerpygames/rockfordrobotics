@@ -60,17 +60,19 @@ class MovingSvgObject(svgsprite.SVGSprite):
 class Enemy(MovingSvgObject):
     """This is a nonfriendly moving object this will be booth a question and a
     bad guy"""
-    def __init__(self, svg, position, speed = -1):
+    def __init__(self, size, svg, position, speed = -1):
         self.position = position
+        self.size = size
         super(Enemy, self).__init__(position = self.position, svg = svg, size =
-                                    (100, 100))
+                                    self.size)
         self.change_x = speed
     
 class BadGuy(Enemy):
     """You can shoot all bad guys, unlike incorrect enemys"""
-    def __init__(self, position, bullets):
+    def __init__(self, position, size, bullets):
         self.position = position
-        super(BadGuy, self).__init__(position = self.position, svg =
+        self.size = size
+        super(BadGuy, self).__init__(position = self.position, size = self.size, svg =
                                      "activity.svg")
         self.mask = pygame.mask.from_surface(self.image
                                             )
@@ -219,8 +221,10 @@ class TheOpponent():
 
     def spawn_badguys(self, screensize, number):
         """I will make more enemys for you"""
-        self.enemys.append(BadGuy(egen(screensize, number), self.bullets))
-        self.group.add(self.enemys[i])
+        self.size, self.positions = egen(screensize, number)
+        for i in range(len(self.positions)):
+            self.enemys.append(BadGuy(self.positions[i], self.size, self.bullets))
+            self.group.add(self.enemys[-1])
 
 
 def main():
