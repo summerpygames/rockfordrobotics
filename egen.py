@@ -4,36 +4,82 @@ Created on Fri Jun 24 15:41:01 2011
 
 @author: lucas
 """
-from math import floor
+from math import floor, sqrt
 
-def egen(size, i, offset = 0):
-    position=[0,0]
-    if size[1] <= 450:        
-        if i == 0:
-            position[0] = floor(size[0]-100+offset)
-        elif i == 1:
-            position[0] = floor(size[0]-100+offset)
-            position[1] = floor(size[1]/2)
-        elif i == 2:
-            position[0] = floor(size[0]-200+offset)
-            position[1] = floor(100)
-        elif i == 3:
-            position[0] = floor(size[0]-200+offset)
-            position[1] = floor(size[1]/2+100)
-    elif size[1] <= 650:
-        if i == 0:
-            position[0] = floor(size[0]-100+offset)
-            print 1
-        elif i == 1:
-            position[0] = floor(size[0]-100+offset)
-            position[1] = floor(size[1]-100)
-            print 2
-        elif i == 2:
-            position[0] = floor(size[0]-200+offset)
-            position[1] = floor(size[1]/2+size[1]/4-100)
-            print 3
-        elif i == 3:
-            position[0] = floor(size[0]-200+offset)
-            position[1] = floor(size[1]/2-size[1]/4)
-            print 4
-    return (position[0],position[1])
+def multiple(n,d):
+    if n % d == 0:
+        return True
+    else:
+        return False
+
+def even(i):
+    if i % 2 == 0:
+        return True
+    else:
+        return False
+
+def square(i):
+    if sqrt(i) == floor(sqrt(i)):
+        return True
+    else:
+        return False
+
+def egen(room,n):
+    if room[0] != room[1]:
+        room = (room[0],room[0])
+    if square(n):
+        side = sqrt(n)
+    elif even(n):
+        after = n
+        while square(after) == False:
+            after += 1
+        side = int(sqrt(after))
+    size = room[0]/side
+    return positions(room,n,size,side)
+
+def positions(room,n,size,side):
+    positions = []
+    if square(n):
+        x = room[0]-size
+        y = 0
+        for i in range(int(n+sqrt(n))):
+            if y != room[0]:
+                positions.append((int(x),int(y)))
+                y += size
+            else:
+                x -= size
+                y = 0
+    elif even(n):
+        before = n
+        while multiple(before,side) == False:
+            before -= 1
+        x = room[0]-size
+        y = 0
+        rem = n
+        for i in range(int(n+sqrt(n))):
+            if n == rem+before and multiple(n,side) == False:
+                x = 0
+                y = size/(side/2)
+                r = rem
+                for i in range(int(r/2)):
+                    positions.append((int(x),int(y)))
+                    y += size
+                    rem -= 1
+                y = room[0]-size/(side/2)-size
+                for i in range(int(r/2)):
+                    positions.append((int(x),int(y)))
+                    y -= size
+                    rem -= 1
+                if rem == 1:
+                    x = 0
+                    y = floor((room[0]-side)/2)
+                    positions.append((int(x),int(y)))
+                break
+            if y < room[0]:
+                positions.append((int(x),int(y)))
+                rem -= 1
+                y += size
+            else:
+                x -= size
+                y = 0
+    return ((size,size),positions)
