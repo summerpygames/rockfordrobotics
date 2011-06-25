@@ -66,6 +66,7 @@ def positions(room, n, size, side, offset_x, offset_y):
                     c = r + 1
                 odev = c - 1
                 interval = (room[0]-odev*size)/c
+                print interval
                 y = 2 * interval
                 for i in range(int(r/2)):
                     positions.append((int(x + offset_x),int(y + offset_y)))
