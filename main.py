@@ -219,9 +219,9 @@ class TheOpponent():
         self.group = group
         self.bullets = bullets
 
-    def spawn_badguys(self, screensize, number):
+    def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
-        self.size, self.positions = egen(screensize, number)
+        self.size, self.positions = egen(screensize, number, x_offset, y_offset)
         for i in range(len(self.positions)):
             self.enemys.append(BadGuy(self.positions[i], self.size, self.bullets))
             self.group.add(self.enemys[-1])
@@ -286,7 +286,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3:
-                        opponent.spawn_badguys((400, 400), 8)
+                        opponent.spawn_badguys((400, 400), 8, 400, 100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
