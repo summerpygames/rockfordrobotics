@@ -72,23 +72,106 @@ class BadGuy(Enemy):
         self.position = position
         super(BadGuy, self).__init__(position = self.position, svg =
                                      "activity.svg")
+class LaserCannon(pygame.sprite.Sprite):
+
+    # -- Attributes
+    # Set speed vector
+    change_x=0
+    change_y=0
+    
+    # -- Methods
+    # Constructor function
+    def __init__(self, bullets):
+        # Call the parent's constructor
+        pygame.sprite.Sprite.__init__(self)
+        
+        self.bulletgroup = pygame.sprite.OrderedUpdates()
+        # Set height, width
+        self.blackness = pygame.Surface([75, 15])
+        self.blackness.fill((0, 0, 0))
+        self.redness = pygame.Surface([75, 15])
+        self.image = pygame.Surface([75, 15])
+        self.redness.fill((0, 0, 0))
+
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [0, 0]
+
+       
+        # Make our top-left corner the passed-in location.
+        
+        self.overheated = False
+        self.heat = 0
+
+        self.bullets = bullets
+    def overheat(self):
+        """This will make the cannon overheated"""
+        self.overheated = True
+        self.heat = 75
+    def shoot(self, position):
+        if self.overheated == False:
+            """This is called for the cannon object to shoot something"""
+            self.bullets.append(Bullet(position))
+            self.heat += 20
+            self.bulletgroup.add(self.bullets[-1])
+            if self.heat >= 75:
+                self.overheat()
+        else:
+            print 'HOT'
+
+    def color_finder(self, heat):
+        """This will chose a color based on how hot the gun is"""
+        self.heat = heat
+        if heat <= 25:
+            return (0, 255, 0)
+        elif heat <= 50:
+            self.red = (10.2 * self.heat) - 255
+            return (self.red, 255, 0)
+        elif heat <= 75:
+            self.green = 765 - (10.2 * self.heat)
+            return (255, self.green, 0)
+        else:
+            return (255, 255, 255)
+
+
+    def update(self):
+        if self.heat > 0:
+            self.heat -= 1
+        elif self.overheated == True:
+            self.overheated = False
+            print 'COOL'
+        self.redness.fill(self.color_finder(self.heat))
+        self.image.blit(self.redness, self.rect, (0, 0, self.heat, 15))
+        self.image.blit(self.blackness, self.rect, (self.heat, 0, 75 -
+                                                    self.heat, 0)) 
+        print self.heat
+        for i in self.bullets:
+            i.update()
+            if i.rect.left > 800:
+                i.remove(self.bulletgroup)
+                self.bullets.remove(i)
+
+        
+        
 
 class Player(MovingSvgObject):
     """This is the good guy, the one that can shoot the lasers and kill the bad
     guys and get the math problems"""
-    def __init__(self, svg, bullets):
+    def __init__(self, svg, lasercannon):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
                                      (100, 100))
-        self.bullets = bullets
-        
-    def shoot(self, position):
-        """This is called for the moving player object to shoot something"""
-        self.bullets.append(Bullet(position))
+        self.cannon = lasercannon
 
+    def shoot(self, position):
+        """This will make the plater shoot"""
+        self.cannon.shoot(position)
+
+        
 class FlyingSaucer(Player):
     """This is just the class for the flying saucer or the ufo"""
-    def __init__(self, bullets):
-        super(FlyingSaucer, self).__init__(svg='ufo.svg', bullets = bullets)
+    def __init__(self, cannon):
+        self.cannon = cannon
+        super(FlyingSaucer, self).__init__(svg='ufo.svg', lasercannon = self.cannon)
+
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
@@ -118,8 +201,6 @@ def keys(event, action):
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
 
-sp=5
-
 class TheOpponent():
     """Contains things about the enemy you only wished you knew"""
     def __init__(self, enemys, group):
@@ -139,7 +220,8 @@ def main():
     "main" is the assumed function name"""
     bullets = []
     enemys = []
-
+    sp = 5 # The speed of the player
+    
         
     size = (800,600)
     if olpcgames.ACTIVITY:
@@ -152,11 +234,13 @@ def main():
 #        color = (255,255,255),
 #        size = 20,
 #    )
+    lasercannon = LaserCannon(bullets)
     enemy = BadGuy((700, 90))
-    player = FlyingSaucer(bullets)
+    player = FlyingSaucer(lasercannon)
     
-    group = pygame.sprite.RenderUpdates()
+    group = pygame.sprite.OrderedUpdates()
     group.add(player)
+    group.add(lasercannon)
     opponent = TheOpponent(enemys, group)
 
     clock = pygame.time.Clock()
@@ -201,17 +285,9 @@ def main():
                         player.changespeed(0,sp)
                     if keys(event, 'down'):
                         player.changespeed(0,-sp)
-
-        for j in bullets:
-            j.update()
-            if j.rect.left > 800:
-                j.remove(group)
-                bullets.remove(j)
-        
-        for j in bullets:
-                j.add(group)
-        player.update()
-        enemy.update()
+        group.update()
+        lasercannon.update()
+        lasercannon.bulletgroup.draw(screen)
         group.draw( screen )
         pygame.display.flip()
 #        clock.tick(500)
