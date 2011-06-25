@@ -68,15 +68,17 @@ class Enemy(MovingSvgObject):
     
 class BadGuy(Enemy):
     """You can shoot all bad guys, unlike incorrect enemys"""
-    def __init__(self, position):
+    def __init__(self, position, bullets):
         self.position = position
         super(BadGuy, self).__init__(position = self.position, svg =
                                      "activity.svg")
-
+        self.mask = pygame.mask.from_surface(self.image
+                                            )
     def update(self):
         """This will update the bad guy and make sure it is not touching any
         bullets or the other wall."""
-        pass
+        
+
 class LaserCannon(pygame.sprite.Sprite):
 
     # -- Attributes
@@ -210,15 +212,15 @@ def keys(event, action):
 
 class TheOpponent():
     """Contains things about the enemy you only wished you knew"""
-    def __init__(self, enemys, group):
+    def __init__(self, enemys, group, bullets):
         self.enemys = enemys
         self.group = group
-        
-    def spawn_badguys(self, screensize):
+        self.bullets = bullets
+
+    def spawn_badguys(self, screensize, number):
         """I will make more enemys for you"""
-        for i in range(4):
-            self.enemys.append(BadGuy(egen(screensize, i)))
-            self.group.add(self.enemys[i])
+        self.enemys.append(BadGuy(egen(screensize, number), self.bullets))
+        self.group.add(self.enemys[i])
 
 
 def main():
@@ -242,13 +244,12 @@ def main():
 #        size = 20,
 #    )
     lasercannon = LaserCannon(bullets)
-    enemy = BadGuy((700, 90))
     player = FlyingSaucer(lasercannon)
     
     group = pygame.sprite.OrderedUpdates()
     group.add(player)
     group.add(lasercannon)
-    opponent = TheOpponent(enemys, group)
+    opponent = TheOpponent(enemys, group, bullets)
 
     clock = pygame.time.Clock()
 
@@ -281,7 +282,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3:
-                        opponent.spawn_badguys(size)
+                        opponent.spawn_badguys((400, 400), 8)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
