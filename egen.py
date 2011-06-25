@@ -24,7 +24,7 @@ def square(i):
     else:
         return False
 
-def egen(room, n, offset_x == 0, offset_y == 0):
+def egen(room, n, offset_x = 0, offset_y = 0):
     if room[0] != room[1]:
         room = (room[0],room[0])
     if square(n):
