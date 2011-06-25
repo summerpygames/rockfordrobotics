@@ -245,6 +245,7 @@ def main():
     if olpcgames.ACTIVITY:
         size = olpcgames.ACTIVITY.game_size
     screen = pygame.display.set_mode(size)
+    background = pygame.image.load('spacesmall.png')
     # Create an 800x600 sized screen
     
 #    text = Player(
@@ -264,7 +265,7 @@ def main():
 
     running = True
     while running:
-        screen.fill( (0,0,128))
+        screen.blit(background, (0, 0))
 #        milliseconds = clock.tick(100) # maximum number of frames per second
         #MESS WITH THIS^^^^^^^^^^^^^^^
         # Event-management loop with support for pausing after X seconds (20 here)
