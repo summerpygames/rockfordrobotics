@@ -69,16 +69,18 @@ class Enemy(MovingSvgObject):
     
 class BadGuy(Enemy):
     """You can shoot all bad guys, unlike incorrect enemys"""
-    def __init__(self, position, size, bullets):
+    def __init__(self, position, size, bullets, bulletgroup):
         self.position = position
         self.size = size
+        self.bulletgroup = bulletgroup
         super(BadGuy, self).__init__(position = self.position, size = self.size, svg =
                                      "activity.svg")
-        self.mask = pygame.mask.from_surface(self.image
-                                            )
+        self.mask = pygame.mask.from_surface(self.image, 127)
+
     def update(self):
         """This will update the bad guy and make sure it is not touching any
         bullets or the other wall."""
+        pygame.sprite.spritecollide(self, self.bulletgroup)
         
 
 class LaserCannon(pygame.sprite.Sprite):
@@ -214,18 +216,19 @@ def keys(event, action):
 
 class TheOpponent():
     """Contains things about the enemy you only wished you knew"""
-    def __init__(self, enemys, group, bullets):
+    def __init__(self, enemys, group, bullets, bulletgroup):
         self.enemys = enemys
         self.group = group
         self.bullets = bullets
+        self.bulletgroup = bulletgroup
 
     def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
         for i in range(len(self.positions)):
-            self.enemys.append(BadGuy(self.positions[i], self.size, self.bullets))
+            self.enemys.append(BadGuy(self.positions[i], self.size,
+                                      self.bullets, self.bulletgroup))
             self.group.add(self.enemys[-1])
-
 
 def main():
     """The mainlook which is specified in the activity.py file
@@ -285,7 +288,7 @@ def main():
                         player.changespeed(0,sp)
                     if keys(event, 'space'):
                         player.shoot()
-                    if event.key == pygame.K_KP3:
+                    if event.key == pygame.K_KP3 or event.key == pygame.K_s:
                         opponent.spawn_badguys((400, 400), 8, 400, 100)
 
                 elif event.type == pygame.KEYUP:
