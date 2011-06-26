@@ -130,8 +130,8 @@ class LaserCannon(pygame.sprite.Sprite):
     def shoot(self, position):
         if self.overheated == False:
             """This is called for the cannon object to shoot something"""
-            self.bullets.append(FriendlyBullet(position[0] + self.offset[0],
-                                               position[1] + self.offset[1]))
+            self.bullets.append(FriendlyBullet((position[0] + self.offset[0],
+                                               position[1] + self.offset[1])))
             self.heat += 20
             self.bulletgroup.add(self.bullets[-1])
             choice(self.sounds).play()
@@ -202,7 +202,7 @@ class FlyingSaucer(Player):
 
 class FriendlyBullet(MovingSvgObject):
     def __init__(self, pos, svg = os.path.join('data', 'friendly_laser.svg'), size = (50, 50), speed=30):
-        super(Bullet, self).__init__(pos, svg, size)
+        super(FriendlyBullet, self).__init__(pos, svg, size)
         self.change_x = speed
     
 def keys(event, action):
@@ -262,7 +262,7 @@ def main():
 #        color = (255,255,255),
 #        size = 20,
 #    )
-    lasercannon = LaserCannon(bullets)
+    lasercannon = LaserCannon(bullets, offset = (-20, 0))
     player = FlyingSaucer(lasercannon)
     
     group = pygame.sprite.OrderedUpdates()
