@@ -280,9 +280,9 @@ class TheOpponent():
         self.opponent_bulletgroup = pygame.sprite.OrderedUpdates()
         self.friendly_player = friendly_player
 
-    def spawn_badguys(self, screensize, number, array, x_offset, y_offset):
+    def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
-        self.size, self.positions = egen(screensize, number, array, x_offset, y_offset)
+        self.size, self.positions = egen(screensize, number, x_offset, y_offset)
         for i in range(len(self.positions)):
             self.enemys.append(BadGuy(self.positions[i], self.size,
                                       self.friendly_bulletgroup,
@@ -352,7 +352,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        opponent.spawn_badguys((400, 400), 15, 1, 600, 100)
+                        opponent.spawn_badguys((400, 400), 15, 600, 100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
