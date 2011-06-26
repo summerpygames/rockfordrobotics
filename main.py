@@ -94,10 +94,11 @@ class LaserCannon(pygame.sprite.Sprite):
     
     # -- Methods
     # Constructor function
-    def __init__(self, bullets):
+    def __init__(self, bullets, offset = (0, 0)):
         # Call the parent's constructor
         pygame.sprite.Sprite.__init__(self)
         self.sounds = []
+        self.offset = offset
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
                                                            'highlaser.wav')))
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
@@ -129,7 +130,8 @@ class LaserCannon(pygame.sprite.Sprite):
     def shoot(self, position):
         if self.overheated == False:
             """This is called for the cannon object to shoot something"""
-            self.bullets.append(Bullet(position))
+            self.bullets.append(FriendlyBullet(position[0] + self.offset[0],
+                                               position[1] + self.offset[1]))
             self.heat += 20
             self.bulletgroup.add(self.bullets[-1])
             choice(self.sounds).play()
@@ -198,8 +200,8 @@ class FlyingSaucer(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
-class Bullet(MovingSvgObject):
-    def __init__(self, pos, svg = os.path.join('data', 'laser.svg'), size = (50, 50), speed=30):
+class FriendlyBullet(MovingSvgObject):
+    def __init__(self, pos, svg = os.path.join('data', 'friendly_laser.svg'), size = (50, 50), speed=30):
         super(Bullet, self).__init__(pos, svg, size)
         self.change_x = speed
     
