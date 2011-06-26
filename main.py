@@ -84,7 +84,7 @@ class BadGuy(Enemy):
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
         self.onefire = False
-        self.bullet_offset = (0, 0)
+        self.bullet_offset = (0, -50)
     def update(self):
         """This will update the bad guy and make sure it is not touching any
         bullets or the other wall."""
@@ -220,7 +220,6 @@ FAILURE!!!
 LOOOOSERRR!!!
 YOU STIIINNNK!!!
 '''
-
         super(Player, self).update()
 
         
@@ -247,7 +246,7 @@ class FriendlyBullet(Bullet):
 
 class BadBullet(Bullet):
     def __init__(self, pos, svg = os.path.join('data', 'friendly_laser.svg'),
-                 size = (50, 50), speed=-15):
+                 size = (100, 100), speed=-25):
         super(BadBullet, self).__init__(pos, svg, size, speed)
 
     
@@ -281,9 +280,9 @@ class TheOpponent():
         self.opponent_bulletgroup = pygame.sprite.OrderedUpdates()
         self.friendly_player = friendly_player
 
-    def spawn_badguys(self, screensize, number, x_offset, y_offset):
+    def spawn_badguys(self, screensize, number, array, x_offset, y_offset):
         """I will make more enemys for you"""
-        self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+        self.size, self.positions = egen(screensize, number, array, x_offset, y_offset)
         for i in range(len(self.positions)):
             self.enemys.append(BadGuy(self.positions[i], self.size,
                                       self.friendly_bulletgroup,
@@ -324,7 +323,6 @@ def main():
     group.add(lasercannon)
 
     clock = pygame.time.Clock()
-
     running = True
     while running:
         screen.blit(background, (0, 0))
@@ -354,7 +352,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        opponent.spawn_badguys((400, 400), 9, 800, 100)
+                        opponent.spawn_badguys((400, 400), 15, 1, 600, 100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
