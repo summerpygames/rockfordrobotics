@@ -24,7 +24,7 @@ def square(i):
     else:
         return False
 
-def egen(room, n, offset_x = 0, offset_y = 0):
+def egen(room, n, array = 1, offset_x = 0, offset_y = 0):
     if room[0] != room[1]:
         room = (room[0],room[0])
     if square(n):
@@ -35,9 +35,9 @@ def egen(room, n, offset_x = 0, offset_y = 0):
             after += 1
         side = sqrt(after)
     size = room[0]/side
-    return positions(room, n, size, side, offset_x, offset_y)
+    return positions(room, n, array, size, side, offset_x, offset_y)
 
-def positions(room, n, size, side, offset_x, offset_y):
+def positions(room, n, array, size, side, offset_x, offset_y):
     positions = []
     if square(n):
         x = room[0]-size
