@@ -4,9 +4,9 @@
 
 import olpcgames, pygame, logging 
 from olpcgames import pausescreen, textsprite, svgsprite
-from gettext import gettext as _
-import resources as r
 from egen import egen as egen
+from random import *
+import os
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
@@ -74,7 +74,7 @@ class BadGuy(Enemy):
         self.size = size
         self.bulletgroup = bulletgroup
         super(BadGuy, self).__init__(position = self.position, size = self.size, svg =
-                                     "enemy1.svg")
+                                     os.path.join('data', 'enemy.svg'))
         self.mask = pygame.mask.from_surface(self.image, 127)
 
     def update(self):
@@ -97,7 +97,13 @@ class LaserCannon(pygame.sprite.Sprite):
     def __init__(self, bullets):
         # Call the parent's constructor
         pygame.sprite.Sprite.__init__(self)
-        
+        self.sounds = []
+        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+                                                           'highlaser.wav')))
+        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+                                                           'midlaser.wav')))
+        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+                                                           'lowlaser.wav')))
         self.bulletgroup = pygame.sprite.OrderedUpdates()
         # Set height, width
         self.blackness = pygame.Surface([75, 15])
@@ -126,6 +132,7 @@ class LaserCannon(pygame.sprite.Sprite):
             self.bullets.append(Bullet(position))
             self.heat += 20
             self.bulletgroup.add(self.bullets[-1])
+            choice(self.sounds).play()
             if self.heat >= 75:
                 self.overheat()
         else:
@@ -185,14 +192,14 @@ class FlyingSaucer(Player):
     """This is just the class for the flying saucer or the ufo"""
     def __init__(self, cannon):
         self.cannon = cannon
-        super(FlyingSaucer, self).__init__(svg='ufo.svg', lasercannon = self.cannon)
+        super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo.svg'), lasercannon = self.cannon)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
 class Bullet(MovingSvgObject):
-    def __init__(self, pos, svg = 'laser.svg', size = (50, 50), speed=30):
+    def __init__(self, pos, svg = os.path.join('data', 'laser.svg'), size = (50, 50), speed=30):
         super(Bullet, self).__init__(pos, svg, size)
         self.change_x = speed
     
@@ -240,12 +247,12 @@ def main():
     enemys = []
     sp = 5 # The speed of the player
     
-        
+    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
     size = (800,600)
     if olpcgames.ACTIVITY:
         size = olpcgames.ACTIVITY.game_size
     screen = pygame.display.set_mode(size)
-    background = pygame.image.load('spacesmall.png')
+    background = pygame.image.load(os.path.join('data', 'spacesmall.png'))
     # Create an 800x600 sized screen
     
 #    text = Player(
@@ -292,7 +299,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        opponent.spawn_badguys((400, 400), 8, 400, 100)
+                        opponent.spawn_badguys((400, 400), 9, 400, 100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
