@@ -41,19 +41,25 @@ def egen(room, n, offset_x = 0, offset_y = 0, wave = False, rand = False, randnu
 
 def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
     positions = []
+    reset = 0
+    column = 1
     if rand:
         randinfo = []
         orignum = n
         n = randnum
         randlist = []
     elif wave is True:
-        waveinfo = [(size,size)]
+        wavepos = []
+        offset_y_orig = offset_y
     if square(n):
         x = room[0]-size
         y = 0
         for i in range(int(n + sqrt(n))):
-            if wave is True and even(i) is False:
-                offset_y += size
+            if reset:
+                offset_y = offset_y_orig - size/2
+            if wave is True and even(column) is False:
+                offset_y = offset_y_orig + size/2
+                reset = True
             if y != room[0]:
                 positions.append((int(x + offset_x),int(y + offset_y)))
                 if rand:
@@ -69,14 +75,12 @@ def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
         x = room[0]-size
         y = 0
         rem = n
-        column = 1
-        reset = 0
         for i in range(int(n + sqrt(n))):
             if reset == 1:
-                offset_y -= size
+                offset_y = offset_y_orig - size/2
                 reset = 0
-            if wave != 0 and even(column) is False:
-                offset_y += size/2
+            if wave is True and even(column) is False:
+                offset_y = offset_y_orig + size/2
                 reset = 1
             if n == rem+before and multiple(n,side) == False:
                 x = 0
@@ -103,7 +107,7 @@ def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
                     if rand:
                         randlist.append((int(x + offset_x),int(y + offset_y)))
                 break
-            if y < room[0]:
+            elif y < room[0]:
                 positions.append((int(x + offset_x),int(y + offset_y)))
                 if rand:
                     randlist.append((int(x + offset_x),int(y + offset_y)))
@@ -112,22 +116,21 @@ def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
             else:
                 x -= size
                 y = 0
+                print positions
                 if wave is True:
                     column += 1
-                    waveinfo.append(positions)
+                    wavepos.append(positions)
                     positions = []
     if wave is True:
-        print waveinfo
-        return waveinfo
+        print wavepos
+        return ((size,size),wavepos)
     elif rand is True:
-        print randlist
         for i in range(orignum):
             toappend = choice(randlist)
             randinfo.append(toappend)
             randlist.remove(toappend)
-        print randinfo
         return ((size,size),randinfo)
     else:
+        print positions
         return ((size, size), positions)
-egen((400,400),12, wave = True)
-    
+egen((400,400),14,wave = True)
