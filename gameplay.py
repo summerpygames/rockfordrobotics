@@ -1,5 +1,5 @@
 import gameplay
-import helpdoc
+import help s
 
 def play():
     print "\n\n\n\n\n\n\n", p1, symbol, p2, "\n\n\n\n\n"

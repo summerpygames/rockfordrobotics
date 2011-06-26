@@ -66,24 +66,47 @@ class Enemy(MovingSvgObject):
         super(Enemy, self).__init__(position = self.position, svg = svg, size =
                                     self.size)
         self.change_x = speed
+    def update(self):
+        """This just passed the update up the line"""
+        super(Enemy, self).update()
     
 class BadGuy(Enemy):
     """You can shoot all bad guys, unlike incorrect enemys"""
-    def __init__(self, position, size, bullets, bulletgroup):
+    def __init__(self, position, size, friendly_bulletgroup,
+                 opponent_bulletgroup, bullets, friendly_player):
         self.position = position
         self.size = size
-        self.bulletgroup = bulletgroup
-        super(BadGuy, self).__init__(position = self.position, size = self.size, svg =
-                                     os.path.join('data', 'enemy.svg'))
+        self.friendly_bulletgroup = friendly_bulletgroup
+        self.opponent_bulletgroup = opponent_bulletgroup
+        self.bullets = bullets
+        super(BadGuy, self).__init__(position = self.position, size = self.size,
+                                     svg = os.path.join('data', 'enemy.svg'))
         self.mask = pygame.mask.from_surface(self.image, 127)
-
+        self.friendly_player = friendly_player
+        self.onefire = False
+        self.bullet_offset = (0, 0)
     def update(self):
         """This will update the bad guy and make sure it is not touching any
         bullets or the other wall."""
-        collisions = pygame.sprite.spritecollide(self, self.bulletgroup, True,
+        collisions = pygame.sprite.spritecollide(self,
+                                                 self.friendly_bulletgroup,
+                                                 True,
                                                  pygame.sprite.collide_mask)
         if len(collisions) > 0:
             self.kill()
+
+        super(BadGuy, self).update()
+        if ((self.rect.midleft[1] >= self.friendly_player.rect.topright[1])
+        and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])):
+            if self.onefire == False:
+                self.bullets.append(BadBullet((self.rect.midleft[0] +
+                                               self.bullet_offset[0],
+                                               self.rect.midleft[1] +
+                                               self.bullet_offset[1])))
+                self.opponent_bulletgroup.add(self.bullets[-1])
+                self.onefire = True
+        else:
+            self.onefire = False
 
 class LaserCannon(pygame.sprite.Sprite):
 
@@ -94,10 +117,11 @@ class LaserCannon(pygame.sprite.Sprite):
     
     # -- Methods
     # Constructor function
-    def __init__(self, bullets):
+    def __init__(self, bullets, offset = (0, 0)):
         # Call the parent's constructor
         pygame.sprite.Sprite.__init__(self)
         self.sounds = []
+        self.offset = offset
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
                                                            'highlaser.wav')))
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
@@ -129,7 +153,8 @@ class LaserCannon(pygame.sprite.Sprite):
     def shoot(self, position):
         if self.overheated == False:
             """This is called for the cannon object to shoot something"""
-            self.bullets.append(Bullet(position))
+            self.bullets.append(FriendlyBullet((position[0] + self.offset[0],
+                                               position[1] + self.offset[1])))
             self.heat += 20
             self.bulletgroup.add(self.bullets[-1])
             choice(self.sounds).play()
@@ -172,9 +197,6 @@ class LaserCannon(pygame.sprite.Sprite):
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
 
-        
-        
-
 class Player(MovingSvgObject):
     """This is the good guy, the one that can shoot the lasers and kill the bad
     guys and get the math problems"""
@@ -182,26 +204,52 @@ class Player(MovingSvgObject):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
                                      (150, 150))
         self.cannon = lasercannon
-
     def shoot(self, position):
         """This will make the plater shoot"""
         self.cannon.shoot(position)
+
+    def update(self):
+        """This is an extention of the update that is used for the movind object"""
+        collisions = pygame.sprite.spritecollide(self,
+                                                 self.opponent_bulletgroup,
+                                                 True,
+                                                 pygame.sprite.collide_mask)
+        if len(collisions) > 0:
+            print '''FAIL!!
+FAILURE!!!
+LOOOOSERRR!!!
+YOU STIIINNNK!!!
+'''
+
+        super(Player, self).update()
 
         
 class FlyingSaucer(Player):
     """This is just the class for the flying saucer or the ufo"""
     def __init__(self, cannon):
         self.cannon = cannon
-        super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo.svg'), lasercannon = self.cannon)
+        super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo.svg'),
+                                           lasercannon = self.cannon)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
 class Bullet(MovingSvgObject):
-    def __init__(self, pos, svg = os.path.join('data', 'laser.svg'), size = (50, 50), speed=30):
+    def __init__(self, pos, svg, size, speed):
         super(Bullet, self).__init__(pos, svg, size)
         self.change_x = speed
+ 
+class FriendlyBullet(Bullet):
+    def __init__(self, pos, svg = os.path.join('data', 'lit_laser_green.svg'),
+                 size = (50, 50), speed=30):
+        super(FriendlyBullet, self).__init__(pos, svg, size, speed)
+
+class BadBullet(Bullet):
+    def __init__(self, pos, svg = os.path.join('data', 'friendly_laser.svg'),
+                 size = (50, 50), speed=-15):
+        super(BadBullet, self).__init__(pos, svg, size, speed)
+
     
 def keys(event, action):
     if action == 'escape':
@@ -225,27 +273,33 @@ def keys(event, action):
 
 class TheOpponent():
     """Contains things about the enemy you only wished you knew"""
-    def __init__(self, enemys, group, bullets, bulletgroup):
+    def __init__(self, enemys, group, friendly_bulletgroup, friendly_player):
         self.enemys = enemys
         self.group = group
-        self.bullets = bullets
-        self.bulletgroup = bulletgroup
+        self.bullets = []
+        self.friendly_bulletgroup = friendly_bulletgroup
+        self.opponent_bulletgroup = pygame.sprite.OrderedUpdates()
+        self.friendly_player = friendly_player
 
     def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
         for i in range(len(self.positions)):
             self.enemys.append(BadGuy(self.positions[i], self.size,
-                                      self.bullets, self.bulletgroup))
+                                      self.friendly_bulletgroup,
+                                      self.opponent_bulletgroup, self.bullets,
+                                      self.friendly_player))
             self.group.add(self.enemys[-1])
-
+    def update(self):
+        """This will update the positions of the bullets"""
+        self.opponent_bulletgroup.update()
 def main():
     """The mainlook which is specified in the activity.py file
     
     "main" is the assumed function name"""
     bullets = []
     enemys = []
-    sp = 5 # The speed of the player
+    sp = 10 # The speed of the player
     
     pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
     size = (800,600)
@@ -260,13 +314,14 @@ def main():
 #        color = (255,255,255),
 #        size = 20,
 #    )
-    lasercannon = LaserCannon(bullets)
-    player = FlyingSaucer(lasercannon)
-    
+    lasercannon = LaserCannon(bullets, offset = (-20, 0))
+        
     group = pygame.sprite.OrderedUpdates()
+    player = FlyingSaucer(lasercannon)
+    opponent = TheOpponent(enemys, group, lasercannon.bulletgroup, player)
+    player.opponent_bulletgroup = opponent.opponent_bulletgroup
     group.add(player)
     group.add(lasercannon)
-    opponent = TheOpponent(enemys, group, bullets, lasercannon.bulletgroup)
 
     clock = pygame.time.Clock()
 
@@ -299,7 +354,7 @@ def main():
                     if keys(event, 'space'):
                         player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        opponent.spawn_badguys((400, 400), 9, 400, 100)
+                        opponent.spawn_badguys((400, 400), 9, 800, 100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
@@ -314,6 +369,8 @@ def main():
         lasercannon.update()
         lasercannon.bulletgroup.draw(screen)
         group.draw( screen )
+        opponent.update()
+        opponent.opponent_bulletgroup.draw(screen)
         pygame.display.flip()
 #        clock.tick(500)
 
