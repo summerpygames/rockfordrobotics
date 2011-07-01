@@ -7,11 +7,21 @@ from olpcgames import pausescreen, textsprite, svgsprite
 from egen import egen as egen
 from random import *
 import os
+import panglery
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
 
-
+class GameManager(object):
+    """GameManager keeps all the values for everything the user or developer
+    will encounter in the game.
+    
+    This can be used to store all lists and things that will need to be accessed
+    at a later time, or anything that needs to be references to in many objects"""
+    def __init__(self, init=1):
+        self.init = init
+        self.p = panglery.Pangler()
+        
 # -- Attributes
 # Set speed vector
 class MovingTextObject(textsprite.TextSprite):
@@ -108,6 +118,11 @@ class BadGuy(Enemy):
         else:
             self.onefire = False
 
+        for i in self.bullets:
+            if i.rect.left < -20:
+                i.remove(self.opponent_bulletgroup)
+                self.bullets.remove(i)
+
 class LaserCannon(pygame.sprite.Sprite):
 
     # -- Attributes
@@ -117,18 +132,19 @@ class LaserCannon(pygame.sprite.Sprite):
     
     # -- Methods
     # Constructor function
-    def __init__(self, bullets, offset = (0, 0)):
+    def __init__(self, gm):
         # Call the parent's constructor
+        self.gm = gm
         pygame.sprite.Sprite.__init__(self)
         self.sounds = []
-        self.offset = offset
+        self.offset = gm.player_cannon_offset
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
                                                            'highlaser.wav')))
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
                                                            'midlaser.wav')))
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
                                                            'lowlaser.wav')))
-        self.bulletgroup = pygame.sprite.OrderedUpdates()
+        self.bulletgroup = gm.friendly_bullet_group
         # Set height, width
         self.blackness = pygame.Surface([75, 15])
         self.blackness.fill((0, 0, 0))
@@ -145,7 +161,7 @@ class LaserCannon(pygame.sprite.Sprite):
         self.overheated = False
         self.heat = 0
 
-        self.bullets = bullets
+        self.bullets = gm.playable_bullets
     def overheat(self):
         """This will make the cannon overheated"""
         self.overheated = True
@@ -226,8 +242,9 @@ YOU STIIINNNK!!!
         
 class FlyingSaucer(Player):
     """This is just the class for the flying saucer or the ufo"""
-    def __init__(self, cannon):
-        self.cannon = cannon
+    def __init__(self, gm):
+        self.cannon = gm.player_cannon
+        self.opponent_bulletgroup = gm.opponent_bullet_group
         super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo.svg'),
                                            lasercannon = self.cannon)
 
@@ -273,57 +290,88 @@ def keys(event, action):
 
 class TheOpponent():
     """Contains things about the enemy you only wished you knew"""
-    def __init__(self, enemys, group, friendly_bulletgroup, friendly_player):
-        self.enemys = enemys
-        self.group = group
-        self.bullets = []
-        self.friendly_bulletgroup = friendly_bulletgroup
-        self.opponent_bulletgroup = pygame.sprite.OrderedUpdates()
-        self.friendly_player = friendly_player
+    def __init__(self, gm):
+        self.gm = gm
+        self.enemies = gm.opponents
+        self.group = gm.opponent_group
+        self.opponent_bullets = gm.opponent_bullets
+        self.friendly_bullet_group = gm.friendly_bullet_group
+        self.opponent_bullet_group = gm.opponent_bullet_group
+        self.friendly_player = gm.player
 
     def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
         for i in range(len(self.positions)):
-            self.enemys.append(BadGuy(self.positions[i], self.size,
-                                      self.friendly_bulletgroup,
-                                      self.opponent_bulletgroup, self.bullets,
+            self.enemies.append(BadGuy(self.positions[i], self.size,
+                                      self.friendly_bullet_group,
+                                      self.opponent_bullet_group,
+                                      self.opponent_bullets,
                                       self.friendly_player))
-            self.group.add(self.enemys[-1])
+            self.group.add(self.enemies[-1])
+
     def update(self):
         """This will update the positions of the bullets"""
         self.opponent_bulletgroup.update()
+
+def start_gm(gm, charecter = 1):
+
+    gm.opponents = []
+    gm.opponent_group = pygame.sprite.OrderedUpdates()
+    gm.opponent_bullets = []
+    gm.opponent_bullet_group =  pygame.sprite.OrderedUpdates()
+    
+    gm.player_group = pygame.sprite.OrderedUpdates()
+    gm.playable_bullets = []
+    gm.friend_bullets = []
+    gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
+    
+    if charecter is 1:
+        gm.player_cannon_offset = (-20, 0)
+        gm.player_cannon = LaserCannon(gm)
+        gm.player = FlyingSaucer(gm)
+    elif charecter is 2:
+        gm.player_cannon_offset = (-20, 0)
+        gm.player_cannon = LaserCannon(gm)
+        gm.player = FlyingSaucer(gm)
+    elif charecter is 3:
+        gm.player_cannon_offset = (-20, 0)
+        gm.player_cannon = LaserCannon(gm)
+        gm.player = FlyingSaucer(gm)
+    elif charecter is 4:
+        gm.player_cannon_offset = (-20, 0)
+        gm.player_cannon = LaserCannon(gm)
+        gm.player = FlyingSaucer(gm)
+    else:
+        gm.player_cannon_offset = (-20, 0)
+        gm.player_cannon = LaserCannon(gm)
+        gm.player = FlyingSaucer(gm)
+
+    gm.opponent_manager = TheOpponent(gm)
+
 def main():
     """The mainlook which is specified in the activity.py file
     
     "main" is the assumed function name"""
-    bullets = []
-    enemys = []
+    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+    clock = pygame.time.Clock()
     sp = 10 # The speed of the player
     
-    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+    
     size = (800,600)
     if olpcgames.ACTIVITY:
         size = olpcgames.ACTIVITY.game_size
     screen = pygame.display.set_mode(size)
     background = pygame.image.load(os.path.join('data', 'spacesmall.png'))
     # Create an 800x600 sized screen
-    
-#    text = Player(
-#        text = "Hello Children of the World",
-#        color = (255,255,255),
-#        size = 20,
-#    )
-    lasercannon = LaserCannon(bullets, offset = (-20, 0))
-        
-    group = pygame.sprite.OrderedUpdates()
-    player = FlyingSaucer(lasercannon)
-    opponent = TheOpponent(enemys, group, lasercannon.bulletgroup, player)
-    player.opponent_bulletgroup = opponent.opponent_bulletgroup
-    group.add(player)
-    group.add(lasercannon)
+    gm = GameManager()
 
-    clock = pygame.time.Clock()
+    start_gm(gm)
+
+        
+    gm.player_group.add(gm.player)
+    gm.player_group.add(gm.player_cannon)
+    
 
     running = True
     while running:
@@ -344,33 +392,34 @@ def main():
                     if keys(event, 'escape'):
                         running = False
                     if keys(event, 'left'):
-                        player.changespeed(-sp,0)
+                        gm.player.changespeed(-sp,0)
                     if keys(event, 'right'):
-                        player.changespeed(sp,0)
+                        gm.player.changespeed(sp,0)
                     if keys(event, 'up'):
-                        player.changespeed(0,-sp)
+                        gm.player.changespeed(0,-sp)
                     if keys(event, 'down'):
-                        player.changespeed(0,sp)
+                        gm.player.changespeed(0,sp)
                     if keys(event, 'space'):
-                        player.shoot()
+                        gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        opponent.spawn_badguys((400, 400), 9, 800, 100)
+                        gm.opponent_manager.spawn_badguys((400, 400), 9, 800, 100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
-                        player.changespeed(sp,0)
+                        gm.player.changespeed(sp,0)
                     if keys(event, 'right'):
-                        player.changespeed(-sp,0)
+                        gm.player.changespeed(-sp,0)
                     if keys(event, 'up'):
-                        player.changespeed(0,sp)
+                        gm.player.changespeed(0,sp)
                     if keys(event, 'down'):
-                        player.changespeed(0,-sp)
-        group.update()
-        lasercannon.update()
-        lasercannon.bulletgroup.draw(screen)
-        group.draw( screen )
-        opponent.update()
-        opponent.opponent_bulletgroup.draw(screen)
+                        gm.player.changespeed(0,-sp)
+        gm.player_group.update()
+        gm.friendly_bullet_group.draw(screen)
+        gm.player_group.draw( screen )
+        gm.opponent_group.update()
+        gm.opponent_group.draw(screen)
+        gm.opponent_bullet_group.update()
+        gm.opponent_bullet_group.draw(screen)
         pygame.display.flip()
 #        clock.tick(500)
 
