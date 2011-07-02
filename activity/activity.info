@@ -1,7 +1,7 @@
 [Activity]
-name = %(name)s 
+name = SpaceMath 
 activity_version = 1
 host_version = 1
-service_name = %(service)s
+service_name = org.laptop.community.SpaceMath
 icon = activity
 exec = sugar-activity activity.Activity
