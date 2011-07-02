@@ -13,7 +13,8 @@ class GameManager(object):
     will encounter in the game.
     
     This can be used to store all lists and things that will need to be accessed
-    at a later time, or anything that needs to be references to in many objects"""
+    at a later time, or anything that needs to be references to in many
+    objects"""
     def __init__(self, init=1):
         self.init = init
         self.p = panglery.Pangler()
@@ -221,7 +222,8 @@ class Player(MovingSvgObject):
         self.cannon.shoot(position)
 
     def update(self):
-        """This is an extention of the update that is used for the movind object"""
+        """This is an extention of the update that is used for the movind
+        object"""
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
@@ -372,9 +374,6 @@ def main():
     running = True
     while running:
         screen.blit(background, (0, 0))
-#        milliseconds = clock.tick(100) # maximum number of frames per second
-        #MESS WITH THIS^^^^^^^^^^^^^^^
-        # Event-management loop with support for pausing after X seconds (20 here)
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
@@ -398,7 +397,8 @@ def main():
                     if keys(event, 'space'):
                         gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        gm.opponent_manager.spawn_badguys((400, 400), 9, 800, 100)
+                        gm.opponent_manager.spawn_badguys((400, 400), 9, 800,
+                                                          100)
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
@@ -417,7 +417,6 @@ def main():
         gm.opponent_bullet_group.update()
         gm.opponent_bullet_group.draw(screen)
         pygame.display.flip()
-#        clock.tick(500)
 
     pygame.quit()
 
