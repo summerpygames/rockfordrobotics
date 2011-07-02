@@ -1,6 +1,6 @@
 import random
 
-def addition_upto_10():
+def get_question():
     """Add a docstring that makes sense for this random generation.
     
     This bunch of functions will be used to creat around 1000 questions for an
