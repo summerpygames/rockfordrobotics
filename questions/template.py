@@ -3,6 +3,17 @@ import random
 def addition_upto_10():
     """Add a docstring that makes sense for this random generation.
     
+    This bunch of functions will be used to creat around 1000 questions for an
+    educational math game, the questions will be stored in a database and
+    randomly selected durring gameplay
+
+    Refer to the list of things to do to find what each of these modules should
+    do
+
+    You should make one of these per item on the list and then email them to:
+        me@markamber.co
+    after checking it off the list
+
     Be sure to return the results in the return format shown
     """
     term_1, term_2, right = generate_question()
