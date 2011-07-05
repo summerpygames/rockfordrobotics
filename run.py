@@ -569,16 +569,15 @@ def main():
                     if keys(event, 'escape'):
                         running = False
                     if keys(event, 'left'):
-                        pangler.trigger(event='event')
-                        
+                        gm.p.trigger(event='key_left_press')
                     if keys(event, 'right'):
-                        gm.player.changespeed(sp,0)
+                        gm.p.trigger(event='key_right_press')
                     if keys(event, 'up'):
-                        gm.player.changespeed(0,-sp)
+                        gm.p.trigger(event='key_up_press')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_press')
-                        gm.player.changespeed(0,sp)
                     if keys(event, 'space'):
+                        gm.p.trigger(event='key_x_press')
                         gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
                         gm.opponent_manager.spawn_badguys((400, 400), 9, 800,
@@ -591,13 +590,13 @@ def main():
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
-                        gm.player.changespeed(sp,0)
+                        gm.p.trigger(event='key_left_rel')
                     if keys(event, 'right'):
-                        gm.player.changespeed(-sp,0)
+                        gm.p.trigger(event='key_right_rel')
                     if keys(event, 'up'):
-                        gm.player.changespeed(0,sp)
+                        gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
-                        gm.player.changespeed(0,-sp)
+                        gm.p.trigger(event='key_down_rel')
 
         gm.player_group.update()
         gm.friendly_bullet_group.draw(screen)

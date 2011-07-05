@@ -96,18 +96,18 @@ class GameManager(object):
             more -- If this is true that is faster, false then slower
             dir  -- The direction, up down left or right
             """
-            if change:
+            if more:
                 sp = self.player_speed
             else:
                 sp = -self.player_speed
             if dir == 'up':
-                arg = (0, sp)
-            elif dir == 'down':
                 arg = (0, -sp)
+            elif dir == 'down':
+                arg = (0, sp)
             elif dir == 'left':
-                arg = (sp, 0)
-            elif arg = 'right':
                 arg = (-sp, 0)
+            elif dir == 'right':
+                arg = (sp, 0)
             else:
                 arg = (0, 0)
 
