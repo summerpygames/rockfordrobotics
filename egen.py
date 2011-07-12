@@ -133,4 +133,3 @@ def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
     else:
         print positions
         return ((size, size), positions)
-egen((400,400),14,wave = True)
