@@ -18,9 +18,9 @@ def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
     wrongs.append(right + 1)
-    wrongs.append(right - 1)
+    wrongs.append(abs(right - 1))
     wrongs.append(right + 2)
-    wrongs.append(right - 2)
+    wrongs.append(abs(right - 2))
     wrongs.append(2*int(sqrt(right)))
     wrongs.append(randint(1, 20))
     wrongs.append(randint(1, 20))
@@ -30,7 +30,7 @@ def generate_wrong(term1, term2, right):
     
     the_wrong_3 = []
 
-    for i in range(3):
+    while len(the_wrong_3) < 3:
         tmp = choice(wrongs)
         wrongs.remove(tmp)
         if tmp not in the_wrong_3 and tmp is not right:
