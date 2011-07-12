@@ -1,6 +1,7 @@
 import random
+import math
 
-def addition_upto_10():
+def generate():
     """Add a docstring that makes sense for this random generation.
     
     This bunch of functions will be used to creat around 1000 questions for an
@@ -17,10 +18,10 @@ def addition_upto_10():
     Be sure to return the results in the return format shown
     """
     term_1, term_2, right = generate_question()
-    generate_question(term_1, term_2)
+    wrong1, wrong2, wrong3 = generate_wrong(term_1, term_2 right)
     return (term_1, term_2, right, wrong1, wrong2, wrong3)
 
-def generate_question():
+def generate_question(term_1, term_2, right):
     """This will make the question and will spit out a math question.
 
     Use the conditions of the question being made to generate a question that
@@ -78,6 +79,6 @@ def generate_wrong(term_1, term_2):
     for i in range(3):
         tmp = random.choice(wrongs)
         wrongs.remove(tmp)
-        if tmp not in the_wrong_3:
+        if tmp not in the_wrong_3 and tmp is not right:
             the_wrong_3.append(tmp)
-
+    return the_wrong_3
