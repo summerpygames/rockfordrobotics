@@ -9,9 +9,15 @@ def generate():
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
-    right = choice(range(1,11))
-    term2 = choice(range(1,right+1))
-    term1 = right - term2
+    right = choice(range(10,101))
+    term11, term21 = [0,0]
+    while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)):
+        term11 = choice(range(1,10))
+        term21 = choice(range(1,10))
+    term12 = choice(range(1,right/10))
+    term1 = 10*term12 + term11
+    term22 = right - term1 - term21
+    term2 = term22 + term21
     return (term1, term2, right)
 
 def generate_wrong(term1, term2, right):
@@ -21,13 +27,12 @@ def generate_wrong(term1, term2, right):
     wrongs.append(right - 1)
     wrongs.append(right + 2)
     wrongs.append(right - 2)
-    wrongs.append(2*int(sqrt(right)))
-    wrongs.append(randint(1, 10))
-    wrongs.append(randint(1, 10))
-    wrongs.append(randint(1, 10))
-    wrongs.append(randint(1, 10))
-    wrongs.append(randint(1, 10))
-    
+    wrongs.append(30*int(sqrt(right)))
+    wrongs.append(right + 10)
+    wrongs.append(right - 10)
+    wrongs.append(right + 20)
+    wrongs.append(right - 20)
+    wrongs.append(randint(10, 100))
     the_wrong_3 = []
 
     while len(the_wrong_3) < 3:

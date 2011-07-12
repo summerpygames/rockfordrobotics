@@ -37,10 +37,10 @@ def generate_wrong(term1, term2, right):
 
     while len(the_wrong_3) < 3:
         if len(wrongs) > 0:
-            tmp = random.choice(wrongs)
+            tmp = choice(wrongs)
             wrongs.remove(tmp)
         else: # This should never happen, if it does, you have a problem.
-            tmp = random.randint(-7, -1)
+            tmp = randint(-7, -1)
         if tmp not in the_wrong_3 and tmp is not right:
             the_wrong_3.append(tmp)
     return the_wrong_3
