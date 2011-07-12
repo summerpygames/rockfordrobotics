@@ -32,10 +32,10 @@ def generate_wrong(term1, term2, right):
     wrongs.append(right - 10)
     wrongs.append(right + 20)
     wrongs.append(right - 20)
-    wrongs.append(randint(1, 10))
+    wrongs.append(randint(100, 1000))
     the_wrong_3 = []
 
-    for i in range(3):
+    while len(the_wrong_3) < 3:
         tmp = choice(wrongs)
         wrongs.remove(tmp)
         if tmp not in the_wrong_3 and tmp is not right:
