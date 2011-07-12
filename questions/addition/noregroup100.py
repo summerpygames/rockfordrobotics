@@ -2,7 +2,7 @@ import random
 from math import sqrt
 
 def generate():
-    """Adding two numbers to a maximum sum of 20."""
+    """Adding two numbers to a maximum sum of 100."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
     print term1, term2, right, wrong1, wrong2, wrong3
@@ -31,7 +31,7 @@ def generate_wrong(term1, term2, right):
     wrongs.append(right - 1)
     wrongs.append(right + 2)
     wrongs.append(right - 2)
-    wrongs.append(30*int(sqrt(right)))
+    wrongs.append(8*int(sqrt(right)))
     wrongs.append(right + 10)
     wrongs.append(right - 10)
     wrongs.append(right + 20)
