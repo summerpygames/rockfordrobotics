@@ -1,4 +1,6 @@
-import olpcgames, pygame, logging 
+import olpcgames
+import pygame
+import logging 
 from olpcgames import pausescreen, textsprite, svgsprite
 from egen import egen as egen
 from random import *
@@ -9,10 +11,8 @@ log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
 
-
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
-
 
 class MovingTextObject(textsprite.TextSprite):
 
@@ -316,7 +316,7 @@ class LaserCannon(pygame.sprite.Sprite):
                                          self.heat, 0)) 
         for i in self.bullets:
             i.update()
-            if i.rect.left > 800:
+            if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
 
@@ -413,7 +413,29 @@ class BadBullet(Bullet):
                  size = (50, 50), speed=-15):
         super(BadBullet, self).__init__(pos, svg, size, speed)
 
+class MovingBackground(object):
+
+    """Controll the psuedo-3D moving background of the game.
     
+    Uses the image length and position to blit a surface that moves dynamically
+    with the position of the player and the enemys
+
+    """
+
+    def __init__(self, forground, midground, background, screensize):
+        self.screensize = screensize
+        self.background_list = [forground, midground, background]
+        self.image = pygame.Surface(self.screensize)
+        self.black.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [0, 0]
+        
+        if self.background_list[0] is not False:
+            self.forground = pygame.image.load(os.path.join('data', ))
+        
+
+        
+
 def keys(event, action):
     """A little hack to make it easier to use the other parts of the programs, I
     think it is a little unneccecary, but it is OK, just shows how you can make
@@ -497,6 +519,12 @@ def start_gm(gm, charecter = 1):
     gm.friend_bullets = []
     gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
     
+    gm.size = (1200, 900)
+    if olpcgames.ACTIVITY:
+        gm.size = olpcgames.ACTIVITY.game_size
+    gm.screen = pygame.display.set_mode(gm.size)
+    gm.background = pygame.image.load(os.path.join('data', 'deepspace.jpg'))
+
     if charecter is 1:
         gm.player_cannon_offset = (-20, 0)
         gm.player_cannon = LaserCannon(gm)
@@ -531,31 +559,26 @@ def start_gm(gm, charecter = 1):
     
 
 def main():
-    """This will run at the startup of the game, and stop when the game is over"""
-    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+    """This will run at the startup of the game, and stop when the game is
+    over
+    """
+
+    pygame.init()
     clock = pygame.time.Clock()
     sp = 10 # The speed of the player
-    
-    
-    size = (800,600)
-    if olpcgames.ACTIVITY:
-        size = olpcgames.ACTIVITY.game_size
-    screen = pygame.display.set_mode(size)
-    background = pygame.image.load(os.path.join('data', 'spacesmall.png'))
-    # Create an 800x600 sized screen
     
     gm = globalgm
 
     start_gm(gm)
-
-        
+    gm.screen.blit(gm.background, (0, 0))
+    
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     
+    current_frame = 0
 
     running = True
-    while running:
-        screen.blit(background, (0, 0))
+    while running:      
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
@@ -587,7 +610,6 @@ def main():
                                                           100)
 
 
-
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
                         gm.p.trigger(event='key_left_rel')
@@ -597,14 +619,21 @@ def main():
                         gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
-
+        
+        gm.player_group.clear(gm.screen, gm.background)
+        gm.opponent_group.clear(gm.screen, gm.background)
+        gm.friendly_bullet_group.clear(gm.screen, gm.background)
+        gm.opponent_bullet_group.clear(gm.screen, gm.background)
+        
         gm.player_group.update()
-        gm.friendly_bullet_group.draw(screen)
-        gm.player_group.draw( screen )
-        gm.opponent_group.update()
-        gm.opponent_group.draw(screen)
+        gm.friendly_bullet_group.update()
         gm.opponent_bullet_group.update()
-        gm.opponent_bullet_group.draw(screen)
+        gm.opponent_group.update()
+
+        gm.player_group.draw(gm.screen)
+        gm.opponent_group.draw(gm.screen)
+        gm.friendly_bullet_group.draw(gm.screen)
+        gm.opponent_bullet_group.draw(gm.screen) 
         pygame.display.flip()
 
     pygame.quit()
