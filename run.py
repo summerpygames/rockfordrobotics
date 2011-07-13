@@ -565,18 +565,11 @@ def main():
 
     pygame.init()
     clock = pygame.time.Clock()
-    sp = 10 # The speed of the player
-    
     gm = globalgm
-
     start_gm(gm)
     gm.screen.blit(gm.background, (0, 0))
-    
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
-    
-    current_frame = 0
-
     running = True
     while running:      
         events = pausescreen.get_events()
@@ -603,11 +596,11 @@ def main():
                         gm.p.trigger(event='key_x_press')
                         gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        gm.opponent_manager.spawn_badguys((400, 400), 9, 800,
-                                                          100)
+                        gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
+                                                          50)
                     if event.key == pygame.K_KP9 or event.key == pygame.K_a:
-                        gm.opponent_manager.spawn_answerguys((400, 400), 9, 800,
-                                                          100)
+                        gm.opponent_manager.spawn_answerguys((600, 600), 9, 1200,
+                                                          50)
 
 
                 elif event.type == pygame.KEYUP:
