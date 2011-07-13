@@ -3,11 +3,11 @@ import math
 
 def generate():
     """"""
-    term_1, term_2, right = generate_question()
-    wrong1, wrong2, wrong3 = generate_wrong(term_1, term_2, right)
-    return (term_1, term_2, right, wrong1, wrong2, wrong3)
+    term1, term2, right = generate_question()
+    wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
+    return (term1, term2, right, wrong1, wrong2, wrong3)
 
-def generate_question(term_1, term_2, right):
+def generate_question(term1, term2, right):
     """This will make the question and will spit out a math question.
 
     Use the conditions of the question being made to generate a question that
@@ -30,9 +30,9 @@ def generate_question(term_1, term_2, right):
     greater, but the correct other number, or one other number more but the
     right remainder.
     """
-    return (term_1, term_2, right)
+    return (term1, term2, right)
 
-def generate_wrong(term_1, term_2, right):
+def generate_wrong(term1, term2, right):
     """This will create _10_ wrong answers and pick 3 that do not repeat
     
     wrongs[] will contain many wrong answers, to create a wrong answer use the
