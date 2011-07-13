@@ -2,37 +2,32 @@ from random import choice, randint
 from math import sqrt
 
 def generate():
-    """Adding two numbers to a maximum sum of 1000."""
+    """Adding two numbers to a maximum sum of 18."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
     return (term1, term2, right, wrong1, wrong2, wrong3)
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
-    right = choice(range(100,1001))
-    term11, term21 = [0,0]
-    while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)):
-        term11 = choice(range(1,10))
-        term21 = choice(range(1,10))
-    term12 = choice(range(10,right/10))
-    term1 = 10*term12 + term11
-    term22 = right - term1 - term21
-    term2 = term22 + term21
+    right = choice(range(1,19))
+    term2 = choice(range(1,right+1))
+    term1 = right - term2
     return (term1, term2, right)
 
 def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
     wrongs.append(right + 1)
-    wrongs.append(right - 1)
+    wrongs.append(abs(right - 1))
     wrongs.append(right + 2)
-    wrongs.append(right - 2)
-    wrongs.append(30*int(sqrt(right)))
-    wrongs.append(right + 10)
-    wrongs.append(right - 10)
-    wrongs.append(right + 20)
-    wrongs.append(right - 20)
-    wrongs.append(randint(100, 1000))
+    wrongs.append(abs(right - 2))
+    wrongs.append(2*int(sqrt(right)))
+    wrongs.append(randint(1, 18))
+    wrongs.append(randint(1, 18))
+    wrongs.append(randint(1, 18))
+    wrongs.append(randint(1, 18))
+    wrongs.append(randint(1, 18))
+    
     the_wrong_3 = []
 
     while len(the_wrong_3) < 3:
