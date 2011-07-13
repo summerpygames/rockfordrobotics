@@ -7,7 +7,7 @@ def generate():
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
     return (term1, term2, right, wrong1, wrong2, wrong3)
 
-def generate_question(term1, term2, right):
+def generate_question():
     """This will make the question and will spit out a math question.
 
     Use the conditions of the question being made to generate a question that
