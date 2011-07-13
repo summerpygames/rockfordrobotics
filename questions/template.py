@@ -32,7 +32,7 @@ def generate_question(term_1, term_2, right):
     """
     return (term_1, term_2, right)
 
-def generate_wrong(term_1, term_2):
+def generate_wrong(term_1, term_2, right):
     """This will create _10_ wrong answers and pick 3 that do not repeat
     
     wrongs[] will contain many wrong answers, to create a wrong answer use the
