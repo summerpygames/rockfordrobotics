@@ -2,26 +2,12 @@ import random
 import math
 
 def generate():
-    """Add a docstring that makes sense for this random generation.
-    
-    This bunch of functions will be used to creat around 1000 questions for an
-    educational math game, the questions will be stored in a database and
-    randomly selected durring gameplay
+    """"""
+    term1, term2, right = generate_question()
+    wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
+    return (term1, term2, right, wrong1, wrong2, wrong3)
 
-    Refer to the list of things to do to find what each of these modules should
-    do
-
-    You should make one of these per item on the list and then email them to:
-        me@markamber.co
-    after checking it off the list
-
-    Be sure to return the results in the return format shown
-    """
-    term_1, term_2, right = generate_question()
-    wrong1, wrong2, wrong3 = generate_wrong(term_1, term_2 right)
-    return (term_1, term_2, right, wrong1, wrong2, wrong3)
-
-def generate_question(term_1, term_2, right):
+def generate_question():
     """This will make the question and will spit out a math question.
 
     Use the conditions of the question being made to generate a question that
@@ -44,9 +30,9 @@ def generate_question(term_1, term_2, right):
     greater, but the correct other number, or one other number more but the
     right remainder.
     """
-    return (term_1, term_2, right)
+    return (term1, term2, right)
 
-def generate_wrong(term_1, term_2):
+def generate_wrong(term1, term2, right):
     """This will create _10_ wrong answers and pick 3 that do not repeat
     
     wrongs[] will contain many wrong answers, to create a wrong answer use the
