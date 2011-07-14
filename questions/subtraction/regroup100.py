@@ -1,26 +1,26 @@
-import random
+from random import choice, randint
 from math import sqrt
 
 def generate():
-    """Adding two numbers to a maximum sum of 100."""
+    """subtracting two numbers to a maximum difference of 1000."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
     return (term1, term2, right, wrong1, wrong2, wrong3)
     
 def generate_question():
-    """This is generating the three terms involved in the sum."""
-    right = random.choice(range(10,101))
-    term1 = random.choice(range(1,right))
-    term2 = right = term1
-    if term2 > term1:
-        term3 = term1
-        term1 = term2
-        term2 = term3
-    for i in range(len(str(term1))):
-        i += 1
-        while str(term1)[-i] + str(term2)[-i] >= 10:
-            str(term1)[-i] = int(random.choice(range(1,int(str(right)[-i]))))
-            str(term2)[-i] = int(str(right)[-i] - str(term1)[-i])
+    """This is generating the three terms involved in the difference."""
+    right = randint(1,100)
+    term1 = randint(right,100)
+    term2 = term1 - right
+    regroup = 0
+    while regroup == 0:
+        for i in range(len(str(term1))):
+            i += 1
+            if int(str(term1)[-i]) < int(str(term2)[-i]):
+                regroup = 1
+        if regroup == 0:
+            term1 = randint(right,100)
+            term2 = term1 - right
     return (term1, term2, right)
 
 def generate_wrong(term1, term2, right):
@@ -35,15 +35,15 @@ def generate_wrong(term1, term2, right):
     wrongs.append(right - 10)
     wrongs.append(right + 20)
     wrongs.append(right - 20)
-    wrongs.append(random.randint(10, 100))
+    wrongs.append(randint(0,100))
     the_wrong_3 = []
 
     while len(the_wrong_3) < 3:
         if len(wrongs) > 0:
-            tmp = random.choice(wrongs)
+            tmp = choice(wrongs)
             wrongs.remove(tmp)
         else: # This should never happen, if it does, you have a problem.
-            tmp = random.randint(-7, -1)
+            tmp = randint(-7, -1)
         if tmp not in the_wrong_3 and tmp is not right:
             the_wrong_3.append(tmp)
     return the_wrong_3
