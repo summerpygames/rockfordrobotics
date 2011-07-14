@@ -1,4 +1,6 @@
-import olpcgames, pygame, logging 
+import olpcgames
+import pygame
+import logging 
 from olpcgames import pausescreen, textsprite, svgsprite
 from egen import egen as egen
 from random import *
@@ -9,10 +11,8 @@ log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
 
-
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
-
 
 class MovingTextObject(textsprite.TextSprite):
 
@@ -413,7 +413,29 @@ class BadBullet(Bullet):
                  size = (50, 50), speed=-15):
         super(BadBullet, self).__init__(pos, svg, size, speed)
 
+class MovingBackground(object):
+
+    """Controll the psuedo-3D moving background of the game.
     
+    Uses the image length and position to blit a surface that moves dynamically
+    with the position of the player and the enemys
+
+    """
+
+    def __init__(self, forground, midground, background, screensize):
+        self.screensize = screensize
+        self.background_list = [forground, midground, background]
+        self.image = pygame.Surface(self.screensize)
+        self.black.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [0, 0]
+        
+        if self.background_list[0] is not False:
+            self.forground = pygame.image.load(os.path.join('data', ))
+        
+
+        
+
 def keys(event, action):
     """A little hack to make it easier to use the other parts of the programs, I
     think it is a little unneccecary, but it is OK, just shows how you can make
@@ -531,7 +553,9 @@ def start_gm(gm, charecter = 1):
     
 
 def main():
-    """This will run at the startup of the game, and stop when the game is over"""
+    """This will run at the startup of the game, and stop when the game is
+    over
+    """
     pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
     clock = pygame.time.Clock()
     sp = 10 # The speed of the player
@@ -547,12 +571,10 @@ def main():
     gm = globalgm
 
     start_gm(gm)
-
-        
+    
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     
-
     running = True
     while running:
         screen.blit(background, (0, 0))
@@ -585,8 +607,6 @@ def main():
                     if event.key == pygame.K_KP9 or event.key == pygame.K_a:
                         gm.opponent_manager.spawn_answerguys((400, 400), 9, 800,
                                                           100)
-
-
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
