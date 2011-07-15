@@ -23,4 +23,4 @@ About the authors
 others will be added...
 
 [markamber]: http://markamber.co "Mark Amber"
-[lukedmor](https://plus.google.com/116612911731859210066/posts)
+[lukedmor] : https://plus.google.com/116612911731859210066/posts
