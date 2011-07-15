@@ -625,20 +625,14 @@ def main():
         gm.opponent_bullet_group.update()
         gm.opponent_group.update()
 
-        if current_frame == 0: #Refresh player
-            gm.player_group.clear(gm.screen, gm.background)
-            gm.player_group.draw(gm.screen)
-            gm.opponent_group.clear(gm.screen, gm.background)
-            gm.opponent_group.draw(gm.screen)
-            current_frame = 1
-        elif current_frame == 1:
-            gm.friendly_bullet_group.clear(gm.screen, gm.background)
-            gm.friendly_bullet_group.draw(gm.screen)
-            gm.opponent_bullet_group.clear(gm.screen, gm.background)
-            gm.opponent_bullet_group.draw(gm.screen) 
-            current_frame = 0
-        else:
-            print 'bad times'
+        gm.player_group.clear(gm.screen, gm.background)
+        gm.player_group.draw(gm.screen)
+        gm.opponent_group.clear(gm.screen, gm.background)
+        gm.opponent_group.draw(gm.screen)
+        gm.friendly_bullet_group.clear(gm.screen, gm.background)
+        gm.friendly_bullet_group.draw(gm.screen)
+        gm.opponent_bullet_group.clear(gm.screen, gm.background)
+        gm.opponent_bullet_group.draw(gm.screen) 
         pygame.display.flip()
 
     pygame.quit()
