@@ -18,6 +18,9 @@ Or, if you are on an XO, put the SpaceMath.activity folder in your ~/Activities 
 About the authors
 -----------------
 [Mark Amber][markamber] : Team Programmer
+[Lucas Morales][lukedmor] : Team Programmer
+
 others will be added...
 
 [markamber]: http://markamber.co "Mark Amber"
+[lukedmor](https://plus.google.com/116612911731859210066/posts)
