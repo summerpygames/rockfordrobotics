@@ -316,7 +316,7 @@ class LaserCannon(pygame.sprite.Sprite):
                                          self.heat, 0)) 
         for i in self.bullets:
             i.update()
-            if i.rect.left > 800:
+            if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
 
@@ -519,6 +519,12 @@ def start_gm(gm, charecter = 1):
     gm.friend_bullets = []
     gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
     
+    gm.size = (800, 600)
+    if olpcgames.ACTIVITY:
+        gm.size = olpcgames.ACTIVITY.game_size
+    gm.screen = pygame.display.set_mode(gm.size)
+    gm.background = pygame.image.load(os.path.join('data', 'spacesmall.png'))
+
     if charecter is 1:
         gm.player_cannon_offset = (-20, 0)
         gm.player_cannon = LaserCannon(gm)
@@ -557,7 +563,6 @@ def main():
     over
     """
 
-    pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=4096)
     pygame.init()
     clock = pygame.time.Clock()
     sp = 10 # The speed of the player
@@ -578,6 +583,8 @@ def main():
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     
+    current_frame = 0
+
     running = True
     while running:      
         events = pausescreen.get_events()
@@ -620,20 +627,28 @@ def main():
                         gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
-
-        gm.player_group.clear(screen, background)
-        gm.friendly_bullet_group.clear(screen, background)
-        gm.player_group.clear(screen, background)
-        gm.opponent_group.clear(screen, background)
-        gm.opponent_bullet_group.clear(screen, background)
-
+        
         gm.player_group.update()
-        gm.friendly_bullet_group.draw(screen)
-        gm.player_group.draw( screen )
-        gm.opponent_group.update()
-        gm.opponent_group.draw(screen)
+        gm.friendly_bullet_group.update()
         gm.opponent_bullet_group.update()
-        gm.opponent_bullet_group.draw(screen)
+        gm.opponent_group.update()
+
+        if current_frame == 0: #Refresh player
+            gm.player_group.clear(gm.screen, gm.background)
+            gm.player_group.draw(gm.screen)
+            current_frame = 1
+        elif current_frame == 1:
+            gm.friendly_bullet_group.clear(gm.screen, gm.background)
+            gm.friendly_bullet_group.draw(gm.screen)
+            gm.opponent_bullet_group.clear(gm.screen, gm.background)
+            gm.opponent_bullet_group.draw(gm.screen) 
+            current_frame = 2
+        elif current_frame == 2:
+            gm.opponent_group.clear(gm.screen, gm.background)
+            gm.opponent_group.draw(gm.screen)
+            current_frame = 0
+        else:
+            print 'bad times'
         pygame.display.flip()
 
     pygame.quit()
