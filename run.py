@@ -95,7 +95,7 @@ class Enemy(MovingSvgObject):
         """This just passes the update up the line"""
         super(Enemy, self).update()
     
-class AnswerGuy(Enemy):
+class AnswerGuy(pygame.sprite.Sprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
@@ -112,9 +112,22 @@ class AnswerGuy(Enemy):
         self.friendly_bulletgroup = friendly_bulletgroup
         self.gm = gm
         self.correct = correct
-        super(AnswerGuy, self).__init__(position = self.position, size =
-                                        self.size, svg = os.path.join('data',
-                                                                      'enemy.svg'))
+        self.data = open(os.path.join("data", "numenemy.svg")).read()
+        self.svg = svgsprite.SVGSprite(svg = self.data,
+                                       size = self.size)
+        self.text = textsprite.TextSprite(text="1", family="Norasi",
+                                          size=32, color=(255, 255, 255))
+        self.text.render()
+        super(AnswerGuy, self).__init__()
+        self.change_x = -1
+        self.change_y = 0
+        self.image = pygame.Surface(size).convert_alpha()
+        self.image.fill((0, 0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.top = position[1]
+        self.rect.left = position[0]
+        self.image.blit(self.svg.image, (0, 0))
+        self.image.blit(self.text.image, (self.size[0] / 2, self.size[1] / 2))
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
 
@@ -132,6 +145,8 @@ class AnswerGuy(Enemy):
         if len(collisions) > 0:
             self.gm.p.trigger(event='shot_answer', correct=self.correct)
             self.kill()
+        self.rect.top += self.change_y
+        self.rect.left += self.change_x
 
         super(AnswerGuy, self).update()
 
