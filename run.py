@@ -571,13 +571,13 @@ def main():
     gm = globalgm
 
     start_gm(gm)
+    screen.blit(background, (0, 0))
     
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     
     running = True
-    while running:
- #       screen.blit(background, (0, 0))
+    while running:      
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
