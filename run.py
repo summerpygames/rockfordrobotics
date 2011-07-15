@@ -561,7 +561,7 @@ def main():
     sp = 10 # The speed of the player
     
     
-    size = (800,600)
+    size = (800, 600)
     if olpcgames.ACTIVITY:
         size = olpcgames.ACTIVITY.game_size
     screen = pygame.display.set_mode(size)
@@ -577,7 +577,7 @@ def main():
     
     running = True
     while running:
-        screen.blit(background, (0, 0))
+ #       screen.blit(background, (0, 0))
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
@@ -608,6 +608,7 @@ def main():
                         gm.opponent_manager.spawn_answerguys((400, 400), 9, 800,
                                                           100)
 
+
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
                         gm.p.trigger(event='key_left_rel')
@@ -617,6 +618,12 @@ def main():
                         gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
+
+        gm.player_group.clear(screen, background)
+        gm.friendly_bullet_group.clear(screen, background)
+        gm.player_group.clear(screen, background)
+        gm.opponent_group.clear(screen, background)
+        gm.opponent_bullet_group.clear(screen, background)
 
         gm.player_group.update()
         gm.friendly_bullet_group.draw(screen)
