@@ -168,7 +168,7 @@ class BadGuy(Enemy):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_rect)
+                                                 pygame.sprite.collide_mask)
         if len(collisions) > 0:
             self.kill()
 
@@ -345,7 +345,7 @@ class Player(MovingSvgObject):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_rect)
+                                                 pygame.sprite.collide_mask)
         if len(collisions) > 0:
             print '''FAIL!!
 FAILURE!!!
