@@ -556,7 +556,7 @@ def main():
     """This will run at the startup of the game, and stop when the game is
     over
     """
-    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+#    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
     clock = pygame.time.Clock()
     sp = 10 # The speed of the player
     
