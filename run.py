@@ -10,7 +10,6 @@ from gamemanager import *
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
-overheaton = True
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
 
@@ -281,7 +280,7 @@ class LaserCannon(pygame.sprite.Sprite):
             # Add the newly created 'bullet' to the sprite group
             choice(self.sounds).play()
             # Randomly select one of the sounds from the list created earlier
-            if self.heat >= 75 and overheaton is True:
+            if self.heat >= 75:
                 self.overheat()
                 # If applicable, overheat the lasercannon
         else:
@@ -640,12 +639,12 @@ def main():
                     if keys(event, 'space'):
                         gm.p.trigger(event='key_x_press')
                         gm.player.shoot()
-                    if keys(event, 'overheat initialize'):
-                        global overheaton
-                        overheaton = True
-                    if keys(event, 'overheat off'):
-                        global overheaton
-                        overheaton = False
+#                    if keys(event, 'overheat initialize'):
+#                        global overheaton
+#                        overheaton = True
+#                    if keys(event, 'overheat off'):
+#                        global overheaton
+#                        overheaton = False
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
                         gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
                                                           50)
