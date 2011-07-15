@@ -10,7 +10,7 @@ from gamemanager import *
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
-
+overheaton = True
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
 
@@ -498,12 +498,12 @@ def keys(event, action):
     if action == 'space':
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
-    if action == 'overheat initialize':
-        if event.key == pygame.K_i:
-            return True
-    if action == 'overheat off':
-        if event.key == pygame.K_o:
-            return True
+#    if action == 'overheat initialize':
+#        if event.key == pygame.K_i:
+#            return True
+#    if action == 'overheat off':
+#        if event.key == pygame.K_o:
+#            return True
 
 class TheOpponent():
     
