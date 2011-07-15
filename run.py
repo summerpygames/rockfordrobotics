@@ -230,12 +230,12 @@ class LaserCannon(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.sounds = []
         self.offset = gm.player_cannon_offset
-#        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-#                                                           'highlaser.wav')))
-#        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-#                                                           'midlaser.wav')))
-#        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-#                                                           'lowlaser.wav')))
+        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+                                                           'highlaser.wav')))
+        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+                                                           'midlaser.wav')))
+        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+                                                           'lowlaser.wav')))
         self.bulletgroup = gm.friendly_bullet_group
         self.blackness = pygame.Surface([75, 15])
         self.blackness.fill((0, 0, 0))
@@ -556,7 +556,9 @@ def main():
     """This will run at the startup of the game, and stop when the game is
     over
     """
-#    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+
+    pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=4096)
+    pygame.init()
     clock = pygame.time.Clock()
     sp = 10 # The speed of the player
     
