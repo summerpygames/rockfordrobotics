@@ -116,13 +116,11 @@ def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
             else:
                 x -= size
                 y = 0
-                print positions
                 if wave is True:
                     column += 1
                     wavepos.append(positions)
                     positions = []
     if wave is True:
-        print wavepos
         return ((size,size),wavepos)
     elif rand is True:
         for i in range(orignum):
@@ -131,5 +129,4 @@ def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
             randlist.remove(toappend)
         return ((size,size),randinfo)
     else:
-        print positions
         return ((size, size), positions)
