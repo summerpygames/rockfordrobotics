@@ -281,7 +281,7 @@ class LaserCannon(pygame.sprite.Sprite):
             # Add the newly created 'bullet' to the sprite group
             choice(self.sounds).play()
             # Randomly select one of the sounds from the list created earlier
-            if self.heat >= 75:
+            if self.heat >= 75 and overheaton is True:
                 self.overheat()
                 # If applicable, overheat the lasercannon
         else:
@@ -498,6 +498,12 @@ def keys(event, action):
     if action == 'space':
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
+    if action == 'overheat initialize':
+        if event.key == pygame.K_i:
+            return True
+    if action == 'overheat off':
+        if event.key == pygame.K_o:
+            return True
 
 class TheOpponent():
     
@@ -604,18 +610,11 @@ def main():
 
     pygame.init()
     clock = pygame.time.Clock()
-    sp = 10 # The speed of the player
-    
     gm = globalgm
-
     start_gm(gm)
     gm.screen.blit(gm.background, (0, 0))
-    
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
-    
-    current_frame = 0
-
     running = True
     while running:      
         events = pausescreen.get_events()
@@ -641,6 +640,12 @@ def main():
                     if keys(event, 'space'):
                         gm.p.trigger(event='key_x_press')
                         gm.player.shoot()
+                    if keys(event, 'overheat initialize'):
+                        global overheaton
+                        overheaton = True
+                    if keys(event, 'overheat off'):
+                        global overheaton
+                        overheaton = False
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
                         gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
                                                           50)
