@@ -620,18 +620,19 @@ def main():
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
         
+        gm.player_group.clear(gm.screen, gm.background)
+        gm.opponent_group.clear(gm.screen, gm.background)
+        gm.friendly_bullet_group.clear(gm.screen, gm.background)
+        gm.opponent_bullet_group.clear(gm.screen, gm.background)
+        
         gm.player_group.update()
         gm.friendly_bullet_group.update()
         gm.opponent_bullet_group.update()
         gm.opponent_group.update()
 
-        gm.player_group.clear(gm.screen, gm.background)
         gm.player_group.draw(gm.screen)
-        gm.opponent_group.clear(gm.screen, gm.background)
         gm.opponent_group.draw(gm.screen)
-        gm.friendly_bullet_group.clear(gm.screen, gm.background)
         gm.friendly_bullet_group.draw(gm.screen)
-        gm.opponent_bullet_group.clear(gm.screen, gm.background)
         gm.opponent_bullet_group.draw(gm.screen) 
         pygame.display.flip()
 
