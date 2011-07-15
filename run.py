@@ -168,7 +168,7 @@ class BadGuy(Enemy):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect)
         if len(collisions) > 0:
             self.kill()
 
@@ -345,7 +345,7 @@ class Player(MovingSvgObject):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect)
         if len(collisions) > 0:
             print '''FAIL!!
 FAILURE!!!
@@ -374,7 +374,7 @@ class FlyingSaucer(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
-class Bullet(MovingSvgObject):
+class Bullet(pygame.sprite.Sprite):
     
     """A generic bullet, should be extended.
     
@@ -383,9 +383,31 @@ class Bullet(MovingSvgObject):
     move and cannot think for itself
     
     """
-    def __init__(self, pos, svg, size, speed):
-        super(Bullet, self).__init__(pos, svg, size)
+    def __init__(self, pos, color, size, speed):
+        pygame.sprite.Sprite.__init__(self)
         self.change_x = speed
+        self.change_y = 0
+#        self.laserbeam = pygame.Surface(size)
+#        self.laserbeam.fill(color)
+        self.image = pygame.Surface(size)
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.rect.top = pos[1]
+        self.rect.left = pos[0]
+
+    def changespeed(self, x, y):
+        """Change the speed of the SVG"""
+        self.change_x+=x
+        self.change_y+=y
+        
+    # Remap the new location of the SVG
+    def update(self):
+        """Update the location of the SVG"""
+        self.rect.top += self.change_y
+        self.rect.left += self.change_x
+#        self.image.blit(self.laserbeam)
+
+
  
 class FriendlyBullet(Bullet):
     
@@ -396,9 +418,9 @@ class FriendlyBullet(Bullet):
     
     """
     
-    def __init__(self, pos, svg = os.path.join('data', 'lit_laser_green.svg'),
-                 size = (50, 50), speed=30):
-        super(FriendlyBullet, self).__init__(pos, svg, size, speed)
+    def __init__(self, pos, color = (0, 255, 0),
+                 size = (25, 3), speed = 30):
+        super(FriendlyBullet, self).__init__(pos, color, size, speed)
 
 class BadBullet(Bullet):
     
@@ -409,9 +431,9 @@ class BadBullet(Bullet):
     
     """
     
-    def __init__(self, pos, svg = os.path.join('data', 'friendly_laser.svg'),
-                 size = (50, 50), speed=-15):
-        super(BadBullet, self).__init__(pos, svg, size, speed)
+    def __init__(self, pos, color = (255, 0, 0),
+                 size = (25, 3), speed=-15):
+        super(BadBullet, self).__init__(pos, color, size, speed)
 
 class MovingBackground(object):
 
