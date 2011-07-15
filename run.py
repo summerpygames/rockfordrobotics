@@ -394,6 +394,9 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.top = pos[1]
         self.rect.left = pos[0]
+        self.mask = pygame.mask.from_surface(self.image)
+        print self.mask.get_size()
+        self.mask.fill()
 
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
