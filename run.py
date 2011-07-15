@@ -572,7 +572,7 @@ def main():
     if olpcgames.ACTIVITY:
         size = olpcgames.ACTIVITY.game_size
     screen = pygame.display.set_mode(size)
-    background = pygame.image.load(os.path.join('data', 'deepspace.png'))
+    background = pygame.image.load(os.path.join('data', 'spacesmall.png'))
     # Create an 800x600 sized screen
     
     gm = globalgm
