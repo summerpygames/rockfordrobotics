@@ -230,12 +230,12 @@ class LaserCannon(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.sounds = []
         self.offset = gm.player_cannon_offset
-        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-                                                           'highlaser.wav')))
-        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-                                                           'midlaser.wav')))
-        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-                                                           'lowlaser.wav')))
+#        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+#                                                           'highlaser.wav')))
+#        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+#                                                           'midlaser.wav')))
+#        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
+#                                                           'lowlaser.wav')))
         self.bulletgroup = gm.friendly_bullet_group
         self.blackness = pygame.Surface([75, 15])
         self.blackness.fill((0, 0, 0))
