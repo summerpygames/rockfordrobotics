@@ -519,11 +519,11 @@ def start_gm(gm, charecter = 1):
     gm.friend_bullets = []
     gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
     
-    gm.size = (800, 600)
+    gm.size = (1200, 900)
     if olpcgames.ACTIVITY:
         gm.size = olpcgames.ACTIVITY.game_size
     gm.screen = pygame.display.set_mode(gm.size)
-    gm.background = pygame.image.load(os.path.join('data', 'spacesmall.png'))
+    gm.background = pygame.image.load(os.path.join('data', 'deepspace.jpg'))
 
     if charecter is 1:
         gm.player_cannon_offset = (-20, 0)
@@ -567,18 +567,10 @@ def main():
     clock = pygame.time.Clock()
     sp = 10 # The speed of the player
     
-    
-    size = (800, 600)
-    if olpcgames.ACTIVITY:
-        size = olpcgames.ACTIVITY.game_size
-    screen = pygame.display.set_mode(size)
-    background = pygame.image.load(os.path.join('data', 'deepspace.jpg'))
-    # Create an 800x600 sized screen
-    
     gm = globalgm
 
     start_gm(gm)
-    screen.blit(background, (0, 0))
+    gm.screen.blit(gm.background, (0, 0))
     
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
@@ -636,16 +628,14 @@ def main():
         if current_frame == 0: #Refresh player
             gm.player_group.clear(gm.screen, gm.background)
             gm.player_group.draw(gm.screen)
+            gm.opponent_group.clear(gm.screen, gm.background)
+            gm.opponent_group.draw(gm.screen)
             current_frame = 1
         elif current_frame == 1:
             gm.friendly_bullet_group.clear(gm.screen, gm.background)
             gm.friendly_bullet_group.draw(gm.screen)
             gm.opponent_bullet_group.clear(gm.screen, gm.background)
             gm.opponent_bullet_group.draw(gm.screen) 
-            current_frame = 2
-        elif current_frame == 2:
-            gm.opponent_group.clear(gm.screen, gm.background)
-            gm.opponent_group.draw(gm.screen)
             current_frame = 0
         else:
             print 'bad times'
