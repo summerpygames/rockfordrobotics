@@ -67,10 +67,6 @@ class MovingSvgObject(pygame.sprite.Sprite):
         self.image = self.sprite.image
         self.rect = self.sprite.rect
         self.resolution = self.sprite.resolution
-
-#        self.image = pygame.Surface(size).convert_alpha()
-#        self.image.fill((0, 0, 0, 0))
-#        self.rect = self.image.get_rect()
         self.rect.top = position[1]
         self.rect.left = position[0]
         self.change_x = 0
@@ -107,6 +103,17 @@ class Enemy(MovingSvgObject):
     def update(self):
         """This just passes the update up the line"""
         super(Enemy, self).update()
+
+class AnswerPrinter(pygame.sprite.Sprite):
+    """Prints a math answer in different ways depending on what it is
+    
+    If the answer has a fraction in it, this will take that into account, if the
+    answer is a devision with a remainder, this will take that into accound too.
+    
+    """
+    def __init__(self):
+        super(AnswerPrinter, self).__init__()
+        
     
 class AnswerGuy(pygame.sprite.Sprite):
     
@@ -119,17 +126,22 @@ class AnswerGuy(pygame.sprite.Sprite):
     """
     
     def __init__(self, position, size, friendly_bulletgroup, friendly_player,
-                 correct,  gm):
+                 correct,  gm, copy =  False):
         self.position = position
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.gm = gm
         self.correct = correct
-        self.data = open(os.path.join("data", "numenemy.svg")).read()
-        self.svg = svgsprite.SVGSprite(svg = self.data,
-                                       size = self.size)
+                
+        if copy is not False and copy.__class__ == svgsprite.SVGSprite:
+            self.svg = copy.copy()
+        else:
+            self.data = open(os.path.join("data", "numenemy.svg")).read()
+            self.svg = svgsprite.SVGSprite(svg = self.data,
+                                           size = self.size)
+
         self.text = textsprite.TextSprite(text="1", family="Norasi",
-                                          size=32, color=(255, 255, 255))
+                                          size=32, color=(0, 0, 0))
         self.text.render()
         super(AnswerGuy, self).__init__()
         self.change_x = -1
@@ -140,7 +152,7 @@ class AnswerGuy(pygame.sprite.Sprite):
         self.rect.top = position[1]
         self.rect.left = position[0]
         self.image.blit(self.svg.image, (0, 0))
-        self.image.blit(self.text.image, (self.size[0] / 2, self.size[1] / 2))
+        self.image.blit(self.text.image, (self.size[0] / 3, self.size[1] / 3))
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
 
@@ -180,7 +192,7 @@ class BadGuy(Enemy):
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.opponent_bulletgroup = opponent_bulletgroup
-        self.bullets = bullets
+        self.bullets = []
         self.gm = gm
         super(BadGuy, self).__init__(position = self.position, size = self.size,
                                      svg = os.path.join('data', 'enemy.svg'),
@@ -201,6 +213,8 @@ class BadGuy(Enemy):
                                                  pygame.sprite.collide_mask)
         if len(collisions) > 0:
             self.kill()
+            self.gm.p.trigger(event='strays', bulletlist = self.bullets,
+                            bulletgroup = self.opponent_bulletgroup)
 
         super(BadGuy, self).update()
         if ((self.rect.midleft[1] >= self.friendly_player.rect.topright[1])
@@ -350,6 +364,35 @@ class LaserCannon(pygame.sprite.Sprite):
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
+
+class StrayBulletManager(object):
+    """Cleans up stray bullets left behind by enemies that have died
+    
+    A pangler trigger is used to signal this class that it should be monitoring
+    stray bullets for a perticular bullet list. Pass a list of bullets along
+    with the panglery trigger and let the stray bullet manager update and
+    monitor the positions of the lost bullets. after a list of bullets is fully
+    depleted, the list will be removed from the que
+    
+    """
+
+    def __init__(self, gm):
+        self.straylists = []
+        self.gm = gm
+        @self.gm.p.subscribe(event='strays', needs=['bulletlist', 'bulletgroup'])
+        def strays_hook(p, bulletlist, bulletgroup):
+             self.straylists.append([bulletlist, bulletgroup])
+
+    def update(self):
+        """Update the lists of stray bullets"""
+        for i in self.straylists:
+            for g in i[0]:
+                if g.rect.left < -25:
+                    g.remove(i[1])
+                    i[0].remove(g)
+
+
+
 
 class Player(MovingSvgObject):
     
@@ -560,11 +603,14 @@ class TheOpponent():
     def spawn_answerguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
-
+        self.answerguysvg = svgsprite.SVGSprite(open(os.path.join('data',
+                                                                  'numenemy.svg')).read(),
+                                                self.size)
         for i in range(len(self.positions)):
             self.enemies.append(AnswerGuy(self.positions[i], self.size,
                                           self.friendly_bullet_group,
-                                          self.friendly_player, True, self.gm))
+                                          self.friendly_player, True, self.gm,
+                                          copy = self.answerguysvg))
             self.group.add(self.enemies[-1])
 
 
@@ -617,6 +663,8 @@ def start_gm(gm, charecter = 1):
     gm.opponent_manager = TheOpponent(gm)
 
     gm.playerlifes = 3
+
+    gm.straybullets = StrayBulletManager(gm)
 
     gm.play = True
     gm.menu = False
@@ -696,6 +744,7 @@ def main():
         gm.friendly_bullet_group.update()
         gm.opponent_bullet_group.update()
         gm.opponent_group.update()
+        gm.straybullets.update()
 
         gm.player_group.draw(gm.screen)
         gm.opponent_group.draw(gm.screen)
