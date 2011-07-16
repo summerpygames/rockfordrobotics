@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import olpcgames
 import pygame
 import logging 
