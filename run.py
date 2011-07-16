@@ -46,7 +46,7 @@ class MovingTextObject(textsprite.TextSprite):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
 
-class MovingSvgObject(svgsprite.SVGSprite):
+class MovingSvgObject(pygame.sprite.Sprite):
 
     """Moving SVG Object extends SVGSprite to allow it to move.
     
@@ -54,14 +54,27 @@ class MovingSvgObject(svgsprite.SVGSprite):
     
     """
 
-    def __init__(self, position = (0, 0), svg=None, size=None):
-        data = open(svg).read()
-        super(MovingSvgObject, self).__init__(data, size)
+    def __init__(self, position = (0, 0), svg=None, size=None, copy=False):
+
+        if copy is not False and copy.__class__ == svgsprite.SVGSprite:
+            self.sprite = copy.copy()
+        else:
+            data = open(svg).read()
+            self.sprite = svgsprite.SVGSprite(data, size)
+
+        super(MovingSvgObject, self).__init__()
+        self.image = self.sprite.image
+        self.rect = self.sprite.rect
+        self.resolution = self.sprite.resolution
+
+#        self.image = pygame.Surface(size).convert_alpha()
+#        self.image.fill((0, 0, 0, 0))
+#        self.rect = self.image.get_rect()
         self.rect.top = position[1]
         self.rect.left = position[0]
         self.change_x = 0
         self.change_y = 0
-
+       
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
         self.change_x+=x
@@ -83,11 +96,11 @@ class Enemy(MovingSvgObject):
     
     """
     
-    def __init__(self, size, svg, position, speed = -1):
+    def __init__(self, size, svg, position, speed = -1, copy = False):
         self.position = position
         self.size = size
         super(Enemy, self).__init__(position = self.position, svg = svg, size =
-                                    self.size)
+                                    self.size, copy = copy)
         self.change_x = speed
 
     def update(self):
@@ -161,14 +174,15 @@ class BadGuy(Enemy):
     
     """
     def __init__(self, position, size, friendly_bulletgroup,
-                 opponent_bulletgroup, bullets, friendly_player):
+                 opponent_bulletgroup, bullets, friendly_player, copy = False):
         self.position = position
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.opponent_bulletgroup = opponent_bulletgroup
         self.bullets = bullets
         super(BadGuy, self).__init__(position = self.position, size = self.size,
-                                     svg = os.path.join('data', 'enemy.svg'))
+                                     svg = os.path.join('data', 'enemy.svg'),
+                                     copy = copy)
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
         self.onefire = False
@@ -401,15 +415,17 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.change_x = speed
         self.change_y = 0
-#        self.laserbeam = pygame.Surface(size)
-#        self.laserbeam.fill(color)
         self.image = pygame.Surface(size)
-        self.image.fill(color)
+        self.colored = pygame.Surface(size)
+        self.colored.fill(color)
+        self.image.blit(self.colored, (0, 0))
         self.rect = self.image.get_rect()
         self.rect.top = pos[1]
         self.rect.left = pos[0]
         self.mask = pygame.mask.from_surface(self.image)
-#        self.mask.fill()
+
+        if not olpcgames.ACTIVITY:
+            self.mask.fill()
 
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
@@ -421,7 +437,6 @@ class Bullet(pygame.sprite.Sprite):
         """Update the location of the SVG"""
         self.rect.top += self.change_y
         self.rect.left += self.change_x
-#        self.image.blit(self.laserbeam)
 
 
  
@@ -526,17 +541,22 @@ class TheOpponent():
     def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+        self.badguysvg = svgsprite.SVGSprite(open(os.path.join('data',
+                                                               'enemy.svg')).read(),
+                                             self.size)
         for i in range(len(self.positions)):
             self.enemies.append(BadGuy(self.positions[i], self.size,
                                       self.friendly_bullet_group,
                                       self.opponent_bullet_group,
                                       self.opponent_bullets,
-                                      self.friendly_player))
+                                      self.friendly_player,
+                                      copy = self.badguysvg))
             self.group.add(self.enemies[-1])
 
     def spawn_answerguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+
         for i in range(len(self.positions)):
             self.enemies.append(AnswerGuy(self.positions[i], self.size,
                                           self.friendly_bullet_group,
