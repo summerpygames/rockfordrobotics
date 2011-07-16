@@ -1,5 +1,16 @@
 import random
 
+def put(num, denom):
+    if int(num) > int(denom):
+        front = str(int(num)/int(denom))
+        num = str(int(num) % int(denom))
+        term = front+'and'+num+'/'+denom
+    elif int(num) < int(denom):
+        term = '0and'+num+'/'+denom
+    else:
+        term = '1and0/0'
+    return term
+
 def generate():
     term1, term2, right, num1, num2, denom = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right, num1, num2, denom)
@@ -9,9 +20,10 @@ def generate_question():
     denom = random.randint(2,4)
     num1 = random.randint(1,denom-1)
     num2 = random.randint(1,num1)
-    term1 = str(num1)+"/"+str(denom)
-    term2 = str(num2)+"/"+str(denom)
-    right = str(num1-num2)+"/"+str(denom)
+    num3 = num1 - num2
+    term1 = put(str(num1), str(denom))
+    term2 = put(str(num2), str(denom))
+    right = put(str(num3), str(denom))
     return (term1, term2, right, num1, num2, denom)
 
 def generate_wrong(term1, term2, right, num1, num2, denom):
