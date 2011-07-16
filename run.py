@@ -175,12 +175,13 @@ class BadGuy(Enemy):
     
     """
     def __init__(self, position, size, friendly_bulletgroup,
-                 opponent_bulletgroup, bullets, friendly_player, copy = False):
+                 opponent_bulletgroup, bullets, friendly_player, gm, copy = False):
         self.position = position
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.opponent_bulletgroup = opponent_bulletgroup
         self.bullets = bullets
+        self.gm = gm
         super(BadGuy, self).__init__(position = self.position, size = self.size,
                                      svg = os.path.join('data', 'enemy.svg'),
                                      copy = copy)
@@ -203,7 +204,8 @@ class BadGuy(Enemy):
 
         super(BadGuy, self).update()
         if ((self.rect.midleft[1] >= self.friendly_player.rect.topright[1])
-        and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])):
+        and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])
+        and (self.rect.midleft[0] < self.gm.size[0] - 30)):
             if self.onefire == False:
                 self.bullets.append(BadBullet((self.rect.midleft[0] +
                                                self.bullet_offset[0],
@@ -551,6 +553,7 @@ class TheOpponent():
                                       self.opponent_bullet_group,
                                       self.opponent_bullets,
                                       self.friendly_player,
+                                      self.gm,
                                       copy = self.badguysvg))
             self.group.add(self.enemies[-1])
 
