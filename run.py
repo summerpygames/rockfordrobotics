@@ -105,12 +105,14 @@ class Enemy(MovingSvgObject):
         super(Enemy, self).update()
 
 class AnswerPrinter(pygame.sprite.Sprite):
+
     """Prints a math answer in different ways depending on what it is
     
     If the answer has a fraction in it, this will take that into account, if the
     answer is a devision with a remainder, this will take that into accound too.
     
     """
+
     def __init__(self):
         super(AnswerPrinter, self).__init__()
         
