@@ -28,7 +28,6 @@ class Sprite(pygame.sprite.Sprite):
         
     def update(self, *args):
         """Simple extention of update method"""
-        globalgm.rectlist.append(self.rect)
         
         super(Sprite, self).update(*args)
         
@@ -65,7 +64,6 @@ class MovingTextObject(textsprite.TextSprite):
         """Remap the new position of the text"""
         self.rect.top += self.change_y
         self.rect.left += self.change_x
-        globalgm.rectlist.append(self.rect)
 
 class MovingSvgObject(Sprite):
 
@@ -474,7 +472,7 @@ class FlyingSaucer(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
-class Bullet(pygame.sprite.Sprite):
+class Bullet(Sprite):
     
     """A generic bullet, should be extended.
     
@@ -691,7 +689,6 @@ def start_gm(gm, charecter = 1):
 
     gm.playerlifes = 3
     
-    gm.rectlist = []
 
     gm.straybullets = StrayBulletManager(gm)
 
@@ -713,17 +710,17 @@ def main():
     gm = globalgm
     start_gm(gm)
     gm.screen.blit(gm.background, (0, 0))
+    pygame.display.update()
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     running = True
     while running:
-        gm.rectlist = []
+        rectlist = []
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
         if events:
             for event in events:
-                log.debug( "Event: %s", event )
                 if event.type == pygame.QUIT:
                     running = False
 
@@ -760,8 +757,8 @@ def main():
                         gm.p.trigger(event='key_left_rel')
                     if keys(event, 'right'):
                         gm.p.trigger(event='key_right_rel')
-                    if keys(event, 'up'):
-                        gm.p.trigger(event='key_up_rel')
+#                    if keys(event, 'up'):
+#                        gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
         
@@ -776,11 +773,12 @@ def main():
         gm.opponent_group.update()
         gm.straybullets.update()
 
-        gm.player_group.draw(gm.screen)
-        gm.opponent_group.draw(gm.screen)
-        gm.friendly_bullet_group.draw(gm.screen)
-        gm.opponent_bullet_group.draw(gm.screen) 
-        pygame.display.update(gm.rectlist)
+        rectlist.extend(gm.player_group.draw(gm.screen))
+        rectlist.extend(gm.opponent_group.draw(gm.screen))
+        rectlist.extend(gm.friendly_bullet_group.draw(gm.screen))
+        rectlist.extend(gm.opponent_bullet_group.draw(gm.screen))
+
+        pygame.display.update(rectlist)
 
     pygame.quit()
 
