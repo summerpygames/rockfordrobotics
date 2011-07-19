@@ -382,7 +382,7 @@ class LaserCannon(Sprite):
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                          self.heat, 0)) 
         for i in self.bullets:
-            i.update()
+ #           i.update()
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
