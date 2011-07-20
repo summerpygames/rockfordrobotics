@@ -14,6 +14,24 @@ log.setLevel( logging.DEBUG )
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
 
+class Sprite(pygame.sprite.Sprite):
+    
+    """This is a simple extention of sprite, just adding rect logging.
+    
+    Rect logging will allow the pygame engine to better use the hardware, and
+    only update the parts of the screen that need it the most
+    
+    """
+    
+    def __init__(self, *args):
+        super(Sprite, self).__init__(*args)
+        
+    def update(self, *args):
+        """Simple extention of update method"""
+        
+        super(Sprite, self).update(*args)
+        
+
 class MovingTextObject(textsprite.TextSprite):
 
     """Moving Text Object extends TextSprite to allow it to move.
@@ -47,7 +65,7 @@ class MovingTextObject(textsprite.TextSprite):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
 
-class MovingSvgObject(pygame.sprite.Sprite):
+class MovingSvgObject(Sprite):
 
     """Moving SVG Object extends SVGSprite to allow it to move.
     
@@ -82,6 +100,7 @@ class MovingSvgObject(pygame.sprite.Sprite):
         """Update the location of the SVG"""
         self.rect.top += self.change_y
         self.rect.left += self.change_x
+        super(MovingSvgObject, self).update()
 
 class Enemy(MovingSvgObject):
     
@@ -117,7 +136,7 @@ class AnswerPrinter(pygame.sprite.Sprite):
         super(AnswerPrinter, self).__init__()
         
     
-class AnswerGuy(pygame.sprite.Sprite):
+class AnswerGuy(Sprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
@@ -168,7 +187,7 @@ class AnswerGuy(pygame.sprite.Sprite):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect_ratio(.75))
         if len(collisions) > 0:
             self.gm.p.trigger(event='shot_answer', correct=self.correct)
             self.kill()
@@ -212,7 +231,7 @@ class BadGuy(Enemy):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect_ratio(.75))
         if len(collisions) > 0:
             self.kill()
             self.gm.p.trigger(event='strays', bulletlist = self.bullets,
@@ -237,7 +256,8 @@ class BadGuy(Enemy):
                 i.remove(self.opponent_bulletgroup)
                 self.bullets.remove(i)
 
-class LaserCannon(pygame.sprite.Sprite):
+
+class LaserCannon(Sprite):
 
     """The LaserCannon is a high tech wepon system on your vehical
     
@@ -362,10 +382,12 @@ class LaserCannon(pygame.sprite.Sprite):
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                          self.heat, 0)) 
         for i in self.bullets:
-            i.update()
+ #           i.update()
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
+
+        super(LaserCannon, self).update()
 
 class StrayBulletManager(object):
     """Cleans up stray bullets left behind by enemies that have died
@@ -421,7 +443,7 @@ class Player(MovingSvgObject):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect_ratio(.75))
         if len(collisions) > 0:
             print '''FAIL!!
 FAILURE!!!
@@ -450,7 +472,7 @@ class FlyingSaucer(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
-class Bullet(pygame.sprite.Sprite):
+class Bullet(Sprite):
     
     """A generic bullet, should be extended.
     
@@ -486,6 +508,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
 
+        super(Bullet, self).update()
 
  
 class FriendlyBullet(Bullet):
@@ -665,6 +688,7 @@ def start_gm(gm, charecter = 1):
     gm.opponent_manager = TheOpponent(gm)
 
     gm.playerlifes = 3
+    
 
     gm.straybullets = StrayBulletManager(gm)
 
@@ -686,16 +710,17 @@ def main():
     gm = globalgm
     start_gm(gm)
     gm.screen.blit(gm.background, (0, 0))
+    pygame.display.update()
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     running = True
-    while running:      
+    while running:
+        rectlist = []
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
         if events:
             for event in events:
-                log.debug( "Event: %s", event )
                 if event.type == pygame.QUIT:
                     running = False
 
@@ -732,8 +757,8 @@ def main():
                         gm.p.trigger(event='key_left_rel')
                     if keys(event, 'right'):
                         gm.p.trigger(event='key_right_rel')
-                    if keys(event, 'up'):
-                        gm.p.trigger(event='key_up_rel')
+#                    if keys(event, 'up'):
+#                        gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
         
@@ -748,11 +773,12 @@ def main():
         gm.opponent_group.update()
         gm.straybullets.update()
 
-        gm.player_group.draw(gm.screen)
-        gm.opponent_group.draw(gm.screen)
-        gm.friendly_bullet_group.draw(gm.screen)
-        gm.opponent_bullet_group.draw(gm.screen) 
-        pygame.display.flip()
+        rectlist.extend(gm.player_group.draw(gm.screen))
+        rectlist.extend(gm.opponent_group.draw(gm.screen))
+        rectlist.extend(gm.friendly_bullet_group.draw(gm.screen))
+        rectlist.extend(gm.opponent_bullet_group.draw(gm.screen))
+
+        pygame.display.update(rectlist)
 
     pygame.quit()
 
