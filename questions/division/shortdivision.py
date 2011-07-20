@@ -7,7 +7,7 @@ def denote(num, rem):
 def generate():
     term1, term2, right, num, rem = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right, num, rem)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '/', term2, right, wrong1, wrong2, wrong3, 'remainder')
 
 def generate_question():
     term1 = int(random.randint(1,100))
