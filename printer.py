@@ -19,6 +19,9 @@ class Converter(object):
         self.expressions = (re.compile(r"(\d+)R(\d+)"),
                             re.compile(r"(\d+)/(\d+)/(\d+)"),
                             re.compile(r"(\d+)"))
+        self.operations  = (create_rint,
+                            create_fint,
+                            int)
         
         # Set what operation we are using
         self.operation  = question['operation']
@@ -34,7 +37,16 @@ class Converter(object):
 
     def extractor(self, string):
         """Find what kind of number we have using regex"""
-        pass
+        for r, x in zip(self.expressions, self.operations):
+            self.m = r.match(string) # Create a match object
+            
+            try:
+                self.g = m.groups()
+            except AttributeError:
+                pass
+            else:
+                return x(*self.g)
+            
                 
         
 
