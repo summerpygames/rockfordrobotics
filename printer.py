@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import pygame
 from olpcgames import pangofont
+import re
 
 class Converter(object):
     
@@ -12,10 +13,30 @@ class Converter(object):
     
     """
     
-    def __init__(self, ):
-        self.arg = arg
+    def __init__(self, question):
+
+        # Setup the ways to test the string, the order is important
+        self.expressions = (re.compile(r"(\d+)R(\d+)"),
+                            re.compile(r"(\d+)/(\d+)/(\d+)"),
+                            re.compile(r"(\d+)"))
+        
+        # Set what operation we are using
+        self.operation  = question['operation']
+        # Set the attributes for this instance to what we recieved from the db
+        self.term1      = self.extractor(question['term1'])
+        self.term2      = self.extractor(question['term2'])
+        self.right      = self.extractor(question['right'])
+        self.wrong1     = self.extractor(question['wrong1'])
+        self.wrong2     = self.extractor(question['wrong2'])
+        self.wrong3     = self.extractor(question['wrong3'])
+        
+        
+
+    def extractor(self, string):
+        """Find what kind of number we have using regex"""
+        pass
                 
-                Converter(
+        
 
 class Draw(object):
 
