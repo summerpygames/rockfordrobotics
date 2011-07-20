@@ -26,12 +26,12 @@ class Converter(object):
         # Set what operation we are using
         self.operation  = question['operation']
         # Set the attributes for this instance to what we recieved from the db
-        self.term1      = self.extractor(question['term1'])
-        self.term2      = self.extractor(question['term2'])
-        self.right      = self.extractor(question['right'])
-        self.wrong1     = self.extractor(question['wrong1'])
-        self.wrong2     = self.extractor(question['wrong2'])
-        self.wrong3     = self.extractor(question['wrong3'])
+        self.term1      = self.extractor(str(question['term1']))
+        self.term2      = self.extractor(str(question['term2']))
+        self.right      = self.extractor(str(question['right']))
+        self.wrong1     = self.extractor(str(question['wrong1']))
+        self.wrong2     = self.extractor(str(question['wrong2']))
+        self.wrong3     = self.extractor(str(question['wrong3']))
         
         
 
@@ -60,20 +60,20 @@ class Draw(object):
     """
 
     def __init__(self, arg):
-        self.arg = arg
+        pass
         
 
 class DrawTheAnswer(Draw):
     """docstring for DrawIt"""
     def __init__(self, ):
-        self.arg = arg
+        pass
         
 class DrawTheQuestion(Draw):
 
     """docstring for DrawTheQuestion"""
 
     def __init__(self, term_1, term_2, operation, result):
-        self. = arg
+        pass
         
 class rint(object):
 
