@@ -5,7 +5,7 @@ def generate():
     """subtracting two numbers to a maximum difference of 1000."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '-', term2, right, wrong1, wrong2, wrong3, 'standard')
     
 def generate_question():
     """This is generating the three terms involved in the difference."""

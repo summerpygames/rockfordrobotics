@@ -14,7 +14,7 @@ def put(num, denom):
 def generate():
     term1, term2, right, num1, denom1, num2, denom2, num3, denom3 = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right, num1, denom1, num2, denom2, num3, denom3)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '*', term2, right, wrong1, wrong2, wrong3, 'fraction')
 
 def generate_question():
     denom1 = str(random.randint(2,6))

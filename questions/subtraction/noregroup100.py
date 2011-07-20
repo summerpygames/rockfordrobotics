@@ -5,7 +5,7 @@ def generate():
     """Adding two numbers to a maximum sum of 100."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '-', term2, right, wrong1, wrong2, wrong3, 'standard')
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
@@ -16,26 +16,32 @@ def generate_question():
         term3 = term1
         term1 = term2
         term2 = term3
+    term1list = []
+    term2list = []
     for i in range(len(str(term1))):
         i += 1
-        while int(str(term1)[-i]) < int(str(term2)[-i]):
-            str(term1)[-i] = str(random.choice(range(int(str(right)[-i]),10)))
-            str(term2)[-i] = str(int(str(term1)[-i]) - int(str(right)[-i]))
-            change = True
-        if change and i is not len(str(term1)):
-            term2 += 10**i
-        elif change:
-            #This shouldn't happen
-            print term1, term2, right, "--What's wrong?"
-    if term2 > term1:
-        term3 = term1
-        term1 = term2
-        term2 = term3
+        term1list.append(int(str(term1)[-i]))
+    for i in range(len(str(term2))):
+        i += 1
+        term2list.append(int(str(term2)[-i]))
+    term1list.reverse()
+    term2list.reverse()
+    term1str = ''
+    term2str = ''
+    for i in range(len(str(term1))):
+        if i in range(len(str(term2))):
+            i += 1
+            while int(str(term1)[-i]) < int(str(term2)[-i]):
+                term1list[-i] = int(random.choice(range(1,int(str(right)[-i]))))
+                term2list[-i] = int(str(right)[-i]) - int(str(term1)[-i])
+    for i in range(len(str(term1))):
+        term1str = term1str + term1list[i]
+    for i in range(len(str(term2))):
+        term2str = term2str + term2list[i]
+    term1 = int(term1str)
+    term2 = int(term2str)
     return (term1, term2, right)
-    if term2 > term1:
-        term3 = term1
-        term1 = term2
-        term2 = term3
+    
 def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []

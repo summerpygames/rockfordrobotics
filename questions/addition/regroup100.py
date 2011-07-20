@@ -5,13 +5,13 @@ def generate():
     """Adding two numbers to a maximum sum of 100."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '+', term2, right, wrong1, wrong2, wrong3, 'standard')
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
     right = choice(range(10,101))
     term11, term21 = [0,0]
-    while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)):
+    while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)[-1]):
         term11 = choice(range(1,10))
         term21 = choice(range(1,10))
     term12 = choice(range(1,right/10))

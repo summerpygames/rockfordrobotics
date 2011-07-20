@@ -11,7 +11,7 @@ def generate():
     wrong1 *= 10
     wrong2 *= 10
     wrong3 *= 10
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '+', term2, right, wrong1, wrong2, wrong3, 'standard')
 
 def generate_question():
     """This is generating the three terms involved in the sum."""

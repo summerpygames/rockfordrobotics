@@ -10,14 +10,14 @@ def generate():
     """"""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '*', term2, right, wrong1, wrong2, wrong3, 'standard')
 
 def generate_question():
     """This will make a multiplication question to have results equal to or less than 18"""
     a = 0
     while a == 0:
-        right = random.randint(2,18)
-        for i in range(1,19):
+        right = random.randint(2,36)
+        for i in range(1,37):
             if multiple(right,i):
                 a = 1
                 b = i
@@ -34,10 +34,10 @@ def generate_wrong(term1, term2, right):
     wrongs.append(right - 2)
     wrongs.append(term1 + term2)
     wrongs.append(abs(term1-term2))
-    wrongs.append(random.randint(1, 18))
-    wrongs.append(random.randint(1, 18))
-    wrongs.append(random.randint(1, 18))
-    wrongs.append(random.randint(1, 18))
+    wrongs.append(random.randint(1, 36))
+    wrongs.append(random.randint(1, 36))
+    wrongs.append(random.randint(1, 36))
+    wrongs.append(random.randint(1, 36))
 
     the_wrong_3 = []
 
