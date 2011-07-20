@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import olpcgames
 import pygame
 import logging 
@@ -9,7 +10,6 @@ import panglery
 from gamemanager import *
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
-
 
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
@@ -47,7 +47,7 @@ class MovingTextObject(textsprite.TextSprite):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
 
-class MovingSvgObject(svgsprite.SVGSprite):
+class MovingSvgObject(pygame.sprite.Sprite):
 
     """Moving SVG Object extends SVGSprite to allow it to move.
     
@@ -55,14 +55,23 @@ class MovingSvgObject(svgsprite.SVGSprite):
     
     """
 
-    def __init__(self, position = (0, 0), svg=None, size=None):
-        data = open(svg).read()
-        super(MovingSvgObject, self).__init__(data, size)
+    def __init__(self, position = (0, 0), svg=None, size=None, copy=False):
+
+        if copy is not False and copy.__class__ == svgsprite.SVGSprite:
+            self.sprite = copy.copy()
+        else:
+            data = open(svg).read()
+            self.sprite = svgsprite.SVGSprite(data, size)
+
+        super(MovingSvgObject, self).__init__()
+        self.image = self.sprite.image
+        self.rect = self.sprite.rect
+        self.resolution = self.sprite.resolution
         self.rect.top = position[1]
         self.rect.left = position[0]
         self.change_x = 0
         self.change_y = 0
-
+       
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
         self.change_x+=x
@@ -84,18 +93,31 @@ class Enemy(MovingSvgObject):
     
     """
     
-    def __init__(self, size, svg, position, speed = -1):
+    def __init__(self, size, svg, position, speed = -1, copy = False):
         self.position = position
         self.size = size
         super(Enemy, self).__init__(position = self.position, svg = svg, size =
-                                    self.size)
+                                    self.size, copy = copy)
         self.change_x = speed
 
     def update(self):
         """This just passes the update up the line"""
         super(Enemy, self).update()
+
+class AnswerPrinter(pygame.sprite.Sprite):
+
+    """Prints a math answer in different ways depending on what it is
     
-class AnswerGuy(Enemy):
+    If the answer has a fraction in it, this will take that into account, if the
+    answer is a devision with a remainder, this will take that into accound too.
+    
+    """
+
+    def __init__(self):
+        super(AnswerPrinter, self).__init__()
+        
+    
+class AnswerGuy(pygame.sprite.Sprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
@@ -106,15 +128,33 @@ class AnswerGuy(Enemy):
     """
     
     def __init__(self, position, size, friendly_bulletgroup, friendly_player,
-                 correct,  gm):
+                 correct,  gm, copy =  False):
         self.position = position
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.gm = gm
         self.correct = correct
-        super(AnswerGuy, self).__init__(position = self.position, size =
-                                        self.size, svg = os.path.join('data',
-                                                                      'enemy.svg'))
+                
+        if copy is not False and copy.__class__ == svgsprite.SVGSprite:
+            self.svg = copy.copy()
+        else:
+            self.data = open(os.path.join("data", "numenemy.svg")).read()
+            self.svg = svgsprite.SVGSprite(svg = self.data,
+                                           size = self.size)
+
+        self.text = textsprite.TextSprite(text="1", family="Norasi",
+                                          size=32, color=(0, 0, 0))
+        self.text.render()
+        super(AnswerGuy, self).__init__()
+        self.change_x = -1
+        self.change_y = 0
+        self.image = pygame.Surface(size).convert_alpha()
+        self.image.fill((0, 0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.top = position[1]
+        self.rect.left = position[0]
+        self.image.blit(self.svg.image, (0, 0))
+        self.image.blit(self.text.image, (self.size[0] / 3, self.size[1] / 3))
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
 
@@ -132,6 +172,8 @@ class AnswerGuy(Enemy):
         if len(collisions) > 0:
             self.gm.p.trigger(event='shot_answer', correct=self.correct)
             self.kill()
+        self.rect.top += self.change_y
+        self.rect.left += self.change_x
 
         super(AnswerGuy, self).update()
 
@@ -147,14 +189,16 @@ class BadGuy(Enemy):
     
     """
     def __init__(self, position, size, friendly_bulletgroup,
-                 opponent_bulletgroup, bullets, friendly_player):
+                 opponent_bulletgroup, bullets, friendly_player, gm, copy = False):
         self.position = position
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.opponent_bulletgroup = opponent_bulletgroup
-        self.bullets = bullets
+        self.bullets = []
+        self.gm = gm
         super(BadGuy, self).__init__(position = self.position, size = self.size,
-                                     svg = os.path.join('data', 'enemy.svg'))
+                                     svg = os.path.join('data', 'enemy.svg'),
+                                     copy = copy)
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
         self.onefire = False
@@ -171,10 +215,13 @@ class BadGuy(Enemy):
                                                  pygame.sprite.collide_mask)
         if len(collisions) > 0:
             self.kill()
+            self.gm.p.trigger(event='strays', bulletlist = self.bullets,
+                            bulletgroup = self.opponent_bulletgroup)
 
         super(BadGuy, self).update()
         if ((self.rect.midleft[1] >= self.friendly_player.rect.topright[1])
-        and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])):
+        and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])
+        and (self.rect.midleft[0] < self.gm.size[0] - 30)):
             if self.onefire == False:
                 self.bullets.append(BadBullet((self.rect.midleft[0] +
                                                self.bullet_offset[0],
@@ -266,7 +313,7 @@ class LaserCannon(pygame.sprite.Sprite):
             # Add the newly created 'bullet' to the sprite group
             choice(self.sounds).play()
             # Randomly select one of the sounds from the list created earlier
-            if self.heat >= 75 and overheaton is True:
+            if self.heat >= 75:
                 self.overheat()
                 # If applicable, overheat the lasercannon
         else:
@@ -319,6 +366,35 @@ class LaserCannon(pygame.sprite.Sprite):
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
+
+class StrayBulletManager(object):
+    """Cleans up stray bullets left behind by enemies that have died
+    
+    A pangler trigger is used to signal this class that it should be monitoring
+    stray bullets for a perticular bullet list. Pass a list of bullets along
+    with the panglery trigger and let the stray bullet manager update and
+    monitor the positions of the lost bullets. after a list of bullets is fully
+    depleted, the list will be removed from the que
+    
+    """
+
+    def __init__(self, gm):
+        self.straylists = []
+        self.gm = gm
+        @self.gm.p.subscribe(event='strays', needs=['bulletlist', 'bulletgroup'])
+        def strays_hook(p, bulletlist, bulletgroup):
+             self.straylists.append([bulletlist, bulletgroup])
+
+    def update(self):
+        """Update the lists of stray bullets"""
+        for i in self.straylists:
+            for g in i[0]:
+                if g.rect.left < -25:
+                    g.remove(i[1])
+                    i[0].remove(g)
+
+
+
 
 class Player(MovingSvgObject):
     
@@ -387,15 +463,17 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.change_x = speed
         self.change_y = 0
-#        self.laserbeam = pygame.Surface(size)
-#        self.laserbeam.fill(color)
         self.image = pygame.Surface(size)
-        self.image.fill(color)
+        self.colored = pygame.Surface(size)
+        self.colored.fill(color)
+        self.image.blit(self.colored, (0, 0))
         self.rect = self.image.get_rect()
         self.rect.top = pos[1]
         self.rect.left = pos[0]
         self.mask = pygame.mask.from_surface(self.image)
-        self.mask.fill()
+
+        if not olpcgames.ACTIVITY:
+            self.mask.fill()
 
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
@@ -407,7 +485,6 @@ class Bullet(pygame.sprite.Sprite):
         """Update the location of the SVG"""
         self.rect.top += self.change_y
         self.rect.left += self.change_x
-#        self.image.blit(self.laserbeam)
 
 
  
@@ -483,12 +560,12 @@ def keys(event, action):
     if action == 'space':
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
-    if action == 'overheat initialize':
-        if event.key == pygame.K_i:
-            return True
-    if action == 'overheat off':
-        if event.key == pygame.K_o:
-            return True
+#    if action == 'overheat initialize':
+#        if event.key == pygame.K_i:
+#            return True
+#    if action == 'overheat off':
+#        if event.key == pygame.K_o:
+#            return True
 
 class TheOpponent():
     
@@ -512,21 +589,30 @@ class TheOpponent():
     def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+        self.badguysvg = svgsprite.SVGSprite(open(os.path.join('data',
+                                                               'enemy.svg')).read(),
+                                             self.size)
         for i in range(len(self.positions)):
             self.enemies.append(BadGuy(self.positions[i], self.size,
                                       self.friendly_bullet_group,
                                       self.opponent_bullet_group,
                                       self.opponent_bullets,
-                                      self.friendly_player))
+                                      self.friendly_player,
+                                      self.gm,
+                                      copy = self.badguysvg))
             self.group.add(self.enemies[-1])
 
     def spawn_answerguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+        self.answerguysvg = svgsprite.SVGSprite(open(os.path.join('data',
+                                                                  'numenemy.svg')).read(),
+                                                self.size)
         for i in range(len(self.positions)):
             self.enemies.append(AnswerGuy(self.positions[i], self.size,
                                           self.friendly_bullet_group,
-                                          self.friendly_player, True, self.gm))
+                                          self.friendly_player, True, self.gm,
+                                          copy = self.answerguysvg))
             self.group.add(self.enemies[-1])
 
 
@@ -580,6 +666,8 @@ def start_gm(gm, charecter = 1):
 
     gm.playerlifes = 3
 
+    gm.straybullets = StrayBulletManager(gm)
+
     gm.play = True
     gm.menu = False
 
@@ -625,12 +713,12 @@ def main():
                     if keys(event, 'space'):
                         gm.p.trigger(event='key_x_press')
                         gm.player.shoot()
-                    if keys(event, 'overheat initialize'):
-                        global overheaton
-                        overheaton = True
-                    if keys(event, 'overheat off'):
-                        global overheaton
-                        overheaton = False
+#                    if keys(event, 'overheat initialize'):
+#                        global overheaton
+#                        overheaton = True
+#                    if keys(event, 'overheat off'):
+#                        global overheaton
+#                        overheaton = False
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
                         gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
                                                           50)
@@ -658,6 +746,7 @@ def main():
         gm.friendly_bullet_group.update()
         gm.opponent_bullet_group.update()
         gm.opponent_group.update()
+        gm.straybullets.update()
 
         gm.player_group.draw(gm.screen)
         gm.opponent_group.draw(gm.screen)
