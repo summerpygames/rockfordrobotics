@@ -49,7 +49,7 @@ def addQuestion(database, source):
     question['term1'], question['operation'], question['term2'], question['right'], question['wrong1'], question['wrong2'], question['wrong3'], question['type'] = source.generate()
 #       The 'operation' is either '+', '-', '*', or '/'.
 #       The 'type' is either 'standard', 'fraction', or 'remainder'. It reflects on the way the terms are put together.
-    database[questionNum] = question
+    database[str(questionNum)] = question
     return
     
 def main(): #This should only be run once: upon startup of the game.
