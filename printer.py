@@ -46,9 +46,47 @@ class Converter(object):
                 pass
             else:
                 return x(*self.g)
-            
                 
+    def __decide(self):
+        """ Method to decide what format we will be displaying the problem in
         
+        To make it easy to understand, the code is heavily commented so you can
+        follow the structure of how you figgure out what kind of display to use
+        but in general, you could end up with:
+        Flat + Flat = ____
+        
+         -or-
+         
+         Vertical
+        +Vertical
+        _________
+        
+         -or-
+         
+        Fract    Fract   Fract
+        ----  +  ----- = -----
+        Fract    Fract   Fract
+        
+         -or-
+           ______         
+        Div) Div
+        
+        and the return is the class that will build this type of equation.
+        
+        """
+        
+        if self.operation == '+':
+            if (self.term1.__class__ == fint or self.term2.__class__ == fint):
+                return 'Fract'
+            else:
+                if self.term1 
+        elif self.operation == '-':
+            
+        elif self.operation == '*':
+            
+        elif self.operation == '/':
+            
+        else:
 
 class Draw(object):
 
