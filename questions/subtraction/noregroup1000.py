@@ -31,7 +31,7 @@ def generate_question():
     for i in range(len(str(term1))):
         if i in range(len(str(term2))):
             i += 1
-            while int(str(term1)[-i]) < int(str(term2)[-i]:
+            while int(str(term1)[-i]) < int(str(term2)[-i]):
                 term1list[-i] = int(random.choice(range(1,int(str(right)[-i]))))
                 term2list[-i] = int(str(right)[-i]) - int(str(term1)[-i])
     for i in range(len(str(term1))):
