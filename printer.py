@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import pygame
-from olpcgames import pangofont
+#from olpcgames import pangofont
 import re
 
 class Converter(object):
@@ -26,12 +26,12 @@ class Converter(object):
         # Set what operation we are using
         self.operation  = question['operation']
         # Set the attributes for this instance to what we recieved from the db
-        self.term1      = self.extractor(str(question['term1']))
-        self.term2      = self.extractor(str(question['term2']))
-        self.right      = self.extractor(str(question['right']))
-        self.wrong1     = self.extractor(str(question['wrong1']))
-        self.wrong2     = self.extractor(str(question['wrong2']))
-        self.wrong3     = self.extractor(str(question['wrong3']))
+        self.term1 = self.extractor(str(question['term1']))
+        self.term2 = self.extractor(str(question['term2']))
+        self.right = self.extractor(str(question['right']))
+        self.wrong1 = self.extractor(str(question['wrong1']))
+        self.wrong2 = self.extractor(str(question['wrong2']))
+        self.wrong3 = self.extractor(str(question['wrong3']))
         
         
 
@@ -39,9 +39,9 @@ class Converter(object):
         """Find what kind of number we have using regex"""
         for r, x in zip(self.expressions, self.operations):
             self.m = r.match(string) # Create a match object
-            
+                        
             try:
-                self.g = m.groups()
+                self.g = self.m.groups()
             except AttributeError:
                 pass
             else:
@@ -98,12 +98,14 @@ class rint(object):
         else:
             return False
 
-def create_rint(i, r):
+def create_rint(i_in, r_in):
     """Factory to construct, and return, the proper object
     
     This will return an intager if the remainder happens to be 0 and return a
     rint if it has a non-zero remainder
     """
+    i = int(i_in)
+    r = int(r_in)
     if r == 0:
         return i
 
@@ -131,18 +133,21 @@ class fmint(fint):
     """A fraction with a whole number and a fraction"""
     
     def __init__(self, whole, num, den):
-        super(fint, self).__init__(num, den)
+        super(fmint, self).__init__(num, den)
         self.__whole = whole
 
     def whole(self):
         """Return the whole number"""
         return self.__whole
 
-def create_fint(whole, num, den):
+def create_fint(whole_in, num_in, den_in):
     """Factory to construct and return the proper object
     this will return an intager if there is no fraction, a fraction if there is
     no whole number, and a mixed number if all spots are non-zero
     """
+    whole = int(whole_in)
+    num = int(num_in)
+    den = int(den_in)
     if abs(whole) == 0:# make sure it has no whole number
         if num != den: # make sure it is not a whole number like 1/1
             return fint(num, den)
