@@ -76,16 +76,45 @@ class Converter(object):
         """
         
         if self.operation == '+':
-            if (self.term1.__class__ == fint or self.term2.__class__ == fint):
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
                 return 'Fract'
             else:
-                if self.term1 
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Vertical'
+                else:
+                    return 'Flat'
+
         elif self.operation == '-':
-            
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Vertical'
+                else:
+                    return 'Flat'
+
         elif self.operation == '*':
-            
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Vertical'
+                else:
+                    return 'Flat'
+
         elif self.operation == '/':
-            
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Div'
+                else:
+                    return 'Flat'
+
         else:
 
 class Draw(object):
@@ -136,6 +165,15 @@ class rint(object):
         else:
             return False
 
+    def __int__(self):
+        return self.__i
+
+    def __gt__(self, value):
+        return (self.__i > value)
+
+    def __lt__(self, value):
+        return (self.__i < value)
+
 def create_rint(i_in, r_in):
     """Factory to construct, and return, the proper object
     
@@ -165,6 +203,15 @@ class fint(object):
     def den(self):
         """Retrun the Denomenator"""
         return self.__den
+
+    def __int__(self):
+        return self.__num
+
+    def __gt__(self, value):
+        return (self.__num > value)
+
+    def __lt__(self, value):
+        return (self.__num < value)
         
 class fmint(fint):
 
