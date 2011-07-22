@@ -18,10 +18,10 @@ def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
     wrongs.append(right + 10)
-    wrongs.append(right - 10)
+    wrongs.append(abs(right - 10))
     wrongs.append(right + 20)
-    wrongs.append(right - 20)
-    wrongs.append(8*int(sqrt(right)))
+    wrongs.append(abs(right - 20))
+    wrongs.append(9*int(sqrt(right)))
     wrongs.append(randint(1, 120))
     wrongs.append(randint(1, 120))
     wrongs.append(randint(1, 120))

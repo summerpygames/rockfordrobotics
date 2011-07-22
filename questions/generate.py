@@ -50,9 +50,9 @@ def addQuestion(database, source):
 #       The 'operation' is either '+', '-', '*', or '/'.
 #       The 'type' is either 'standard', 'fraction', or 'remainder'. It reflects on the way the terms are put together.
     database[str(questionNum)] = question
-    return
+    return question
     
-def main(): #This should only be run once: upon startup of the game.
+def main(index): #This should only be run once: upon startup of the game.
     for sourceString in sourceStrings:
         global questionNum
         questionNum = 0

@@ -1,5 +1,5 @@
 from random import choice, randint
-from math import sqrt
+from math import sqrt, ceil
 
 def generate():
     """Adding two numbers to a maximum sum of 100."""
@@ -9,12 +9,12 @@ def generate():
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
-    right = choice(range(10,101))
+    right = choice(range(11,101))
     term11, term21 = [0,0]
     while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)[-1]):
         term11 = choice(range(1,10))
         term21 = choice(range(1,10))
-    term12 = choice(range(1,right/10))
+    term12 = choice(range(1,int(ceil(float(right)/10))))
     term1 = 10*term12 + term11
     term22 = right - term1 - term21
     term2 = term22 + term21
@@ -24,14 +24,14 @@ def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
     wrongs.append(right + 1)
-    wrongs.append(right - 1)
+    wrongs.append(abs(right - 1))
     wrongs.append(right + 2)
-    wrongs.append(right - 2)
+    wrongs.append(abs(right - 2))
     wrongs.append(30*int(sqrt(right)))
     wrongs.append(right + 10)
-    wrongs.append(right - 10)
+    wrongs.append(abs(right - 10))
     wrongs.append(right + 20)
-    wrongs.append(right - 20)
+    wrongs.append(abs(right - 20))
     wrongs.append(randint(10, 100))
     the_wrong_3 = []
 

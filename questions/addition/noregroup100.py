@@ -35,9 +35,9 @@ def generate_question():
                 term1list[-i] = int(random.choice(range(1,int(str(right)[-i]))))
                 term2list[-i] = int(str(right)[-i]) - int(str(term1)[-i])
     for i in range(len(str(term1))):
-        term1str = term1str + term1list[i]
+        term1str = term1str + str(term1list[i])
     for i in range(len(str(term2))):
-        term2str = term2str + term2list[i]
+        term2str = term2str + str(term2list[i])
     term1 = int(term1str)
     term2 = int(term2str)
     return (term1, term2, right)
@@ -46,14 +46,14 @@ def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
     wrongs.append(right + 1)
-    wrongs.append(right - 1)
+    wrongs.append(abs(right - 1))
     wrongs.append(right + 2)
-    wrongs.append(right - 2)
+    wrongs.append(abs(right - 2))
     wrongs.append(8*int(sqrt(right)))
     wrongs.append(right + 10)
-    wrongs.append(right - 10)
+    wrongs.append(abs(right - 10))
     wrongs.append(right + 20)
-    wrongs.append(right - 20)
+    wrongs.append(abs(right - 20))
     wrongs.append(random.randint(10, 100))
     the_wrong_3 = []
 
