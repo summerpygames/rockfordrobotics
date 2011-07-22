@@ -14,14 +14,22 @@ class Letters(textsprite.TextSprite):
     """
     
     def __init__(self, string):
-        super(Element, self).__init__()
-        self.arg = arg
+        super(Element, self).__init__(text=string, size=32)
+        
+        
+
+    def width(self):
+        """
+        Returns the width of this
+        """
         
 class Line(pygame.sprite.Sprite):
     """docstring for Line"""
     def __init__(self, width)
         super(Line, self).__init__()
         self.line = pygame.Surface([width, 3])
+        self.image = pygame.Surface([width, 3])
+        self.image.blit(self.line)
 
 class FractionTerm(pygame.sprite.Sprite):
     """A numerator over a denomenator, no a mixed number, with a line"""
