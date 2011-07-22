@@ -4,40 +4,6 @@ import pygame
 import re
 import sprites
 
-class Question(pygame.sprite.Sprite):
-
-    """This will make a surface using fonts from the olpc from a question
-    
-    it will look at the problem, find out what it should look like, then print
-    out a visual represenation of the whole thing on the surface
-
-    """
-
-    def __init__(self, width, height):
-        super(Question, self).__init__()
-
-class FlatQuestion(Question):
-    """A question in the right to left format"""
-    def __init__(self, term1, operation, term2):
-        super(FlatQuestion, self).__init__()
-        self.arg = arg
-        
-        
-
-class Answer(pygame.sprite.Sprite):
-
-    """docstring for DrawIt"""
-    
-    def __init__(self, ):
-        pass        
-
-class FlatAnswer(Answer):
-    """Make a """
-    def __init__(self, arg):
-        super(FlatAnswer, self).__init__()
-        self.arg = arg
-        
-
 class rint(object):
 
     """An intager with a remainder, for answering questions"""
@@ -139,6 +105,70 @@ def create_fint(whole_in, num_in, den_in):
     else: # in the case that we have all three elements
         return fmint(whole, num, den)
 
+class Question(pygame.sprite.Sprite):
+
+    """This will make a surface using fonts from the olpc from a question
+    
+    it will look at the problem, find out what it should look like, then print
+    out a visual represenation of the whole thing on the surface
+
+    """
+
+    def __init__(self, width, height):
+        super(Question, self).__init__()
+
+    def decideelement(self, element):
+        """Use this to return what sprite drawer should be used
+        
+        This will return a Letters element for an int, a FractionElelment for...
+        """
+        if element.__class__ == int:
+            return sprites.Letters(element)
+        elif element.__class__ == fint:
+            return sprites.FractionTerm(element)
+        elif element.__class__ == mfint:
+            return sprites.FractionTerm(element)
+        elif element.__class__ == rint:
+            return sprites.RemainderTerm(element)
+
+class FlatQuestion(Question):
+    """A question in the right to left format"""
+    def __init__(self, term1, operation, term2):
+        super(FlatQuestion, self).__init__()
+        self.term1 = term1
+        self.term2 = term2
+        self.operation = operation
+
+        self.term1_sprite = decideelement(self.term1)
+        self.term2_sprite = decideelement(self.term2)
+        self.operation_sprite = decideelement(self.operation)
+
+        self.width = max((self.term1_sprite.rect.width,
+                          self.term2_sprite.rect.width,
+                          self.operation_sprite.rect.width))
+
+        self.height = max((self.term1_sprite.rect.height,
+                           self.term2_sprite.rect.height,
+                           self.operation_sprite.rect.height))
+
+        
+
+
+
+
+class Answer(pygame.sprite.Sprite):
+
+    """docstring for DrawIt"""
+    
+    def __init__(self, ):
+        pass        
+
+class FlatAnswer(Answer):
+    """Make a """
+    def __init__(self, arg):
+        super(FlatAnswer, self).__init__()
+        self.arg = arg
+
 class Converter(object):
     
     """Full solution to turn an entry from a database into a bunch of surfaces
@@ -184,18 +214,8 @@ class Converter(object):
             else:
                 return x(*self.g)
 
-    def __decideelement(self, element):
-        """Use this to return what sprite drawer should be used
-        
-        This will return a Letters element for an int, a FractionElelment for...
-        """
-
-        
-    #}}}
-
-
                 
-    def __decidequestion(self):
+    def decidequestion(self):
         """ Method to decide what format we will be displaying the problem in
         
         To make it easy to understand, the code is heavily commented so you can
@@ -264,6 +284,7 @@ class Converter(object):
                     return 'Flat'
 
         else:
+            pass
 
         
 
