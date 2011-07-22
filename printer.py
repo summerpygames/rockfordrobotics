@@ -2,6 +2,7 @@
 import pygame
 #from olpcgames import pangofont
 import re
+import sprites
 
 class Converter(object):
     
@@ -21,7 +22,7 @@ class Converter(object):
                             re.compile(r"(\d+)"))
         self.operations  = (create_rint,
                             create_fint,
-                            int)
+
         
         # Set what operation we are using
         self.operation  = question['operation']
@@ -70,7 +71,7 @@ class Converter(object):
          -or-
            ______         
         Div) Div
-        
+ 
         and the return is the class that will build this type of equation.
         
         """
@@ -117,7 +118,7 @@ class Converter(object):
 
         else:
 
-class Draw(object):
+class Question(pygame.sprite.Sprite):
 
     """This will make a surface using fonts from the olpc from a question
     
@@ -130,18 +131,13 @@ class Draw(object):
         pass
         
 
-class DrawTheAnswer(Draw):
+class Answer(pygame.sprite.Sprite):
+
     """docstring for DrawIt"""
+    
     def __init__(self, ):
-        pass
-        
-class DrawTheQuestion(Draw):
+        pass        
 
-    """docstring for DrawTheQuestion"""
-
-    def __init__(self, term_1, term_2, operation, result):
-        pass
-        
 class rint(object):
 
     """An intager with a remainder, for answering questions"""
@@ -171,7 +167,7 @@ class rint(object):
     def __gt__(self, value):
         return (self.__i > value)
 
-    def __lt__(self, value):
+    def __lt__(self, value):ClassName
         return (self.__i < value)
 
 def create_rint(i_in, r_in):
