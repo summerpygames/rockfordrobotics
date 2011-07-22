@@ -15,31 +15,56 @@ class Letters(textsprite.TextSprite):
     
     def __init__(self, string):
         super(Element, self).__init__(text=string, size=32)
-        
-        
-
-    def width(self):
-        """
-        Returns the width of this
-        """
+        self.render()
         
 class Line(pygame.sprite.Sprite):
-    """docstring for Line"""
+
+    """dA sprite that is a line"""
+
     def __init__(self, width)
         super(Line, self).__init__()
         self.line = pygame.Surface([width, 3])
         self.image = pygame.Surface([width, 3])
+        self.image = pygame.Surface(size).convert_alpha()
+        self.image.fill((0, 0, 0, 0))
         self.image.blit(self.line)
+        self.rect = self.image.get_rect()
+
 
 class FractionTerm(pygame.sprite.Sprite):
+
     """A numerator over a denomenator, no a mixed number, with a line"""
+
     def __init__(self, fint):
         super(FractionTerm, self).__init__()
         self.numerator = Letters(str(fint.num()))
         self.denomenator = Letters(str(fint.den()))
-        self.line = Line
+        if self.numerator.rect.width > self.denomenator.rect.width:
+            self.width = self.numerator.rect.width()
+        else:
+            self.width = self.denomenator.rect.width()
+        self.line = Line(self.width)
+
+        MARGIN = 5
+
+        self.dests = []
+        srcs = [self.numerator, self.line, self.denomenator]
+
+        cur_y = 0 # increments, how far from the top are we
+        dw = self.width # The width of the destination sprite
         
+        for src in srcs:
+            self.dests.append((src, ((dw - src.get_width())/2), cur_y))
+            cur_y += src.get_height() + MARGIN
         
+        self.height = cur_y - MARGIN # sets the height to the fraction height
+        
+        self.image = pygame.Surface((self.width, self.height)).convert_alpha()
+        self.image.fill((0, 0, 0, 0))
+        self.rect = self.image.get_rect()
+        
+        for src in dests:
+            self.image.blit(src)
 
         
 

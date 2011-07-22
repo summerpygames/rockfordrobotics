@@ -4,120 +4,6 @@ import pygame
 import re
 import sprites
 
-class Converter(object):
-    
-    """Full solution to turn an entry from a database into a bunch of surfaces
-
-    Provide this with the dict from the database and let it work its magic, also
-    provide the type of operation being performed, that way it will be east to
-    know what it should print on the screen
-    
-    """
-    
-    def __init__(self, question):
-
-        # Setup the ways to test the string, the order is important
-        self.expressions = (re.compile(r"(\d+)R(\d+)"),
-                            re.compile(r"(\d+)/(\d+)/(\d+)"),
-                            re.compile(r"(\d+)"))
-        self.operations  = (create_rint,
-                            create_fint,
-
-        
-        # Set what operation we are using
-        self.operation  = question['operation']
-        # Set the attributes for this instance to what we recieved from the db
-        self.term1 = self.extractor(str(question['term1']))
-        self.term2 = self.extractor(str(question['term2']))
-        self.right = self.extractor(str(question['right']))
-        self.wrong1 = self.extractor(str(question['wrong1']))
-        self.wrong2 = self.extractor(str(question['wrong2']))
-        self.wrong3 = self.extractor(str(question['wrong3']))
-        
-        
-
-    def extractor(self, string):
-        """Find what kind of number we have using regex"""
-        for r, x in zip(self.expressions, self.operations):
-            self.m = r.match(string) # Create a match object
-                        
-            try:
-                self.g = self.m.groups()
-            except AttributeError:
-                pass
-            else:
-                return x(*self.g)
-                
-    def __decide(self):
-        """ Method to decide what format we will be displaying the problem in
-        
-        To make it easy to understand, the code is heavily commented so you can
-        follow the structure of how you figgure out what kind of display to use
-        but in general, you could end up with:
-        Flat + Flat = ____
-        
-         -or-
-         
-         Vertical
-        +Vertical
-        _________
-        
-         -or-
-         
-        Fract    Fract   Fract
-        ----  +  ----- = -----
-        Fract    Fract   Fract
-        
-         -or-
-           ______         
-        Div) Div
- 
-        and the return is the class that will build this type of equation.
-        
-        """
-        
-        if self.operation == '+':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
-                # If either number is a fraction
-                return 'Fract'
-            else:
-                if (self.term1 > 10 or self.term2 > 10):
-                    return 'Vertical'
-                else:
-                    return 'Flat'
-
-        elif self.operation == '-':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
-                # If either number is a fraction
-                return 'Fract'
-            else:
-                if (self.term1 > 10 or self.term2 > 10):
-                    return 'Vertical'
-                else:
-                    return 'Flat'
-
-        elif self.operation == '*':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
-                # If either number is a fraction
-                return 'Fract'
-            else:
-                if (self.term1 > 10 or self.term2 > 10):
-                    return 'Vertical'
-                else:
-                    return 'Flat'
-
-        elif self.operation == '/':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
-                # If either number is a fraction
-                return 'Fract'
-            else:
-                if (self.term1 > 10 or self.term2 > 10):
-                    return 'Div'
-                else:
-                    return 'Flat'
-
-        else:
-
 class Question(pygame.sprite.Sprite):
 
     """This will make a surface using fonts from the olpc from a question
@@ -127,8 +13,15 @@ class Question(pygame.sprite.Sprite):
 
     """
 
-    def __init__(self, arg):
-        pass
+    def __init__(self, width, height):
+        super(Question, self).__init__()
+
+class FlatQuestion(Question):
+    """A question in the right to left format"""
+    def __init__(self, term1, operation, term2):
+        super(FlatQuestion, self).__init__()
+        self.arg = arg
+        
         
 
 class Answer(pygame.sprite.Sprite):
@@ -137,6 +30,13 @@ class Answer(pygame.sprite.Sprite):
     
     def __init__(self, ):
         pass        
+
+class FlatAnswer(Answer):
+    """Make a """
+    def __init__(self, arg):
+        super(FlatAnswer, self).__init__()
+        self.arg = arg
+        
 
 class rint(object):
 
@@ -238,6 +138,133 @@ def create_fint(whole_in, num_in, den_in):
         return whole
     else: # in the case that we have all three elements
         return fmint(whole, num, den)
+
+class Converter(object):
+    
+    """Full solution to turn an entry from a database into a bunch of surfaces
+
+    Provide this with the dict from the database and let it work its magic, also
+    provide the type of operation being performed, that way it will be east to
+    know what it should print on the screen
+    
+    """
+    
+    def __init__(self, question):
+
+        # Setup the ways to test the string, the order is important
+        self.expressions = (re.compile(r"(\d+)R(\d+)"),
+                            re.compile(r"(\d+)/(\d+)/(\d+)"),
+                            re.compile(r"(\d+)"))
+        self.operations  = (create_rint,
+                            create_fint,
+                            int)
+
+        
+        # Set what operation we are using
+        self.operation  = question['operation']
+        # Set the attributes for this instance to what we recieved from the db
+        self.term1 = self.extractor(str(question['term1']))
+        self.term2 = self.extractor(str(question['term2']))
+        self.right = self.extractor(str(question['right']))
+        self.wrong1 = self.extractor(str(question['wrong1']))
+        self.wrong2 = self.extractor(str(question['wrong2']))
+        self.wrong3 = self.extractor(str(question['wrong3']))
+        
+        
+
+    def extractor(self, string):
+        """Find what kind of number we have using regex"""
+        for r, x in zip(self.expressions, self.operations):
+            self.m = r.match(string) # Create a match object
+                        
+            try:
+                self.g = self.m.groups()
+            except AttributeError:
+                pass
+            else:
+                return x(*self.g)
+
+    def __decideelement(self, element):
+        """Use this to return what sprite drawer should be used
+        
+        This will return a Letters element for an int, a FractionElelment for...
+        """
+
+        
+    #}}}
+
+
+                
+    def __decidequestion(self):
+        """ Method to decide what format we will be displaying the problem in
+        
+        To make it easy to understand, the code is heavily commented so you can
+        follow the structure of how you figgure out what kind of display to use
+        but in general, you could end up with:
+        Flat + Flat = ____
+        
+         -or-
+         
+         Vertical
+        +Vertical
+        _________
+        
+         -or-
+         
+        Fract    Fract   Fract
+        ----  +  ----- = -----
+        Fract    Fract   Fract
+        
+         -or-
+           ______         
+        Div) Div
+ 
+        and the return is the class that will build this type of equation.
+        
+        """
+        
+        if self.operation == '+':
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Vertical'
+                else:
+                    return 'Flat'
+
+        elif self.operation == '-':
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Vertical'
+                else:
+                    return 'Flat'
+
+        elif self.operation == '*':
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Vertical'
+                else:
+                    return 'Flat'
+
+        elif self.operation == '/':
+            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+                # If either number is a fraction
+                return 'Fract'
+            else:
+                if (self.term1 > 10 or self.term2 > 10):
+                    return 'Div'
+                else:
+                    return 'Flat'
+
+        else:
+
         
 
 if __name__ == '__main__':
