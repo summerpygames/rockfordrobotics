@@ -188,11 +188,11 @@ class FlatQuestion(Question):
                 self.equals]
 
         cur_x = 0 # increments, how far from the left are we
-        dh = self.width # The width of the destination sprite
+        dh = self.height # The width of the destination sprite
         
         for src in srcs:
             self.dests.append( (src.image,
-                                (( (dh - src.rect.height) / 2 ), cur)
+                                (cur_x, ( (dh - src.rect.height) / 2 ))
                                ))
             cur_x += src.rect.width + MARGIN
 
@@ -220,28 +220,29 @@ class VerticalQuestion(Question):
         self.term1_sprite = decideelement(self.term1)
         self.term2_sprite = decideelement(self.term2)
         self.operation_sprite = decideelement(self.operation)
+        
+        self.width  = max((self.term1_sprite.rect.width,
+                           self.term2_sprite.rect.width,
+                           self.operation_sprite.rect.width,
+                           100))
 
-        self.height = max((self.term1_sprite.rect.height,
-                           self.term2_sprite.rect.height,
-                           self.operation_sprite.rect.height))
-
-        self.line = sprites.Line(100)
-        self.equals = sprites.Letters("=")
+        
 
         MARGIN = 5 # The margin between parts of the question
 
         self.dests = []
-        srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,
-                self.equals]
+        srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,]
 
-        cur_x = 0 # increments, how far from the left are we
+        cur_y = 0 # increments, how far from the left are we
         dh = self.height # The width of the destination sprite
         
         for src in srcs:
             self.dests.append( (src.image,
-                                (cur_x, ( (dh - src.rect.height) / 2 ))
+                                ((dh - src.rect.height), cur_x)
                                ))
-            cur_x += src.rect.width + MARGIN
+            cur_y += src.rect.height + MARGIN
+        
+        self.line = sprites.Line(self.width)
 
         self.dests.append((self.line.image,
                            (cur_x, (dh - self.line.rect.height))
