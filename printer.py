@@ -6,7 +6,7 @@ import sprites
 
 class Rint(object):
 
-    """An intager with a remainder, for answering questions"""
+    """An intager with a remainder, for answering questions """
 
     def __init__(self, i, r):
         self.__i = i
