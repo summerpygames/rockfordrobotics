@@ -10,7 +10,7 @@ def generate():
     """"""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '*', term2, right, wrong1, wrong2, wrong3, 'standard')
 
 def generate_question():
     """This will make a multiplication question to have results equal to or less than 18"""
@@ -29,9 +29,9 @@ def generate_question():
 def generate_wrong(term1, term2, right):
     wrongs = []
     wrongs.append(right + 10)
-    wrongs.append(right - 10)
+    wrongs.append(abs(right - 10))
     wrongs.append(right + 40)
-    wrongs.append(right - 40)
+    wrongs.append(abs(right - 40))
     wrongs.append(term1 + term2)
     wrongs.append(abs(term1-term2))
     wrongs.append(random.randint(1, 1000))

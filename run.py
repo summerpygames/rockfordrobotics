@@ -4,15 +4,36 @@ import pygame
 import logging 
 from olpcgames import pausescreen, textsprite, svgsprite
 from egen import egen as egen
+from egen import answergen as answergen
 from random import *
 import os
 import panglery
 from gamemanager import *
+import printer
+import questions.getquestion
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
+
+class Sprite(pygame.sprite.Sprite):
+    
+    """This is a simple extention of sprite, just adding rect logging.
+    
+    Rect logging will allow the pygame engine to better use the hardware, and
+    only update the parts of the screen that need it the most
+    
+    """
+    
+    def __init__(self, *args):
+        super(Sprite, self).__init__(*args)
+        
+    def update(self, *args):
+        """Simple extention of update method"""
+        
+        super(Sprite, self).update(*args)
+        
 
 class MovingTextObject(textsprite.TextSprite):
 
@@ -47,7 +68,7 @@ class MovingTextObject(textsprite.TextSprite):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
 
-class MovingSvgObject(pygame.sprite.Sprite):
+class MovingSvgObject(Sprite):
 
     """Moving SVG Object extends SVGSprite to allow it to move.
     
@@ -82,6 +103,7 @@ class MovingSvgObject(pygame.sprite.Sprite):
         """Update the location of the SVG"""
         self.rect.top += self.change_y
         self.rect.left += self.change_x
+        super(MovingSvgObject, self).update()
 
 class Enemy(MovingSvgObject):
     
@@ -117,7 +139,7 @@ class AnswerPrinter(pygame.sprite.Sprite):
         super(AnswerPrinter, self).__init__()
         
     
-class AnswerGuy(pygame.sprite.Sprite):
+class AnswerGuy(Sprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
@@ -128,7 +150,7 @@ class AnswerGuy(pygame.sprite.Sprite):
     """
     
     def __init__(self, position, size, friendly_bulletgroup, friendly_player,
-                 correct,  gm, copy =  False):
+                 correct,  gm, response, copy =  False):
         self.position = position
         self.size = size
         self.friendly_bulletgroup = friendly_bulletgroup
@@ -142,9 +164,7 @@ class AnswerGuy(pygame.sprite.Sprite):
             self.svg = svgsprite.SVGSprite(svg = self.data,
                                            size = self.size)
 
-        self.text = textsprite.TextSprite(text="1", family="Norasi",
-                                          size=32, color=(0, 0, 0))
-        self.text.render()
+        self.text = response
         super(AnswerGuy, self).__init__()
         self.change_x = -1
         self.change_y = 0
@@ -168,7 +188,7 @@ class AnswerGuy(pygame.sprite.Sprite):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect_ratio(.75))
         if len(collisions) > 0:
             self.gm.p.trigger(event='shot_answer', correct=self.correct)
             self.kill()
@@ -212,7 +232,7 @@ class BadGuy(Enemy):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect_ratio(.75))
         if len(collisions) > 0:
             self.kill()
             self.gm.p.trigger(event='strays', bulletlist = self.bullets,
@@ -237,7 +257,8 @@ class BadGuy(Enemy):
                 i.remove(self.opponent_bulletgroup)
                 self.bullets.remove(i)
 
-class LaserCannon(pygame.sprite.Sprite):
+
+class LaserCannon(Sprite):
 
     """The LaserCannon is a high tech wepon system on your vehical
     
@@ -362,10 +383,12 @@ class LaserCannon(pygame.sprite.Sprite):
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                          self.heat, 0)) 
         for i in self.bullets:
-            i.update()
+ #           i.update()
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
+
+        super(LaserCannon, self).update()
 
 class StrayBulletManager(object):
     """Cleans up stray bullets left behind by enemies that have died
@@ -421,7 +444,7 @@ class Player(MovingSvgObject):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_mask)
+                                                 pygame.sprite.collide_rect_ratio(.75))
         if len(collisions) > 0:
             print '''FAIL!!
 FAILURE!!!
@@ -450,7 +473,7 @@ class FlyingSaucer(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
-class Bullet(pygame.sprite.Sprite):
+class Bullet(Sprite):
     
     """A generic bullet, should be extended.
     
@@ -486,6 +509,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.top += self.change_y
         self.rect.left += self.change_x
 
+        super(Bullet, self).update()
 
  
 class FriendlyBullet(Bullet):
@@ -585,6 +609,12 @@ class TheOpponent():
         self.friendly_bullet_group = gm.friendly_bullet_group
         self.opponent_bullet_group = gm.opponent_bullet_group
         self.friendly_player = gm.player
+        self.question_group = gm.question_group
+        @self.gm.p.subscribe(event='shot_answer', needs=['correct'])
+        def strays_hook(p, correct):
+            self.question_group.empty()
+            self.group.empty()
+
 
     def spawn_badguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
@@ -604,17 +634,27 @@ class TheOpponent():
 
     def spawn_answerguys(self, screensize, number, x_offset, y_offset):
         """I will make more enemys for you"""
-        self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+        self.size, self.positions = answergen(x_offset, y_offset, screensize)
         self.answerguysvg = svgsprite.SVGSprite(open(os.path.join('data',
                                                                   'numenemy.svg')).read(),
                                                 self.size)
+        self.question = printer.Converter(questions.getquestion.get('addition.upto10'))
+        self.question.render()
         for i in range(len(self.positions)):
+            response = choice(self.question.responses)
+            self.question.responses.remove(response)
             self.enemies.append(AnswerGuy(self.positions[i], self.size,
                                           self.friendly_bullet_group,
-                                          self.friendly_player, True, self.gm,
+                                          self.friendly_player,
+                                          response[1],
+                                          self.gm,
+                                          response[0],
                                           copy = self.answerguysvg))
             self.group.add(self.enemies[-1])
 
+        self.questionsprite = self.question.getquestion()
+        self.questionsprite.add(self.question_group)
+        
 
     def update(self):
         """This will update the positions of the bullets"""
@@ -629,11 +669,15 @@ def start_gm(gm, charecter = 1):
     gm.opponent_group = pygame.sprite.OrderedUpdates()
     gm.opponent_bullets = []
     gm.opponent_bullet_group =  pygame.sprite.OrderedUpdates()
+    gm.question_group = pygame.sprite.OrderedUpdates()
+
     
     gm.player_group = pygame.sprite.OrderedUpdates()
     gm.playable_bullets = []
     gm.friend_bullets = []
     gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
+
+
     
     gm.size = (1200, 900)
     if olpcgames.ACTIVITY:
@@ -665,6 +709,7 @@ def start_gm(gm, charecter = 1):
     gm.opponent_manager = TheOpponent(gm)
 
     gm.playerlifes = 3
+    
 
     gm.straybullets = StrayBulletManager(gm)
 
@@ -686,16 +731,17 @@ def main():
     gm = globalgm
     start_gm(gm)
     gm.screen.blit(gm.background, (0, 0))
+    pygame.display.update()
     gm.player_group.add(gm.player)
     gm.player_group.add(gm.player_cannon)
     running = True
-    while running:      
+    while running:
+        rectlist = []
         events = pausescreen.get_events()
         clock.tick(25)
         # Now the main event-processing loop
         if events:
             for event in events:
-                log.debug( "Event: %s", event )
                 if event.type == pygame.QUIT:
                     running = False
 
@@ -741,6 +787,7 @@ def main():
         gm.opponent_group.clear(gm.screen, gm.background)
         gm.friendly_bullet_group.clear(gm.screen, gm.background)
         gm.opponent_bullet_group.clear(gm.screen, gm.background)
+        gm.question_group.clear(gm.screen, gm.background)
         
         gm.player_group.update()
         gm.friendly_bullet_group.update()
@@ -748,11 +795,12 @@ def main():
         gm.opponent_group.update()
         gm.straybullets.update()
 
-        gm.player_group.draw(gm.screen)
-        gm.opponent_group.draw(gm.screen)
-        gm.friendly_bullet_group.draw(gm.screen)
-        gm.opponent_bullet_group.draw(gm.screen) 
-        pygame.display.flip()
+        rectlist.extend(gm.player_group.draw(gm.screen))
+        rectlist.extend(gm.opponent_group.draw(gm.screen))
+        rectlist.extend(gm.friendly_bullet_group.draw(gm.screen))
+        rectlist.extend(gm.opponent_bullet_group.draw(gm.screen))
+        rectlist.extend(gm.question_group.draw(gm.screen))
+        pygame.display.update(rectlist)
 
     pygame.quit()
 

@@ -5,7 +5,7 @@ def generate():
     """Adding two numbers to a maximum sum of 18."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '+', term2, right, wrong1, wrong2, wrong3, 'standard')
     
 def generate_question():
     """This is generating the three terms involved in the sum."""

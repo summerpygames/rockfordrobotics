@@ -5,7 +5,7 @@ def generate():
     """Adding two numbers to a maximum sum of 10."""
     term1, term2, right = generate_question()
     wrong1, wrong2, wrong3 = generate_wrong(term1, term2, right)
-    return (term1, term2, right, wrong1, wrong2, wrong3)
+    return (term1, '+', term2, right, wrong1, wrong2, wrong3, 'standard')
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
@@ -18,9 +18,9 @@ def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
     wrongs.append(right + 1)
-    wrongs.append(right - 1)
+    wrongs.append(abs(right - 1))
     wrongs.append(right + 2)
-    wrongs.append(right - 2)
+    wrongs.append(abs(right - 2))
     wrongs.append(2*int(sqrt(right)))
     wrongs.append(randint(1, 10))
     wrongs.append(randint(1, 10))
