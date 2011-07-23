@@ -190,24 +190,28 @@ class FlatQuestion(Question):
 
         self.dests = []
         srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,
-                self.equals, self.line]
+                self.equals]
 
         cur_x = 0 # increments, how far from the left are we
         dh = self.height # The width of the destination sprite
         
         for src in srcs:
-            self.dests.append( (src,
+            self.dests.append( (src.image,
                                 (cur_x, ( (dh - src.rect.height) / 2 ))
                                ))
             cur_x += src.rect.width + MARGIN
-        
-        self.width = cur_x - MARGIN # sets the height to the fraction height
+
+        self.dests.append((self.line.image,
+                           (cur_x, (dh - self.line.rect.height))
+                          ))
+        cur_x += self.line.rect.width
+        self.width = cur_x# sets the height to the fraction height
 
         super(FlatQuestion, self).create(self.width, self.height)
 
 
                 
-        for src in dests:
+        for src in self.dests:
             self.image.blit(*src)
 
 

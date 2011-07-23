@@ -24,7 +24,7 @@ class Line(pygame.sprite.Sprite):
     def __init__(self, width):
         super(Line, self).__init__()
         self.image = pygame.Surface([width, 3])
-        self.image.fill((0, 0, 0))
+        self.image.fill((255, 255, 255))
         self.rect = self.image.get_rect()
 
 
@@ -51,7 +51,7 @@ class FractionTerm(pygame.sprite.Sprite):
         dw = self.width # The width of the destination sprite
         
         for src in srcs:
-            self.dests.append( (src,
+            self.dests.append( (src.image,
                                 (((dw - src.rect.width)/2), cur_y)
                                ))
             cur_y += src.rect.height + MARGIN
@@ -62,7 +62,7 @@ class FractionTerm(pygame.sprite.Sprite):
         self.image.fill((0, 0, 0, 0))
         self.rect = self.image.get_rect()
         
-        for src in dests:
+        for src in self.dests:
             self.image.blit(*src)
 
         
