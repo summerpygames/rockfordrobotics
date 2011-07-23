@@ -32,6 +32,7 @@
 # OS generated files #
 ######################
 .DS_Store?
+Python.xcodeproj
 ehthumbs.db
 Icon?
 Thumbs.db
