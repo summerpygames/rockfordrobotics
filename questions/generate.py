@@ -35,10 +35,10 @@ import multiplication.fractions
 import division.upto5
 import division.longdivision
 import division.shortdivision
-
+import os
 sources = [addition.upto10, addition.upto18, addition.upto20, addition.fracabove1, addition.fracbelow1, addition.multiplesof10, addition.term20multiplesof10, addition.regroup100, addition.regroup1000, addition.noregroup100, addition.noregroup1000, subtraction.upto10, subtraction.upto18, subtraction.upto20, subtraction.fracabove1, subtraction.fracbelow1, subtraction.multipleof5, subtraction.upto20multipleof5, subtraction.regroup100, subtraction.regroup1000, subtraction.noregroup100, subtraction.noregroup1000, multiplication.upto18, multiplication.upto36, multiplication.upto72, multiplication.upto1000, multiplication.fractions, division.upto5, division.longdivision, division.shortdivision]
 
-sourceStrings = ['addition.upto10.dat', 'addition.upto18.dat', 'addition.upto20.dat', 'addition.fracabove1.dat', 'addition.fracbelow1.dat', 'addition.multiplesof10.dat', 'addition.term20multiplesof10.dat', 'addition.regroup100.dat', 'addition.regroup1000.dat', 'addition.noregroup100.dat', 'addition.noregroup1000.dat', 'subtraction.upto10.dat', 'subtraction.upto18.dat', 'subtraction.upto20.dat', 'subtraction.fracabove1.dat', 'subtraction.fracbelow1.dat', 'subtraction.multipleof5.dat', 'subtraction.upto20multipleof5.dat', 'subtraction.regroup100.dat', 'subtraction.regroup1000.dat', 'subtraction.noregroup100.dat', 'subtraction.noregroup1000.dat', 'multiplication.upto18.dat', 'multiplication.upto36.dat', 'multiplication.upto72.dat', 'multiplication.upto1000.dat', 'multiplication.fractions.dat', 'division.upto5.dat', 'division.longdivision.dat', 'division.shortdivision.dat']
+sourceStrings = ['addition.upto10.shelve.db', 'addition.upto18.shelve.db', 'addition.upto20.shelve.db', 'addition.fracabove1.shelve.db', 'addition.fracbelow1.shelve.db', 'addition.multiplesof10.shelve.db', 'addition.term20multiplesof10.shelve.db', 'addition.regroup100.shelve.db', 'addition.regroup1000.shelve.db', 'addition.noregroup100.shelve.db', 'addition.noregroup1000.shelve.db', 'subtraction.upto10.shelve.db', 'subtraction.upto18.shelve.db', 'subtraction.upto20.shelve.db', 'subtraction.fracabove1.shelve.db', 'subtraction.fracbelow1.shelve.db', 'subtraction.multipleof5.shelve.db', 'subtraction.upto20multipleof5.shelve.db', 'subtraction.regroup100.shelve.db', 'subtraction.regroup1000.shelve.db', 'subtraction.noregroup100.shelve.db', 'subtraction.noregroup1000.shelve.db', 'multiplication.upto18.shelve.db', 'multiplication.upto36.shelve.db', 'multiplication.upto72.shelve.db', 'multiplication.upto1000.shelve.db', 'multiplication.fractions.shelve.db', 'division.upto5.shelve.db', 'division.longdivision.shelve.db', 'division.shortdivision.shelve.db']
 
 questionNum = 0
 
@@ -56,7 +56,7 @@ def main(index): #This should only be run once: upon startup of the game.
     for sourceString in sourceStrings:
         global questionNum
         questionNum = 0
-        database = shelve.open(sourceString, writeback = True)
+        database = shelve.open(os.path.join('questions', 'databases',sourceString), writeback = True)
         source = sources[sourceStrings.index(sourceString)]
         for i in range(1000):
             addQuestion(database, source)

@@ -8,6 +8,8 @@ from random import *
 import os
 import panglery
 from gamemanager import *
+import printer
+import questions.getquestion
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
@@ -44,7 +46,7 @@ class MovingTextObject(textsprite.TextSprite):
     def __init__(self, text=None, family=None, size=None, bold=False,
                  italic=False, color=None, background=None):
 
-        super(MovingTextObject, self).__init__(text, family, size,
+        super(MomodulevingTextObject, self).__init__(text, family, size,
                                         bold, italic, color,
                                         background)
         self.change_y = 0
@@ -638,6 +640,10 @@ class TheOpponent():
                                           copy = self.answerguysvg))
             self.group.add(self.enemies[-1])
 
+        self.question = printer.Converter(questions.getquestion.get('addition.upto10'))
+        self.questionsprite = self.question.getquestion()
+        self.questionsprite.add(self.group)
+
 
     def update(self):
         """This will update the positions of the bullets"""
@@ -757,8 +763,8 @@ def main():
                         gm.p.trigger(event='key_left_rel')
                     if keys(event, 'right'):
                         gm.p.trigger(event='key_right_rel')
-#                    if keys(event, 'up'):
-#                        gm.p.trigger(event='key_up_rel')
+                    if keys(event, 'up'):
+                        gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
         

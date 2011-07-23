@@ -202,7 +202,7 @@ class FlatQuestion(Question):
                            (cur_x, (dh - self.line.rect.height))
                           ))
         cur_x += self.line.rect.width
-        self.width = cur_y# sets the height to the fraction height
+        self.width = cur_x# sets the height to the fraction height
 
         super(FlatQuestion, self).create(self.width, self.height)
 
@@ -304,8 +304,12 @@ class Converter(object):
         self.wrong1 = self.extractor(str(question['wrong1']))
         self.wrong2 = self.extractor(str(question['wrong2']))
         self.wrong3 = self.extractor(str(question['wrong3']))
+
+        self.kind = self.decidequestion()
         
-        
+    def getquestion(self):
+        """Return the question for putting on the screen"""
+        return self.kind(self.term1, self.operation, self.term2)
 
     def extractor(self, string):
         """Find what kind of number we have using regex"""
@@ -349,45 +353,50 @@ class Converter(object):
         """
         
         if self.operation == '+':
-            if (self.term1.isfraction or self.term2.isfraction):
-                # If either number is a fraction
-                return FlatQuestion
-
-            else:
+            try:
+                if (self.term1.isfraction or self.term2.isfraction):
+                    # If either number is a fraction
+                    return FlatQuestion
+                    print 'firsttry'
+            except AttributeError:
+                print 'secondtry'
                 if (self.term1 > 10 or self.term2 > 10):
-                    return 'Vertical'
+                    return FlatQuestion
                 else:
-                    return 'Flat'
+                    return FlatQuestion
 
         elif self.operation == '-':
-            if (self.term1.isfraction or self.term2.isfraction):
-                # If either number is a fraction
-                return FlatQuestion
-            else:
+            try:
+                if (self.term1.isfraction or self.term2.isfraction):
+                    # If either number is a fraction
+                    return FlatQuestion
+            except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return 'Vertical'
+                    return FlatQuestion
                 else:
-                    return 'Flat'
+                    return FlatQuestion
 
         elif self.operation == '*':
-            if (self.term1.isfraction or self.term2.isfraction):
-                # If either number is a fraction
-                return FlatQuestion
-            else:
+            try:
+                if (self.term1.isfraction or self.term2.isfraction):
+                    # If either number is a fraction
+                    return FlatQuestion
+            except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return 'Vertical'
+                    return FlatQuestion
                 else:
-                    return 'Flat'
+                    return FlatQuestion
 
         elif self.operation == '/':
-            if (self.term1.isfraction or self.term2.isfraction):
-                # If either number is a fraction
-                return FlatQuestion
-            else:
+            try:
+                if (self.term1.isfraction or self.term2.isfraction):
+                    # If either number is a fraction
+                    return FlatQuestion
+            except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return 'Div'
+                    return FlatQuestion
                 else:
-                    return 'Flat'
+                    return FlatQuestion
 
         else:
             pass
