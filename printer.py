@@ -4,13 +4,14 @@ import pygame
 import re
 import sprites
 
-class rint(object):
+class Rint(object):
 
     """An intager with a remainder, for answering questions"""
 
     def __init__(self, i, r):
         self.__i = i
         self.__r = r
+        self.type = 'rint'
 
     def i(self):
         """Return the int part"""
@@ -33,10 +34,10 @@ class rint(object):
     def __gt__(self, value):
         return (self.__i > value)
 
-    def __lt__(self, value):ClassName
+    def __lt__(self, value):
         return (self.__i < value)
 
-def create_rint(i_in, r_in):
+def create_Rint(i_in, r_in):
     """Factory to construct, and return, the proper object
     
     This will return an intager if the remainder happens to be 0 and return a
@@ -48,15 +49,16 @@ def create_rint(i_in, r_in):
         return i
 
     else:
-        return rint(i, r)
+        return Rint(i, r)
 
-class fint(object):
+class Fint(object):
 
     """A set of two intagers, one numerator one denomenator"""
 
     def __init__(self, num, den):
         self.__num = num
-        self.__sen = den
+        self.__den = den
+        self.type = 'fint'
 
     def num(self):
         """Return the Numerator"""
@@ -74,20 +76,28 @@ class fint(object):
 
     def __lt__(self, value):
         return (self.__num < value)
+
+    def __repr__(self):
+        return '{0}/{0}'.format(self.__num, self.__den)
+
         
-class fmint(fint):
+class FMint(Fint):
 
     """A fraction with a whole number and a fraction"""
     
     def __init__(self, whole, num, den):
-        super(fmint, self).__init__(num, den)
+        super(FMint, self).__init__(num, den)
         self.__whole = whole
+        self.type = 'fmint'
 
     def whole(self):
         """Return the whole number"""
         return self.__whole
 
-def create_fint(whole_in, num_in, den_in):
+    def __repr__(self):
+        return '{0}/{1}/{2}'.format(self.__whole, self.__num, self.__den)
+
+def create_Fint(whole_in, num_in, den_in):
     """Factory to construct and return the proper object
     this will return an intager if there is no fraction, a fraction if there is
     no whole number, and a mixed number if all spots are non-zero
@@ -97,13 +107,39 @@ def create_fint(whole_in, num_in, den_in):
     den = int(den_in)
     if abs(whole) == 0:# make sure it has no whole number
         if num != den: # make sure it is not a whole number like 1/1
-            return fint(num, den)
+            return Fint(num, den)
         else: # in the case that the num and den are the same
             return int(num)
     elif num == 0: # in the case that there is no fraction part
         return whole
     else: # in the case that we have all three elements
-        return fmint(whole, num, den)
+        return FMint(whole, num, den)
+
+def decideelement(element):
+        """Use this to return what sprite drawer should be used
+        
+        This will return a Letters element for an int, a FractionElelment for...
+        """
+
+        if isinstance(element, int):
+            return sprites.Letters(element)
+            print 'itsanint'
+        else:
+            try:
+                if element.type == 'fint':
+                    r = sprites.FractionTerm
+                elif element.type == 'fmint':
+                    r = sprites.FractionTerm
+                elif element.type == 'rint':
+                    r = sprites.RemainderTerm
+                else:
+                    r = sprites.Letters
+            except AttributeError:
+                print 'problem'
+                r = sprites.Letters
+            finally:
+                return r(element)
+
 
 class Question(pygame.sprite.Sprite):
 
@@ -114,22 +150,17 @@ class Question(pygame.sprite.Sprite):
 
     """
 
-    def __init__(self, width, height):
+    def __init__(self):
         super(Question, self).__init__()
+    
+    def create(self, width, height):
+        """Create the image"""
+        self.image = pygame.Surface((width, height)).convert_alpha()
+        self.image.fill((0, 0, 0, 0))
+        self.rect = self.image.get_rect()
 
-    def decideelement(self, element):
-        """Use this to return what sprite drawer should be used
-        
-        This will return a Letters element for an int, a FractionElelment for...
-        """
-        if element.__class__ == int:
-            return sprites.Letters(element)
-        elif element.__class__ == fint:
-            return sprites.FractionTerm(element)
-        elif element.__class__ == mfint:
-            return sprites.FractionTerm(element)
-        elif element.__class__ == rint:
-            return sprites.RemainderTerm(element)
+
+    
 
 class FlatQuestion(Question):
     """A question in the right to left format"""
@@ -138,20 +169,47 @@ class FlatQuestion(Question):
         self.term1 = term1
         self.term2 = term2
         self.operation = operation
-
+        ############DEBUG######DEBUG#######################
+        print Fint.__class__
+        print str(self.term1)
+        print self.term1.__class__
+        print decideelement(self.term1).__class__
+        ###################################################
         self.term1_sprite = decideelement(self.term1)
         self.term2_sprite = decideelement(self.term2)
         self.operation_sprite = decideelement(self.operation)
-
-        self.width = max((self.term1_sprite.rect.width,
-                          self.term2_sprite.rect.width,
-                          self.operation_sprite.rect.width))
 
         self.height = max((self.term1_sprite.rect.height,
                            self.term2_sprite.rect.height,
                            self.operation_sprite.rect.height))
 
+        self.line = sprites.Line(100)
+        self.equals = sprites.Letters("=")
+
+        MARGIN = 5 # The margin between parts of the question
+
+        self.dests = []
+        srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,
+                self.equals, self.line]
+
+        cur_x = 0 # increments, how far from the left are we
+        dh = self.height # The width of the destination sprite
         
+        for src in srcs:
+            self.dests.append( (src,
+                                (cur_x, ( (dh - src.rect.height) / 2 ))
+                               ))
+            cur_x += src.rect.width + MARGIN
+        
+        self.width = cur_x - MARGIN # sets the height to the fraction height
+
+        super(FlatQuestion, self).create(self.width, self.height)
+
+
+                
+        for src in dests:
+            self.image.blit(*src)
+
 
 
 
@@ -185,8 +243,8 @@ class Converter(object):
         self.expressions = (re.compile(r"(\d+)R(\d+)"),
                             re.compile(r"(\d+)/(\d+)/(\d+)"),
                             re.compile(r"(\d+)"))
-        self.operations  = (create_rint,
-                            create_fint,
+        self.operations  = (create_Rint,
+                            create_Fint,
                             int)
 
         
@@ -244,7 +302,7 @@ class Converter(object):
         """
         
         if self.operation == '+':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
                 # If either number is a fraction
                 return 'Fract'
             else:
@@ -254,7 +312,7 @@ class Converter(object):
                     return 'Flat'
 
         elif self.operation == '-':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
                 # If either number is a fraction
                 return 'Fract'
             else:
@@ -264,7 +322,7 @@ class Converter(object):
                     return 'Flat'
 
         elif self.operation == '*':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
                 # If either number is a fraction
                 return 'Fract'
             else:
@@ -274,7 +332,7 @@ class Converter(object):
                     return 'Flat'
 
         elif self.operation == '/':
-            if (isinstance(self.term1, fint) or isinstance(self.term2, fint)):
+            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
                 # If either number is a fraction
                 return 'Fract'
             else:

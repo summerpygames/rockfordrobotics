@@ -1,6 +1,6 @@
 import pygame
-import olpcgame
-from olpcgame import textsprite
+import olpcgames
+from olpcgames import textsprite
 
 class Letters(textsprite.TextSprite):
 
@@ -14,20 +14,17 @@ class Letters(textsprite.TextSprite):
     """
     
     def __init__(self, string):
-        super(Element, self).__init__(text=string, size=32)
+        super(Letters, self).__init__(text=str(string), size=32)
         self.render()
         
 class Line(pygame.sprite.Sprite):
 
     """dA sprite that is a line"""
 
-    def __init__(self, width)
+    def __init__(self, width):
         super(Line, self).__init__()
-        self.line = pygame.Surface([width, 3])
         self.image = pygame.Surface([width, 3])
-        self.image = pygame.Surface(size).convert_alpha()
-        self.image.fill((0, 0, 0, 0))
-        self.image.blit(self.line)
+        self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect()
 
 
@@ -40,9 +37,9 @@ class FractionTerm(pygame.sprite.Sprite):
         self.numerator = Letters(str(fint.num()))
         self.denomenator = Letters(str(fint.den()))
         if self.numerator.rect.width > self.denomenator.rect.width:
-            self.width = self.numerator.rect.width()
+            self.width = self.numerator.rect.width
         else:
-            self.width = self.denomenator.rect.width()
+            self.width = self.denomenator.rect.width
         self.line = Line(self.width)
 
         MARGIN = 5
@@ -54,8 +51,10 @@ class FractionTerm(pygame.sprite.Sprite):
         dw = self.width # The width of the destination sprite
         
         for src in srcs:
-            self.dests.append((src, ((dw - src.get_width())/2), cur_y))
-            cur_y += src.get_height() + MARGIN
+            self.dests.append( (src,
+                                (((dw - src.rect.width)/2), cur_y)
+                               ))
+            cur_y += src.rect.height + MARGIN
         
         self.height = cur_y - MARGIN # sets the height to the fraction height
         
@@ -64,7 +63,7 @@ class FractionTerm(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         for src in dests:
-            self.image.blit(src)
+            self.image.blit(*src)
 
         
 
