@@ -124,7 +124,6 @@ def decideelement(element):
 
         if isinstance(element, int):
             return sprites.Letters(element)
-            print 'itsanint'
         else:
             try:
                 if element.type == 'fint':
@@ -136,7 +135,6 @@ def decideelement(element):
                 else:
                     r = sprites.Letters
             except AttributeError:
-                print 'problem'
                 r = sprites.Letters
             finally:
                 return r(element)
@@ -306,6 +304,13 @@ class Converter(object):
         self.wrong3 = self.extractor(str(question['wrong3']))
 
         self.kind = self.decidequestion()
+
+    def render(self):
+        """Render the right and wrong answers and put them in a list of tuples"""
+        self.responses = []
+        self.responses.append((decideelement(self.right), True))
+        for i in [self.wrong1, self.wrong2, self.wrong3]:
+            self.responses.append((decideelement(i), False))
         
     def getquestion(self):
         """Return the question for putting on the screen"""
@@ -357,9 +362,7 @@ class Converter(object):
                 if (self.term1.isfraction or self.term2.isfraction):
                     # If either number is a fraction
                     return FlatQuestion
-                    print 'firsttry'
             except AttributeError:
-                print 'secondtry'
                 if (self.term1 > 10 or self.term2 > 10):
                     return FlatQuestion
                 else:
