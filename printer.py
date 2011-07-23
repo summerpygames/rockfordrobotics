@@ -192,11 +192,9 @@ class FlatQuestion(Question):
         
         for src in srcs:
             self.dests.append( (src.image,
-<<<<<<< HEAD
+
                                 (cur_x, ( (dh - src.rect.height) / 2 ))
-=======
-                                ((dh - src.rect.height), cur)
->>>>>>> origin/mark
+
                                ))
             cur_x += src.rect.width + MARGIN
 
