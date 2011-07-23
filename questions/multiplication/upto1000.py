@@ -29,9 +29,9 @@ def generate_question():
 def generate_wrong(term1, term2, right):
     wrongs = []
     wrongs.append(right + 10)
-    wrongs.append(right - 10)
+    wrongs.append(abs(right - 10))
     wrongs.append(right + 40)
-    wrongs.append(right - 40)
+    wrongs.append(abs(right - 40))
     wrongs.append(term1 + term2)
     wrongs.append(abs(term1-term2))
     wrongs.append(random.randint(1, 1000))

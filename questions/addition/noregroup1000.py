@@ -11,7 +11,7 @@ def generate_question():
     """This is generating the three terms involved in the sum."""
     right = random.choice(range(100,1001))
     term1 = random.choice(range(1,right))
-    term2 = right - term1
+    term2 = right = term1
     if term2 > term1:
         term3 = term1
         term1 = term2
@@ -35,9 +35,9 @@ def generate_question():
                 term1list[-i] = int(random.choice(range(1,int(str(right)[-i]))))
                 term2list[-i] = int(str(right)[-i]) - int(str(term1)[-i])
     for i in range(len(str(term1))):
-        term1str = term1str + term1list[i]
+        term1str = term1str + str(term1list[i])
     for i in range(len(str(term2))):
-        term2str = term2str + term2list[i]
+        term2str = term2str + str(term2list[i])
     term1 = int(term1str)
     term2 = int(term2str)
     return (term1, term2, right)
@@ -45,15 +45,15 @@ def generate_question():
 def generate_wrong(term1, term2, right):
     """Giving many wrong answers to choose from."""
     wrongs = []
-    wrongs.append(right + 1)
-    wrongs.append(right - 1)
-    wrongs.append(right + 2)
-    wrongs.append(right - 2)
-    wrongs.append(30*int(sqrt(right)))
     wrongs.append(right + 10)
-    wrongs.append(right - 10)
+    wrongs.append(abs(right - 10))
     wrongs.append(right + 20)
-    wrongs.append(right - 20)
+    wrongs.append(abs(right - 20))
+    wrongs.append(30*int(sqrt(right)))
+    wrongs.append(right + 100)
+    wrongs.append(abs(right - 100))
+    wrongs.append(right + 200)
+    wrongs.append(abs(right - 200))
     wrongs.append(random.randint(100, 1000))
     the_wrong_3 = []
 
