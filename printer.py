@@ -59,6 +59,7 @@ class Fint(object):
         self.__num = num
         self.__den = den
         self.type = 'fint'
+        self.isfraction = True
 
     def num(self):
         """Return the Numerator"""
@@ -169,12 +170,53 @@ class FlatQuestion(Question):
         self.term1 = term1
         self.term2 = term2
         self.operation = operation
-        ############DEBUG######DEBUG#######################
-        print Fint.__class__
-        print str(self.term1)
-        print self.term1.__class__
-        print decideelement(self.term1).__class__
-        ###################################################
+        self.term1_sprite = decideelement(self.term1)
+        self.term2_sprite = decideelement(self.term2)
+        self.operation_sprite = decideelement(self.operation)
+
+        self.height = max((self.term1_sprite.rect.height,
+                           self.term2_sprite.rect.height,
+                           self.operation_sprite.rect.height))
+
+        self.line = sprites.Line(100)
+        self.equals = sprites.Letters("=")
+
+        MARGIN = 5 # The margin between parts of the question
+
+        self.dests = []
+        srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,
+                self.equals]
+
+        cur_x = 0 # increments, how far from the left are we
+        dh = self.width # The width of the destination sprite
+        
+        for src in srcs:
+            self.dests.append( (src.image,
+                                (( (dh - src.rect.height) / 2 ), cur)
+                               ))
+            cur_x += src.rect.width + MARGIN
+
+        self.dests.append((self.line.image,
+                           (cur_x, (dh - self.line.rect.height))
+                          ))
+        cur_x += self.line.rect.width
+        self.width = cur_x# sets the height to the fraction height
+
+        super(FlatQuestion, self).create(self.width, self.height)
+
+
+                
+        for src in self.dests:
+            self.image.blit(*src)
+
+
+class VerticalQuestion(Question):
+    """A question in the right to left format"""
+    def __init__(self, term1, operation, term2):
+        super(FlatQuestion, self).__init__()
+        self.term1 = term1
+        self.term2 = term2
+        self.operation = operation
         self.term1_sprite = decideelement(self.term1)
         self.term2_sprite = decideelement(self.term2)
         self.operation_sprite = decideelement(self.operation)
@@ -213,8 +255,6 @@ class FlatQuestion(Question):
                 
         for src in self.dests:
             self.image.blit(*src)
-
-
 
 
 
@@ -306,9 +346,10 @@ class Converter(object):
         """
         
         if self.operation == '+':
-            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
+            if (self.term1.isfraction or self.term2.isfraction):
                 # If either number is a fraction
-                return 'Fract'
+                return FlatQuestion
+
             else:
                 if (self.term1 > 10 or self.term2 > 10):
                     return 'Vertical'
@@ -316,9 +357,9 @@ class Converter(object):
                     return 'Flat'
 
         elif self.operation == '-':
-            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
+            if (self.term1.isfraction or self.term2.isfraction):
                 # If either number is a fraction
-                return 'Fract'
+                return FlatQuestion
             else:
                 if (self.term1 > 10 or self.term2 > 10):
                     return 'Vertical'
@@ -326,9 +367,9 @@ class Converter(object):
                     return 'Flat'
 
         elif self.operation == '*':
-            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
+            if (self.term1.isfraction or self.term2.isfraction):
                 # If either number is a fraction
-                return 'Fract'
+                return FlatQuestion
             else:
                 if (self.term1 > 10 or self.term2 > 10):
                     return 'Vertical'
@@ -336,9 +377,9 @@ class Converter(object):
                     return 'Flat'
 
         elif self.operation == '/':
-            if (isinstance(self.term1, Fint) or isinstance(self.term2, Fint)):
+            if (self.term1.isfraction or self.term2.isfraction):
                 # If either number is a fraction
-                return 'Fract'
+                return FlatQuestion
             else:
                 if (self.term1 > 10 or self.term2 > 10):
                     return 'Div'
