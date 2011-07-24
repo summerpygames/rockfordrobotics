@@ -3,6 +3,27 @@ SpaceMath
 
 The Game
 --------
+In the game Space Math you, the hero, has to destroy the swarms of alian combatants from the planet. But as an advanced species, you know the only way to truly crush the others is to do so diplomaticly, not with your laser cannon. Your mission is simple: Make your way to the alien city to talk to their leader and negociate an intergalactic peace aggreement. This is no small task, and will require the loss of enemy alians on the way, but that loss is nothing compared to the descruction that these alians could cause to our planet if peace is not reached. But be warned, the alians are quite weary of invaders, you will have to prove your skills in the only universal language, Math!
 
+How to run
+----------
+
+the easiest way to run the game is to (after downloading it) run
+
+	cd SpaceMath.activity	
+	python ./run.py
+
+Or, if you are on an XO, put the SpaceMath.activity folder in your ~/Activities folder and restart the XO to see the game in your list.
+
+About the authors
+-----------------
+[Mark Amber][markamber] : Team Programmer
+
+[Lucas Morales][lukedmor] : Team Programmer
+
+others will be added...
+
+soon and sonn
 
 [markamber]: http://markamber.co "Mark Amber"
+[lukedmor]: https://plus.google.com/116612911731859210066/posts "Lucas Morales"

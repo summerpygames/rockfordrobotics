@@ -39,6 +39,24 @@ def egen(room, n, offset_x = 0, offset_y = 0, wave = False, rand = False, randnu
     size = room[0]/side
     return positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum)
 
+def answergen(offset_x, offset_y, screensize):
+    """Generate the posisions for answer guys"""
+    PADDING = screensize[1]/32
+    SIZE = (
+            (screensize[1] - (3*PADDING)) / 4,
+            (screensize[1] - (3*PADDING)) / 4
+           )
+    pos = []
+    x = 0
+    y = 0
+    for i in range(3):
+        pos.append((int(x + offset_x),int(y + offset_y)))
+        y += PADDING + SIZE[1]
+    pos.append((int(x + offset_x),int(y + offset_y)))
+
+    return (SIZE, pos)
+
+
 def positions(room, n, size, side, offset_x, offset_y, wave, rand, randnum):
     positions = []
     reset = 0
