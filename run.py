@@ -825,8 +825,8 @@ def main():
         pygame.display.update(rectlist)
 
     pygame.quit()
-import cProfile
+#import cProfile
 if __name__ == '__main__':
-    cProfile.run('main()', 'profile.p')
+#    cProfile.run('main()', 'profile.p')
 
-#    main()
+    main()
