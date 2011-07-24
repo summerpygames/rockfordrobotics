@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #       WhateverWeCallTheGame.py
@@ -825,6 +825,8 @@ def main():
         pygame.display.update(rectlist)
 
     pygame.quit()
-
+import cProfile
 if __name__ == '__main__':
-    main()
+    cProfile.run('main()', 'profile.p')
+
+#    main()
