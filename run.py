@@ -108,6 +108,7 @@ class MovingSvgObject(Sprite):
 
         super(MovingSvgObject, self).__init__()
         self.image = self.sprite.image
+#        self.image.set_colorkey((26, 26, 26))
         self.rect = self.sprite.rect
         self.resolution = self.sprite.resolution
         self.rect.top = position[1]
