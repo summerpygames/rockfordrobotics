@@ -57,13 +57,16 @@ import shelve
 #import division.upto5
 #import division.longdivision
 #import division.shortdivision
-import generators
+from generators import *
 import os
+import re
+
 sources = [addition.upto10, addition.upto18, addition.upto20, addition.fracabove1, addition.fracbelow1, addition.multiplesof10, addition.term20multiplesof10, addition.regroup100, addition.regroup1000, addition.noregroup100, addition.noregroup1000, subtraction.upto10, subtraction.upto18, subtraction.upto20, subtraction.fracabove1, subtraction.fracbelow1, subtraction.multipleof5, subtraction.upto20multipleof5, subtraction.regroup100, subtraction.regroup1000, subtraction.noregroup100, subtraction.noregroup1000, multiplication.upto18, multiplication.upto36, multiplication.upto72, multiplication.upto1000, multiplication.fractions, division.upto5, division.longdivision, division.shortdivision]
 
-sourceStrings = ['addition.upto10.shelve.db', 'addition.upto18.shelve.db', 'addition.upto20.shelve.db', 'addition.fracabove1.shelve.db', 'addition.fracbelow1.shelve.db', 'addition.multiplesof10.shelve.db', 'addition.term20multiplesof10.shelve.db', 'addition.regroup100.shelve.db', 'addition.regroup1000.shelve.db', 'addition.noregroup100.shelve.db', 'addition.noregroup1000.shelve.db', 'subtraction.upto10.shelve.db', 'subtraction.upto18.shelve.db', 'subtraction.upto20.shelve.db', 'subtraction.fracabove1.shelve.db', 'subtraction.fracbelow1.shelve.db', 'subtraction.multipleof5.shelve.db', 'subtraction.upto20multipleof5.shelve.db', 'subtraction.regroup100.shelve.db', 'subtraction.regroup1000.shelve.db', 'subtraction.noregroup100.shelve.db', 'subtraction.noregroup1000.shelve.db', 'multiplication.upto18.shelve.db', 'multiplication.upto36.shelve.db', 'multiplication.upto72.shelve.db', 'multiplication.upto1000.shelve.db', 'multiplication.fractions.shelve.db', 'division.upto5.shelve.db', 'division.longdivision.shelve.db', 'division.shortdivision.shelve.db']
+sourceStrings = ['addition.upto10.shelve.db', 'addition.upto18.shelve.db', 'addition.upto20.shelve.db', 'addition.fracabove1.shelve.db', 'addition.fracbelow1.shelve.db', 'addition.multiplesof10.shelve.db', 'addition.term20multiplesof10.shelve.db', 'addition.regroup100.shelve.db', 'addition.regroup1000.shelve.db', 'addition.noregroup100.shelve.db', 'addition.noregroup1000.shelve.db', 'subtraction.upto10.shelve.db', 'subtraction.upto18.shelve.db', 'subtraction.upto20.shelve.db', 'subtraction.fracabove1.shelve.db', 'subtraction.fracbelow1.shelve.db', 'subtraction.multipleof5.shelve.db', 'subtraction.upto20multipleof5.shelve.db', 'subtraction.regroup100.shelve.db', 'subtraction.regroup1000.shelve.db', 'subtraction.noregroup100.shelve.db', 'subtraction.noregroup1000.shelve.db', 'multiplication.upto18.shelve.db', 'multiplication.upto36.shelve.db', 'multiplication.upto72.shelve.db', 'multiplication.upto1000.shelve.db', 'multiplication.fractions.shelve.db', 'division.upto5.shelve.db', 'division.longdivision.shelve.db', 'division.short.shelve.db']
 
 questionNum = 0
+sourcematch = re.compile(r"(generators).(\w+).(.+).(shelve.db)")
 
 def addQuestion(database, source):
     question = {}
@@ -77,6 +80,8 @@ def addQuestion(database, source):
     
 def main(index): #This should only be run once: upon startup of the game.
     for sourceString in sourceStrings:
+        sourcelist = sourcematch.groups(sourceString)
+        print sourcelist
         global questionNum
         questionNum = 0
         database = shelve.open(os.path.join('questions', 'databases',sourceString), writeback = True)
