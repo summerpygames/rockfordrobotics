@@ -25,9 +25,12 @@ class MovingSvgObject(Sprite):
             data = open(svg).read()
             self.sprite = svgsprite.SVGSprite(data, size)
 
-        super(MovingSvgObject, self).__init__()
+        
         print self.sprite.image.get_flags()
-        self.image = self.sprite.image
+        super(MovingSvgObject, self).__init__()
+        self.image = new_surface(self.sprite.image.get_size())
+        
+        self.image.blit(self.sprite.image, (0, 0))
         self.rect = self.sprite.rect
         self.resolution = self.sprite.resolution
         self.rect.top = position[1]
@@ -74,6 +77,7 @@ class FancyNewState(SubGame):
     def transition_in(self):
         """Transition into the loop"""
         self.sprite = MovingSvgObject(position = (10, 10), svg = 'data/ufo.svg', size =(150, 150))
+        self.screen_state.set_background(my_load_image('deepspace.jpg'))
         self.group = Group(self.sprite)
 
     def main_loop(self):

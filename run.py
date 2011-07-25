@@ -84,6 +84,7 @@ class MovingTextObject(textsprite.TextSprite):
         """Remap the new position of the text"""
         self.rect.top += self.change_y
         self.rect.left += self.change_x
+        super(MovingTextObject, self).update()
 
 class MovingSvgObject(Sprite):
 
@@ -102,14 +103,14 @@ class MovingSvgObject(Sprite):
             self.sprite = svgsprite.SVGSprite(data, size)
 
         super(MovingSvgObject, self).__init__()
-        self.image = self.sprite.image
-#        self.image.set_colorkey((26, 26, 26))
+        self.image = new_surface(self.sprite.image.get_size())
+        self.image.blit(self.sprite.image, (0, 0))
         self.rect = self.sprite.rect
         self.resolution = self.sprite.resolution
-        self.rect.top = position[1]
-        self.rect.left = position[0]
+        self.position = (position[0], position[1])
         self.change_x = 0
         self.change_y = 0
+        self.layer = 'test'
        
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
@@ -739,12 +740,68 @@ class PlayState(SubGame):
         self.initialized = False
     
     def transition_in(self):
+        if self.initialized:
+            return
+        self.initialized = True
         pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
         self.gm = globalgm
-        start_gm(self.gm)
+        self.set_layers(['test'])
+        self.gm.opponents = []
+        self.gm.opponent_group = Group()
+        self.gm.opponent_bullets = []
+        self.gm.opponent_bullet_group =  Group()
+        self.gm.question_group = Group()
+
+        
+        self.gm.player_group = Group()
+        self.gm.playable_bullets = []
+        self.gm.friend_bullets = []
+        self.gm.friendly_bullet_group = Group()
+
+        self.gm.size = (1200, 900)
+        if olpcgames.ACTIVITY:
+            self.gm.size = olpcgames.ACTIVITY.game_size
+    #    self.gm.screen = pygame.display.set_mode(self.gm.size)
+        self.gm.background = my_load_image('deepspace.jpg')
+        charecter = 1
+        if charecter is 1:
+            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon = LaserCannon(self.gm)
+            self.gm.player = FlyingSaucer(self.gm)
+        elif charecter is 2:
+            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon = LaserCannon(self.gm)
+            self.gm.player = FlyingSaucer(self.gm)
+        elif charecter is 3:
+            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon = LaserCannon(self.gm)
+            self.gm.player = FlyingSaucer(self.gm)
+        elif charecter is 4:
+            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon = LaserCannon(self.gm)
+            self.gm.player = FlyingSaucer(self.gm)
+        else:
+            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon = LaserCannon(self.gm)
+            self.gm.player = FlyingSaucer(self.gm)
+
+        self.gm.opponent_manager = TheOpponent(self.gm)
+
+        self.gm.playerlifes = 3
+        
+
+        self.gm.straybullets = StrayBulletManager(self.gm)
+
+        self.gm.play = True
+        self.gm.menu = False
+
+        self.gm.player_speed = 10
+
+        self.gm.setup_hooks()
         self.screen_state.set_background(self.gm.background)
         self.gm.player_group.add(self.gm.player)
         self.gm.player_group.add(self.gm.player_cannon)
+        self.t = 0
         
     def main_loop(self):
         
@@ -787,19 +844,21 @@ class PlayState(SubGame):
                         self.gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         self.gm.p.trigger(event='key_down_rel')
+            
         
 #        gm.player_group.clear(gm.screen, gm.background)
 #        gm.opponent_group.clear(gm.screen, gm.background)
 #        gm.friendly_bullet_group.clear(gm.screen, gm.background)
 #        gm.opponent_bullet_group.clear(gm.screen, gm.background)
 #        gm.question_group.clear(gm.screen, gm.background)
-#        
-#        gm.player_group.update()
-#        gm.friendly_bullet_group.update()
-#        gm.opponent_bullet_group.update()
-#        gm.opponent_group.update()
+        self.t = self.t + 1
+        #Update various sprite groups
+        self.gm.player_group.update()
+        self.gm.friendly_bullet_group.update()
+        self.gm.opponent_bullet_group.update()
+        self.gm.opponent_group.update()
         self.gm.straybullets.update()
-
+        print 'hi'
         GetScreen().draw()
         
         
