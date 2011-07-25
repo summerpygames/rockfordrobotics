@@ -46,6 +46,25 @@ log.setLevel( logging.DEBUG )
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
 
+class MaskSprite(Sprite):
+    """ A sprite superclass which adds automatic generation of masks for
+    the sprite as they are needed. """
+    def __setattr__(self, item, value):
+        if item == 'image':
+            if 'mask' in self.__dict__:
+                self.__dict__.pop('mask')
+            Sprite.__setattr__(self, item, value)
+        else:
+            Sprite.__setattr__(self, item, value)
+            
+    def __getattr__(self, item):
+        if item == 'mask':
+            if 'mask' not in self.__dict__:
+                self.__dict__['mask'] = pygame.mask.from_surface(self.image)
+            return self.__dict__['mask']
+        else:
+            return Sprite.__getattr__(self, item)
+
 def my_load_image(imgName,colorkey=None):
     newName = os.path.join('data',imgName)
     return load_image(newName,colorkey)
@@ -86,7 +105,7 @@ class MovingTextObject(textsprite.TextSprite):
         self.rect.left += self.change_x
         super(MovingTextObject, self).update()
 
-class MovingSvgObject(Sprite):
+class MovingSvgObject(MaskSprite):
 
     """Moving SVG Object extends SVGSprite to allow it to move.
     
@@ -135,10 +154,10 @@ class Enemy(MovingSvgObject):
     """
     
     def __init__(self, size, svg, position, speed = -1, copy = False):
-        self.position = position
-        self.size = size
-        super(Enemy, self).__init__(position = self.position, svg = svg, size =
-                                    self.size, copy = copy)
+        self.pos = position
+        self.siz = size
+        super(Enemy, self).__init__(position = self.pos, svg = svg, size =
+                                    self.siz, copy = copy)
         self.change_x = speed
 
     def update(self):
@@ -158,7 +177,7 @@ class AnswerPrinter(Sprite):
         super(AnswerPrinter, self).__init__()
         
     
-class AnswerGuy(Sprite):
+class AnswerGuy(MaskSprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
@@ -207,7 +226,7 @@ class AnswerGuy(Sprite):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_rect_ratio(.75))
+                                                 pygame.sprite.collide_mask)
         if len(collisions) > 0:
             self.gm.p.trigger(event='shot_answer', correct=self.correct)
             self.kill()
@@ -229,13 +248,13 @@ class BadGuy(Enemy):
     """
     def __init__(self, position, size, friendly_bulletgroup,
                  opponent_bulletgroup, bullets, friendly_player, gm, copy = False):
-        self.position = position
-        self.size = size
+        self.pos = position
+        self.siz = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.opponent_bulletgroup = opponent_bulletgroup
         self.bullets = []
         self.gm = gm
-        super(BadGuy, self).__init__(position = self.position, size = self.size,
+        super(BadGuy, self).__init__(position = self.pos, size = self.siz,
                                      svg = os.path.join('data', 'enemy.svg'),
                                      copy = copy)
         self.mask = pygame.mask.from_surface(self.image, 127)
@@ -251,7 +270,7 @@ class BadGuy(Enemy):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_rect_ratio(.75))
+                                                 pygame.sprite.collide_mask)
         if len(collisions) > 0:
             self.kill()
             self.gm.p.trigger(event='strays', bulletlist = self.bullets,
@@ -463,7 +482,7 @@ class Player(MovingSvgObject):
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
-                                                 pygame.sprite.collide_rect_ratio(.75))
+                                                 pygame.sprite.collide_mask)
         if len(collisions) > 0:
             print '''FAIL!!
 FAILURE!!!
@@ -492,7 +511,7 @@ class FlyingSaucer(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
-class Bullet(Sprite):
+class Bullet(MaskSprite):
     
     """A generic bullet, should be extended.
     
@@ -502,7 +521,7 @@ class Bullet(Sprite):
     
     """
     def __init__(self, pos, color, size, speed):
-        Sprite.__init__(self)
+        MaskSprite.__init__(self)
         self.change_x = speed
         self.change_y = 0
         self.image = new_surface(size)
@@ -806,7 +825,7 @@ class PlayState(SubGame):
         
     def main_loop(self):
         
-        events = pausescreen.get_events()
+        events = pygame.event.get( )
         
         # Now the main event-processing loop
         if events:
@@ -829,10 +848,12 @@ class PlayState(SubGame):
                         self.gm.p.trigger(event='key_x_press')
                         self.gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        self.gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
+                        self.gm.opponent_manager.spawn_badguys((600, 600), 9,
+                                                               700,
                                                           50)
                     if event.key == pygame.K_KP9 or event.key == pygame.K_a:
-                        self.gm.opponent_manager.spawn_answerguys((600, 600), 9, 1200,
+                        self.gm.opponent_manager.spawn_answerguys((600, 600), 9,
+                                                                  700,
                                                           50)
 
 
@@ -847,12 +868,6 @@ class PlayState(SubGame):
                         self.gm.p.trigger(event='key_down_rel')
             
         
-#        gm.player_group.clear(gm.screen, gm.background)
-#        gm.opponent_group.clear(gm.screen, gm.background)
-#        gm.friendly_bullet_group.clear(gm.screen, gm.background)
-#        gm.opponent_bullet_group.clear(gm.screen, gm.background)
-#        gm.question_group.clear(gm.screen, gm.background)
-        self.t = self.t + 1
         #Update various sprite groups
         self.gm.player_group.update()
         self.gm.friendly_bullet_group.update()
@@ -864,6 +879,7 @@ class PlayState(SubGame):
         self.gm.friendly_bullet_group.draw()
         self.gm.opponent_group.draw()
         self.gm.opponent_bullet_group.draw()
+        self.gm.question_group.draw()
 
         GetScreen().draw()
         
@@ -885,7 +901,7 @@ def main():
     running = True
     while running:
         rectlist = []
-        events = pausescreen.get_events()
+        events = pygame.event.get( )
         clock.tick(25)
         # Now the main event-processing loop
         if events:

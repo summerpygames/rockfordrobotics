@@ -12,7 +12,7 @@ from math import sqrt
 
 from run import *
 
-virtual_size = (10,10)
+virtual_size = (800,600)
 color = (0,0,0)
 
 def launch():
