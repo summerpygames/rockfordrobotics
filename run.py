@@ -45,22 +45,10 @@ log.setLevel( logging.DEBUG )
 # Make a new global GameManager, persistant through levels
 globalgm = GameManager()
 
-class Sprite(pygame.sprite.Sprite):
-    
-    """This is a simple extention of sprite, just adding rect logging.
-    
-    Rect logging will allow the pygame engine to better use the hardware, and
-    only update the parts of the screen that need it the most
-    
-    """
-    
-    def __init__(self, *args):
-        super(Sprite, self).__init__(*args)
-        
-    def update(self, *args):
-        """Simple extention of update method"""
-        
-        super(Sprite, self).update(*args)
+def my_load_image(imgName,colorkey=None):
+    newName = os.path.join('data',imgName)
+    return load_image(newName,colorkey)
+
         
 
 class MovingTextObject(textsprite.TextSprite):
@@ -155,7 +143,7 @@ class Enemy(MovingSvgObject):
         """This just passes the update up the line"""
         super(Enemy, self).update()
 
-class AnswerPrinter(pygame.sprite.Sprite):
+class AnswerPrinter(Sprite):
 
     """Prints a math answer in different ways depending on what it is
     
@@ -197,7 +185,7 @@ class AnswerGuy(Sprite):
         super(AnswerGuy, self).__init__()
         self.change_x = -1
         self.change_y = 0
-        self.image = pygame.Surface(size).convert_alpha()
+        self.image = new_surface(size)
         self.image.fill((0, 0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.top = position[1]
@@ -324,7 +312,7 @@ class LaserCannon(Sprite):
     
     def __init__(self, gm):
         self.gm = gm
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
         self.sounds = []
         self.offset = gm.player_cannon_offset
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
@@ -334,10 +322,10 @@ class LaserCannon(Sprite):
         self.sounds.append(pygame.mixer.Sound(os.path.join('data',
                                                            'lowlaser.wav')))
         self.bulletgroup = gm.friendly_bullet_group
-        self.blackness = pygame.Surface([75, 15])
+        self.blackness = new_surface([75, 15])
         self.blackness.fill((0, 0, 0))
-        self.redness = pygame.Surface([75, 15])
-        self.image = pygame.Surface([75, 15])
+        self.redness = new_surface([75, 15])
+        self.image = new_surface([75, 15])
         self.redness.fill((0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.topleft = [0, 0]
@@ -512,11 +500,11 @@ class Bullet(Sprite):
     
     """
     def __init__(self, pos, color, size, speed):
-        pygame.sprite.Sprite.__init__(self)
+        Sprite.__init__(self)
         self.change_x = speed
         self.change_y = 0
-        self.image = pygame.Surface(size)
-        self.colored = pygame.Surface(size)
+        self.image = new_surface(size)
+        self.colored = new_surface(size)
         self.colored.fill(color)
         self.image.blit(self.colored, (0, 0))
         self.rect = self.image.get_rect()
@@ -579,7 +567,7 @@ class MovingBackground(object):
     def __init__(self, forground, midground, background, screensize):
         self.screensize = screensize
         self.background_list = [forground, midground, background]
-        self.image = pygame.Surface(self.screensize)
+        self.image = new_surface(self.screensize)
         self.black.fill((0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.topleft = [0, 0]
@@ -613,12 +601,7 @@ def keys(event, action):
     if action == 'space':
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
-#    if action == 'overheat initialize':
-#        if event.key == pygame.K_i:
-#            return True
-#    if action == 'overheat off':
-#        if event.key == pygame.K_o:
-#            return True
+
 
 class TheOpponent():
     
@@ -750,11 +733,11 @@ def start_gm(gm, charecter = 1):
 class PlayState(SubGame):
     
     def __init__(self):
-        def __init__(self):
+        
         SubGame.__init__(self)
         self.initialized = False
     
-    def transition_in():
+    def transition_in(self):
         gm = globalgm
         start_gm(gm)
         gm.screen.blit(gm.background, (0, 0))
@@ -803,23 +786,19 @@ class PlayState(SubGame):
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
         
-        gm.player_group.clear(gm.screen, gm.background)
-        gm.opponent_group.clear(gm.screen, gm.background)
-        gm.friendly_bullet_group.clear(gm.screen, gm.background)
-        gm.opponent_bullet_group.clear(gm.screen, gm.background)
-        gm.question_group.clear(gm.screen, gm.background)
-        
-        gm.player_group.update()
-        gm.friendly_bullet_group.update()
-        gm.opponent_bullet_group.update()
-        gm.opponent_group.update()
+#        gm.player_group.clear(gm.screen, gm.background)
+#        gm.opponent_group.clear(gm.screen, gm.background)
+#        gm.friendly_bullet_group.clear(gm.screen, gm.background)
+#        gm.opponent_bullet_group.clear(gm.screen, gm.background)
+#        gm.question_group.clear(gm.screen, gm.background)
+#        
+#        gm.player_group.update()
+#        gm.friendly_bullet_group.update()
+#        gm.opponent_bullet_group.update()
+#        gm.opponent_group.update()
         gm.straybullets.update()
 
-        gm.player_group.draw(gm.screen)
-        gm.opponent_group.draw(gm.screen)
-        gm.friendly_bullet_group.draw(gm.screen)
-        gm.opponent_bullet_group.draw(gm.screen)
-        gm.question_group.draw()
+        GetScreen().draw()
         
         
 

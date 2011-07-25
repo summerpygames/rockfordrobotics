@@ -10,7 +10,7 @@ import cProfile
 import time
 from math import sqrt
 
-from main import *
+from run import *
 
 virtual_size = (10,10)
 color = (0,0,0)
