@@ -744,6 +744,7 @@ class PlayState(SubGame):
             return
         self.initialized = True
         pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+        pygame.init()
         self.gm = globalgm
         self.set_layers(['test'])
         self.gm.opponents = []
@@ -758,7 +759,7 @@ class PlayState(SubGame):
         self.gm.friend_bullets = []
         self.gm.friendly_bullet_group = Group()
 
-        self.gm.size = (1200, 900)
+        self.gm.size = (800, 600)
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
     #    self.gm.screen = pygame.display.set_mode(self.gm.size)
@@ -811,11 +812,11 @@ class PlayState(SubGame):
         if events:
             for event in events:
                 if event.type == pygame.QUIT:
-                    running = False
+                    GetGame().quit = True
 
                 elif event.type == pygame.KEYDOWN:
                     if keys(event, 'escape'):
-                        running = False
+                        GetGame().quit = True
                     if keys(event, 'left'):
                         self.gm.p.trigger(event='key_left_press')
                     if keys(event, 'right'):
@@ -858,7 +859,12 @@ class PlayState(SubGame):
         self.gm.opponent_bullet_group.update()
         self.gm.opponent_group.update()
         self.gm.straybullets.update()
-        print 'hi'
+
+        self.gm.player_group.draw()
+        self.gm.friendly_bullet_group.draw()
+        self.gm.opponent_group.draw()
+        self.gm.opponent_bullet_group.draw()
+
         GetScreen().draw()
         
         
