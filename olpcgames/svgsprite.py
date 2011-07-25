@@ -1,8 +1,14 @@
 """RSVG/Cairo-based rendering of SVG into Pygame Images"""
+from APH import *
+from APH.Game import *
+from APH.Utils import *
+from APH.Screen import *
+from APH.Sprite import *
+
 from pygame import sprite, Rect
 from olpcgames import _cairoimage
 
-class SVGSprite( sprite.Sprite ):
+class SVGSprite( Sprite ):
     """Sprite class which renders SVG source-code as a Pygame image
     
     Note:

@@ -27,6 +27,7 @@ from APH.Game import *
 from APH.Utils import *
 from APH.Screen import *
 from APH.Sprite import *
+
 import olpcgames
 import pygame
 import logging 
@@ -678,22 +679,22 @@ def start_gm(gm, charecter = 1):
     """
 
     gm.opponents = []
-    gm.opponent_group = pygame.sprite.OrderedUpdates()
+    gm.opponent_group = Group()
     gm.opponent_bullets = []
-    gm.opponent_bullet_group =  pygame.sprite.OrderedUpdates()
-    gm.question_group = pygame.sprite.OrderedUpdates()
+    gm.opponent_bullet_group =  Group()
+    gm.question_group = Group()
 
     
-    gm.player_group = pygame.sprite.OrderedUpdates()
+    gm.player_group = Group()
     gm.playable_bullets = []
     gm.friend_bullets = []
-    gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
+    gm.friendly_bullet_group = Group()
 
     gm.size = (1200, 900)
     if olpcgames.ACTIVITY:
         gm.size = olpcgames.ACTIVITY.game_size
 #    gm.screen = pygame.display.set_mode(gm.size)
-    gm.background = pygame.image.load(os.path.join('data', 'deepspace.jpg'))
+    gm.background = my_load_image('deepspace.jpg')
 
     if charecter is 1:
         gm.player_cannon_offset = (-20, 0)
@@ -738,16 +739,17 @@ class PlayState(SubGame):
         self.initialized = False
     
     def transition_in(self):
-        gm = globalgm
-        start_gm(gm)
-        gm.screen.blit(gm.background, (0, 0))
-        gm.player_group.add(gm.player)
-        gm.player_group.add(gm.player_cannon)
+        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+        self.gm = globalgm
+        start_gm(self.gm)
+        self.screen_state.set_background(self.gm.background)
+        self.gm.player_group.add(self.gm.player)
+        self.gm.player_group.add(self.gm.player_cannon)
         
     def main_loop(self):
-        rectlist = []
+        
         events = pausescreen.get_events()
-        clock.tick(25)
+        
         # Now the main event-processing loop
         if events:
             for event in events:
@@ -758,33 +760,33 @@ class PlayState(SubGame):
                     if keys(event, 'escape'):
                         running = False
                     if keys(event, 'left'):
-                        gm.p.trigger(event='key_left_press')
+                        self.gm.p.trigger(event='key_left_press')
                     if keys(event, 'right'):
-                        gm.p.trigger(event='key_right_press')
+                        self.gm.p.trigger(event='key_right_press')
                     if keys(event, 'up'):
-                        gm.p.trigger(event='key_up_press')
+                        self.gm.p.trigger(event='key_up_press')
                     if keys(event, 'down'):
-                        gm.p.trigger(event='key_down_press')
+                        self.gm.p.trigger(event='key_down_press')
                     if keys(event, 'space'):
-                        gm.p.trigger(event='key_x_press')
-                        gm.player.shoot()
+                        self.gm.p.trigger(event='key_x_press')
+                        self.gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
+                        self.gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
                                                           50)
                     if event.key == pygame.K_KP9 or event.key == pygame.K_a:
-                        gm.opponent_manager.spawn_answerguys((600, 600), 9, 1200,
+                        self.gm.opponent_manager.spawn_answerguys((600, 600), 9, 1200,
                                                           50)
 
 
                 elif event.type == pygame.KEYUP:
                     if keys(event, 'left'):
-                        gm.p.trigger(event='key_left_rel')
+                        self.gm.p.trigger(event='key_left_rel')
                     if keys(event, 'right'):
-                        gm.p.trigger(event='key_right_rel')
+                        self.gm.p.trigger(event='key_right_rel')
                     if keys(event, 'up'):
-                        gm.p.trigger(event='key_up_rel')
+                        self.gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
-                        gm.p.trigger(event='key_down_rel')
+                        self.gm.p.trigger(event='key_down_rel')
         
 #        gm.player_group.clear(gm.screen, gm.background)
 #        gm.opponent_group.clear(gm.screen, gm.background)
@@ -796,7 +798,7 @@ class PlayState(SubGame):
 #        gm.friendly_bullet_group.update()
 #        gm.opponent_bullet_group.update()
 #        gm.opponent_group.update()
-        gm.straybullets.update()
+        self.gm.straybullets.update()
 
         GetScreen().draw()
         
