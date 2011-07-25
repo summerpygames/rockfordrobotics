@@ -21,6 +21,12 @@
 #       MA 02110-1301, USA.
 #       
 # 
+#Import APH libraries
+from APH import *
+from APH.Game import *
+from APH.Utils import *
+from APH.Screen import *
+from APH.Sprite import *
 import olpcgames
 import pygame
 import logging 
@@ -700,12 +706,10 @@ def start_gm(gm, charecter = 1):
     gm.friend_bullets = []
     gm.friendly_bullet_group = pygame.sprite.OrderedUpdates()
 
-
-    
     gm.size = (1200, 900)
     if olpcgames.ACTIVITY:
         gm.size = olpcgames.ACTIVITY.game_size
-    gm.screen = pygame.display.set_mode(gm.size)
+#    gm.screen = pygame.display.set_mode(gm.size)
     gm.background = pygame.image.load(os.path.join('data', 'deepspace.jpg'))
 
     if charecter is 1:
@@ -743,9 +747,84 @@ def start_gm(gm, charecter = 1):
 
     gm.setup_hooks()
     
+class PlayState(SubGame):
+    
+    def __init__(self):
+        def __init__(self):
+        SubGame.__init__(self)
+        self.initialized = False
+    
+    def transition_in():
+        gm = globalgm
+        start_gm(gm)
+        gm.screen.blit(gm.background, (0, 0))
+        gm.player_group.add(gm.player)
+        gm.player_group.add(gm.player_cannon)
+        
+    def main_loop(self):
+        rectlist = []
+        events = pausescreen.get_events()
+        clock.tick(25)
+        # Now the main event-processing loop
+        if events:
+            for event in events:
+                if event.type == pygame.QUIT:
+                    running = False
+
+                elif event.type == pygame.KEYDOWN:
+                    if keys(event, 'escape'):
+                        running = False
+                    if keys(event, 'left'):
+                        gm.p.trigger(event='key_left_press')
+                    if keys(event, 'right'):
+                        gm.p.trigger(event='key_right_press')
+                    if keys(event, 'up'):
+                        gm.p.trigger(event='key_up_press')
+                    if keys(event, 'down'):
+                        gm.p.trigger(event='key_down_press')
+                    if keys(event, 'space'):
+                        gm.p.trigger(event='key_x_press')
+                        gm.player.shoot()
+                    if event.key == pygame.K_KP3 or event.key == pygame.K_s:
+                        gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
+                                                          50)
+                    if event.key == pygame.K_KP9 or event.key == pygame.K_a:
+                        gm.opponent_manager.spawn_answerguys((600, 600), 9, 1200,
+                                                          50)
+
+
+                elif event.type == pygame.KEYUP:
+                    if keys(event, 'left'):
+                        gm.p.trigger(event='key_left_rel')
+                    if keys(event, 'right'):
+                        gm.p.trigger(event='key_right_rel')
+                    if keys(event, 'up'):
+                        gm.p.trigger(event='key_up_rel')
+                    if keys(event, 'down'):
+                        gm.p.trigger(event='key_down_rel')
+        
+        gm.player_group.clear(gm.screen, gm.background)
+        gm.opponent_group.clear(gm.screen, gm.background)
+        gm.friendly_bullet_group.clear(gm.screen, gm.background)
+        gm.opponent_bullet_group.clear(gm.screen, gm.background)
+        gm.question_group.clear(gm.screen, gm.background)
+        
+        gm.player_group.update()
+        gm.friendly_bullet_group.update()
+        gm.opponent_bullet_group.update()
+        gm.opponent_group.update()
+        gm.straybullets.update()
+
+        gm.player_group.draw(gm.screen)
+        gm.opponent_group.draw(gm.screen)
+        gm.friendly_bullet_group.draw(gm.screen)
+        gm.opponent_bullet_group.draw(gm.screen)
+        gm.question_group.draw()
+        
+        
 
 def main():
-    """This will run at the startup of the game, and stop when the game is
+    """This will run at the startup of the game, and stop when the game 
     over
     """
 
@@ -782,12 +861,6 @@ def main():
                     if keys(event, 'space'):
                         gm.p.trigger(event='key_x_press')
                         gm.player.shoot()
-#                    if keys(event, 'overheat initialize'):
-#                        global overheaton
-#                        overheaton = True
-#                    if keys(event, 'overheat off'):
-#                        global overheaton
-#                        overheaton = False
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
                         gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
                                                           50)
@@ -805,17 +878,12 @@ def main():
                         gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         gm.p.trigger(event='key_down_rel')
+
         
-        gm.player_group.clear(gm.screen, gm.background)
-        gm.opponent_group.clear(gm.screen, gm.background)
-        gm.friendly_bullet_group.clear(gm.screen, gm.background)
-        gm.opponent_bullet_group.clear(gm.screen, gm.background)
-        gm.question_group.clear(gm.screen, gm.background)
-        
-        gm.player_group.update()
-        gm.friendly_bullet_group.update()
-        gm.opponent_bullet_group.update()
-        gm.opponent_group.update()
+#        gm.player_group.update()
+#        gm.friendly_bullet_group.update()
+#        gm.opponent_bullet_group.update()
+#        gm.opponent_group.update()
         gm.straybullets.update()
 
         rectlist.extend(gm.player_group.draw(gm.screen))

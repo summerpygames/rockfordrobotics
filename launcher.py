@@ -10,12 +10,14 @@ import cProfile
 import time
 from math import sqrt
 
+from main import *
+
 virtual_size = (10,10)
 color = (0,0,0)
 
 def launch():
     # Here we go for where we can put some launching code
-    g = YourGameState()
+    g = PlayState()
     g.push_state()
 
 def format_columns(message, data, file = None):
