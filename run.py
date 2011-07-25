@@ -189,8 +189,8 @@ class AnswerGuy(MaskSprite):
     
     def __init__(self, position, size, friendly_bulletgroup, friendly_player,
                  correct,  gm, response, copy =  False):
-        self.position = position
-        self.size = size
+        self.pos = position
+        self.siz = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.gm = gm
         self.correct = correct
@@ -200,7 +200,7 @@ class AnswerGuy(MaskSprite):
         else:
             self.data = open(os.path.join("data", "numenemy.svg")).read()
             self.svg = svgsprite.SVGSprite(svg = self.data,
-                                           size = self.size)
+                                           size = self.siz)
 
         self.text = response
         super(AnswerGuy, self).__init__()
@@ -209,10 +209,9 @@ class AnswerGuy(MaskSprite):
         self.image = new_surface(size)
         self.image.fill((0, 0, 0, 0))
         self.rect = self.image.get_rect()
-        self.rect.top = position[1]
-        self.rect.left = position[0]
+        self.position = (self.pos[0], self.pos[1])
         self.image.blit(self.svg.image, (0, 0))
-        self.image.blit(self.text.image, (self.size[0] / 3, self.size[1] / 3))
+        self.image.blit(self.text.image, (self.siz[0] / 3, self.siz[1] / 3))
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
 
