@@ -831,11 +831,13 @@ class PlayState(SubGame):
         if events:
             for event in events:
                 if event.type == pygame.QUIT:
-                    GetGame().quit = True
+                    self.quit = True
+                    sekf.pop_state()
 
                 elif event.type == pygame.KEYDOWN:
                     if keys(event, 'escape'):
-                        GetGame().quit = True
+                        self.quit = True
+                        self.pop_state()
                     if keys(event, 'left'):
                         self.gm.p.trigger(event='key_left_press')
                     if keys(event, 'right'):
