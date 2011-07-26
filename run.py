@@ -831,7 +831,7 @@ class PlayState(SubGame):
             for event in events:
                 if event.type == pygame.QUIT:
                     self.quit = True
-                    sekf.pop_state()
+                    self.pop_state()
 
                 elif event.type == pygame.KEYDOWN:
                     if keys(event, 'escape'):
