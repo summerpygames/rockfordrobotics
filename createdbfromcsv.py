@@ -17,19 +17,70 @@
 
 import sqlite3
 import os
-import optparse as OptionParser
+from optparse import OptionParser
+import csv
 
-def csvtolistoflists(file):
+def csvtolistoflists(file, db, force):
     """docstring for csvtolistoflists"""
-    pass
 
+    createDb = sqlite3.connect(db)
+    queryCurs = createDb.cursor()
+    list = csv.reader(open(file))
+    dbmade = False
+    try:
+        queryCurs.execute('''create table levels(
+                            ID INTEGER PRIMARY KEY,
+                            grade INTAGER,
+                            stage INTAGER,
+                            level INTAGER,
+                            allmath INTAGER,
+                            database TEXT,
+                            gameplay TEXT,
+                            acomplishment TEXT,
+                            acomcount INTAGER,
+                            playcount INTAGER)
+                          ''')
+
+    except sqlite3.OperationalError, e:
+        if force:
+            queryCurs.execute('''drop table levels''')
+            queryCurs.execute('''create table levels(
+                                ID INTEGER PRIMARY KEY,
+                                grade INTAGER,
+                                stage INTAGER,
+                                level INTAGER,
+                                allmath INTAGER,
+                                database TEXT,
+                                gameplay TEXT,
+                                acomplishment TEXT,
+                                acomcount INTAGER,
+                                playcount INTAGER)
+                              ''')
+            dbmade = True
+        else:
+            print 'Cannot overwrite table, use --force (-f)'
+    else:
+        dbmade = True
+
+    if dbmade:
+        for i in list:
+            queryCurs.execute('''insert into levels (grade, stage, level,
+                              allmath, database, acomplishment, acomcount,
+                              playcount)values (?, ?, ?, ?, ?, ?, ?, ?)''',i)
+        createDb.commit()
+        queryCurs.close()
+
+
+            
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option("-f", "--fullscreen", action="store_true",
-                      dest="fullscreen", default=False, help="Overwrite\
-                      existing file.")
-    parser.add_option("-r", "--resolution", type="int", nargs=2, dest="res", help="Specify the resolution. Default is 0 0, which uses the screen's resolution.", metavar="WIDTH HEIGHT", default=(0,0))
-    parser.add_option("-s", "--fps", type="int", dest="fps", help="Specify the fps cap. Default is 30", metavar="FPS", default=30)
-    parser.add_option("-p", "--profile", action="store_true", default=False, dest="profile", help="Enable profiling. pstats files will made for each GameState in profiles/")
-    parser.add_option("-o", "--output", type="string", dest="profile_output", default=None, help="Specify an output directory for profiling data")
+    parser.add_option("-f", "--force", action="store_true",
+                      dest="force", default=False, 
+                      help="Overwrite existing file.")
+    parser.add_option("-o", "--output", type="string", dest="db",
+                      default='out.db',
+                      help="The database to output to")
+    parser.add_option("-i", "--input", type="string", dest="file", default=None,
+                      help="The CSV to import")
     (options, args) = parser.parse_args()
+    csvtolistoflists(options.file, options.db, options.force)
