@@ -44,7 +44,23 @@ class UserGame(object):
     
     """
 
-    def __init__(self, ):
+    def __init__(self):
         super(UserGame, self).__init__()
         self.arg = arg
+        
+    def stageloop(self, list):
+        """Make the stage for the user based one cornflaks"""
+        self.delimiter('.')
+        self.cursor = 0
+        self.lastdelimeter = 0
+        self.output = []
+        self.list = list
+        try:
+            if self.list[self.cursor] == self.delimiter:
+                if self.list
+
+        except Exception, e:
+            raise e
+        else:
+            pass
                 
