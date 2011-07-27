@@ -45,8 +45,17 @@ class UserGame(object):
     
     """
 
-    def __init__(self):
+    def __init__(self, db, ):
         super(UserGame, self).__init__()
+        createDb = sqlite3.connect(db)
+        queryCurs = createDb.cursor()
+        
+
+    def getlevels(self, grade, stage):
+        """This will return an ID, a Description of the level, and if its
+        unlocked, and if it is played"""
+
+        return (id, description, unlocked, played)
         
     def stageloop(self, l):
         """Make the stage for the user based one cornflaks"""

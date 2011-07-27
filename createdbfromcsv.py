@@ -35,7 +35,6 @@ def csvtolistoflists(file, db, force):
                             level INTAGER,
                             allmath INTAGER,
                             database TEXT,
-                            gameplay TEXT,
                             acomplishment TEXT,
                             acomcount INTAGER,
                             playcount INTAGER)
@@ -51,7 +50,6 @@ def csvtolistoflists(file, db, force):
                                 level INTAGER,
                                 allmath INTAGER,
                                 database TEXT,
-                                gameplay TEXT,
                                 acomplishment TEXT,
                                 acomcount INTAGER,
                                 playcount INTAGER)

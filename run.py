@@ -118,7 +118,7 @@ class MovingSvgObject(MaskSprite):
             self.sprite = copy.copy()
         else:
             data = open(svg).read()
-            self.sprite = svgsprite.SVGSprite(data, size)
+            self.sprite = svgsprite.SVGSprite(data=svg, size=size)
 
         super(MovingSvgObject, self).__init__()
         self.image = new_surface(self.sprite.image.get_size())
@@ -463,7 +463,7 @@ class Player(MovingSvgObject):
     
     def __init__(self, svg, lasercannon):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
-                                     (150, 150))
+                                     (200, None))
         self.cannon = lasercannon
 
     def shoot(self, position):
