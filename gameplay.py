@@ -17,6 +17,7 @@
 
 import math
 import sqlite3
+import pdb
 
 class UserGame(object):
 
@@ -46,21 +47,61 @@ class UserGame(object):
 
     def __init__(self):
         super(UserGame, self).__init__()
-        self.arg = arg
         
-    def stageloop(self, list):
+    def stageloop(self, l):
         """Make the stage for the user based one cornflaks"""
-        self.delimiter('.')
+        self.delimiter = '.'
         self.cursor = 0
         self.lastdelimeter = 0
         self.output = []
-        self.list = list
-        try:
-            if self.list[self.cursor] == self.delimiter:
-                if self.list
+        self.list = list(l)
+        self.running = True
+        while self.running == True:
+            try:
+                if self.list[self.cursor] == self.delimiter:
+                    try:
+                        int(self.list[self.cursor + 1])
+                    except ValueError, e:
+                        self.lastdelimeter = self.cursor
+                    else:
+                        self.cursor += 1
+                        startnumber = self.cursor 
+                        stillnumber = True
+                        number = int(self.list[self.cursor])
+                        self.cursor += 1
+                        while stillnumber == True:
+                            try: # See if the next thing in the list is a number
+                                int(self.list[self.cursor])
+                            except ValueError, e: # if it is say a period
+                                stillnumber = False
+                            else: # If the next thing is still a number
+                                number = (number*10) +\
+                                int(self.list[self.cursor])
+                                self.cursor += 1
+                                #Now we make the number one digit longer
+                        self.list[startnumber:self.cursor] = list(str(number-1)) if number != 0\
+                                                             else []
+                        self.cursor = self.lastdelimeter
+                    finally:
+                        self.cursor += 1
 
-        except Exception, e:
-            raise e
-        else:
-            pass
+                elif self.list[self.cursor] == 'A':
+                    self.output.append('ask')
+                    self.cursor += 1
+                elif self.list[self.cursor] == 'E':
+                    try:
+                        int(self.list[self.cursor + 1])
+                    except ValueError, e:
+                        pass
+                    else:
+                        self.cursor += 1
+                        self.output.append(int(self.list[self.cursor]))
+                    finally:
+                        self.cursor += 1
+                else:
+                    self.cursor += 1
+
+            except IndexError, e:
+                return self.output
+                self.running = False
                 

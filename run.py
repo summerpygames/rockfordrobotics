@@ -233,9 +233,6 @@ class AnswerGuy(MaskSprite):
 
         super(AnswerGuy, self).update()
 
-
-        
-
 class BadGuy(Enemy):
 
     """A BadGuy is a simple enemy, it only can be destroyed or destroy you.
