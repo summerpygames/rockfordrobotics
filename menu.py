@@ -81,6 +81,25 @@ how = ((('none', ''),),)
 how = ((('none', ''),),)
 
 ###Classes shared between states###
+class Allignment(Sprite):
+    """A simple SVG background allignment"""
+    def __init__(self, svg=None, size=None):
+        super(Allignment, self).__init__()
+        self.svg = svg
+        data = open(svg).read()
+        self.sprite = svgsprite.SVGSprite(svg=data, size=size)
+        self.image = self.sprite.image 
+        self.rect = self.sprite.rect
+        self.resolution = self.sprite.resolution
+        self.position = (0, 0)
+        self.layer = 'allignment'
+
+    def update(self, *args):
+        """do nothing"""
+        pass
+
+        
+
 class Button(Sprite):
     """Base button class to be built upon"""
     def __init__(self, position = (0, 0), #starting position?
@@ -98,15 +117,10 @@ class Button(Sprite):
 
         self.selected = initsel
         Sprite.__init__(self)
-        self.image = new_surface(self.sprite_sel.image.get_size())
         if self.selected is True:
-            self.image.blit(self.sprite_sel.image, (0, 0))
-            self.image.fill((255, 255, 255))
+            self.image = self.sprite_sel.image
         else:
-            self.image.blit(self.sprite_des.image, (0, 0))
-            self.image.fill((0, 0, 0))
-
-
+            self.image = self.sprite_des.image
         
         self.rect = self.sprite_sel.rect
         self.resolution = self.sprite_sel.resolution
@@ -114,7 +128,6 @@ class Button(Sprite):
         self.position = position
         self.callout = callout
         self.attrigger = trigger
-        print self.layer
 
     def trigger(self):
         """What state to transfer to when the button is pressed"""
@@ -127,15 +140,12 @@ class Button(Sprite):
         """This will set the button to deselected if it was the thing
         that is now selected, and it will make itself selected if it is"""
         if callout == self.callout:
-            self.image.blit(self.sprite_sel.image, (0, 0))
+            self.image = self.sprite_sel.image
             self.selected = True
-            self.image.fill((255, 255, 255))
             print 'update to', self.callout
         else:
-            self.image.blit(self.sprite_des.image, (0, 0))
-            self.image.fill((0, 0, 0))
+            self.image = self.sprite_des.image
             self.selected = False
-            print 'away from', self.callout
 
         super(Button, self).update()
 
@@ -227,7 +237,7 @@ class MainMenu(AnyMenu):
             return
         self.cursor = [0, 0]
         self.initialized = True
-        self.set_layers(['main'])
+        self.set_layers(['main', 'allignment'])
         self.t = 0        
         #Background initialization
         bg = load_image(os.path.join('data', 'spacebg.jpg'))
@@ -245,29 +255,29 @@ class MainMenu(AnyMenu):
 #                             initsel = True,          Start selected?
 #                             trigger = None)          What to launch on click
 
-
+        
         self.play = Button(   sel_svg = main_play_sel,
                               des_svg = main_play_des,
-                              size = ( None, 50 ),
+                              size = ( 350, None ),
                               callout = 'play',
                               initsel = True,
                               trigger = None)
-        self.howto = Button(  sel_svg = main_play_sel,
-                              des_svg = main_play_des,
-                              size = ( None, 50 ),
+        self.howto = Button(  sel_svg = main_howto_sel,
+                              des_svg = main_howto_des,
+                              size = ( 562, None ),
                               callout = 'how',
                               initsel = False,
                               trigger = None)
-        self.about = Button(  sel_svg = main_play_sel,
-                              des_svg = main_play_des,
-                              size = ( None, 50 ),
-                              callout = 'about',
+        self.credits = Button(sel_svg = main_credits_sel,
+                              des_svg = main_credits_des,
+                              size = ( 312, None ),
+                              callout = 'cred',
                               initsel = False,
                               trigger = None)
-        self.credits = Button(sel_svg = main_play_sel,
-                              des_svg = main_play_des,
-                              size = ( None, 50 ),
-                              callout = 'cred',
+        self.about = Button  (sel_svg = main_about_sel,
+                              des_svg = main_about_des,
+                              size = ( 312, None ),
+                              callout = 'about',
                               initsel = False,
                               trigger = None)
 
@@ -276,17 +286,20 @@ class MainMenu(AnyMenu):
         
         self.play.rect.midtop = (sw/2, int(sh*.25))
         self.howto.rect.midtop = (sw/2, int(sh*.39))
-        self.about.rect.midbottom = (sw/2, int(sh-(sh*.17)))
-        self.credits.rect.midbottom = (sw/2, int(sh-(sh*.05)))
+        self.credits.rect.midbottom = (sw/2, int(sh - (sh*.17)))
+        self.about.rect.midbottom = (sw/2, int(sh - (sh*.05)))
 
         print self.play.rect.midtop
         print self.howto.rect.midtop
         print self.about.rect.midbottom
         print self.credits.rect.midbottom
-
+        
+        self.allignment = Allignment(svg=main_allign, size = (0, sh))
+        self.allignment.rect.midtop = (sw/2, 0)
 
         #Sprite group initialization
-        self.group = Group(self.play, self.howto, self.about, self.credits)
+        self.group = Group(self.play, self.howto, self.about, self.credits,
+                           self.allignment)
 
     def main_loop(self):
         """Run the main loop"""

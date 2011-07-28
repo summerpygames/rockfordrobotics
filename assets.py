@@ -1,7 +1,7 @@
 import os
 assets = 'data'
 button = 'button'
-allign = 'menu'
+allign = 'allign'
 
 ##########################
 ## To complete this file##

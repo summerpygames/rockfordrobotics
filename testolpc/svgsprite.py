@@ -1,6 +1,8 @@
 """RSVG/Cairo-based rendering of SVG into Pygame Images"""
+
+
 from pygame import sprite, Rect
-from olpcgames import svg as svg_module
+from olpcgames import _cairoimage
 
 class SVGSprite( sprite.Sprite ):
     """Sprite class which renders SVG source-code as a Pygame image
@@ -36,11 +38,43 @@ class SVGSprite( sprite.Sprite ):
             width,height = self.size
         else:
             width,height = None,None
-        self.image = svg_module.render( self.svg, (width,height) ).convert_alpha()
+        self.image = self._render( width,height ).convert_alpha()
         rect = self.image.get_rect()
         if self.rect:
             rect.move( self.rect ) # should let something higher-level do that...
         self.rect = rect 
+
+    def _render( self, width, height ):
+        """Render our SVG to a Pygame image"""
+        import rsvg
+        handle = rsvg.Handle( data = self.svg )
+        originalSize = (width,height)
+        scale = 1.0
+        hw,hh = handle.get_dimension_data()[:2]
+        if hw and hh:
+            if not width:
+                if not height:
+                    width,height = hw,hh 
+                else:
+                    scale = float(height)/hh
+                    width = hh/float(hw) * height
+            elif not height:
+                scale = float(width)/hw
+                height = hw/float(hh) * width
+            else:
+                # scale only, only rendering as large as it is...
+                if width/height > hw/hh:
+                    # want it taller than it is...
+                    width = hh/float(hw) * height
+                else:
+                    height = hw/float(hh) * width
+                scale = float(height)/hh
+            
+            csrf, ctx = _cairoimage.newContext( int(width), int(height) )
+            ctx.scale( scale, scale )
+            handle.render_cairo( ctx )
+            return _cairoimage.asImage( csrf )
+        return None
     def copy( self ):
         """Create a copy of this sprite without reloading the svg image"""
         result = self.__class__(
