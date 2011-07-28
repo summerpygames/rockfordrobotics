@@ -9,15 +9,16 @@ from optparse import OptionParser
 import cProfile
 import time
 from math import sqrt
+import olpcgames
 
-from run import *
+import menu
 
-virtual_size = (800,600)
+virtual_size = (1200,900)
 color = (0,0,0)
 
 def launch():
     # Here we go for where we can put some launching code
-    g = PlayState()
+    g = menu.MainMenu()
     g.push_state()
 
 def format_columns(message, data, file = None):
@@ -49,6 +50,16 @@ if __name__ == '__main__':
     parser.add_option("-p", "--profile", action="store_true", default=False, dest="profile", help="Enable profiling. pstats files will made for each GameState in profiles/")
     parser.add_option("-o", "--output", type="string", dest="profile_output", default=None, help="Specify an output directory for profiling data")
     (options, args) = parser.parse_args()
+
+    resolution = options.res
+    fps = options.fps
+    fullscreen = options.fullscreen
+
+    if olpcgames.ACTIVITY:
+        resolution = olpcgames.ACTIVITY.game_size
+        virtual_size = olpcgames.ACTIVITY.game_size
+        fps = 20
+        fullscreen = False
     
     if options.profile_output is not None:
         output_dir = options.profile_output
@@ -77,14 +88,14 @@ if __name__ == '__main__':
             
     try:
         clock = pygame.time.Clock()
-        g = NewGame(color, virtual_size, options.res, options.fullscreen)
+        g = NewGame(color, virtual_size, resolution, fullscreen)
         g.push_state()
         launch()
         
         def game_loop():
             game = GetGame()
             while GetGame() is game:
-                GetGame().main(clock, options.fps)
+                GetGame().main(clock, fps)
                 if len(pygame.event.get([pygame.QUIT])) > 0:
                     GetGame().quit = True
                 if GetGame().__class__.__name__ == "NewGame":
