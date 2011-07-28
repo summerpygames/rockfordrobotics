@@ -45,18 +45,52 @@ class UserGame(object):
     
     """
 
-    def __init__(self, db, ):
+    def __init__(self, db):
         super(UserGame, self).__init__()
-        createDb = sqlite3.connect(db)
-        queryCurs = createDb.cursor()
+        self.db = sqlite3.connect(db)
+        self.c = createDb.cursor()
         
 
-    def getlevels(self, grade, stage):
+    def get_game_levels(self, grade, stage):
         """This will return an ID, a Description of the level, and if its
         unlocked, and if it is played"""
-
-        return (id, description, unlocked, played)
+        levels = []
+        self.c.execute('''
+                       SELECT id, level, description, playcount FROM levels
+                       WHERE grade=? AND stage=? AND allmath=0
+                       ''', (grade, stage)
+                       )
+        for row in self.c:
+            levels.append({id:row[0], level:row[1], description:row[2],
+                           playcount:row[3]})
         
+        return levels
+
+    def get_math_levels(self, grade, stage):
+        """This will return an ID, a Description of the level, and if its
+        unlocked, and if it is played"""
+        levels = []
+        self.c.execute('''
+                       SELECT id, level, description, playcount FROM levels
+                       WHERE grade=? AND stage=? AND allmath=1
+                       ''', (grade, stage)
+                       )
+        for row in self.c:
+            levels.append({id:row[0], level:row[1], description:row[2],
+                           playcount:row[3]})
+        
+        return levels
+
+
+    def getlevel(self, id):
+        """Get information on a certain level"""
+        self.c.execute('''
+                       SELECT * FROM levels
+                       WHERE grade=? AND stage=?
+                       ''', (grade, stage)
+                       )
+        return (databasefile, gameplaylist)
+
     def stageloop(self, l):
         """Make the stage for the user based one cornflaks"""
         self.delimiter = '.'

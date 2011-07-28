@@ -416,7 +416,6 @@ class LaserCannon(Sprite):
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                          self.heat, 0)) 
         for i in self.bullets:
- #           i.update()
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
@@ -515,6 +514,7 @@ class Bullet(MaskSprite):
     move and cannot think for itself
     
     """
+
     def __init__(self, pos, color, size, speed):
         MaskSprite.__init__(self)
         self.change_x = speed
@@ -550,7 +550,7 @@ class FriendlyBullet(Bullet):
     """Friendly bullet extends a bullet.
     
     The friendly bullet has a green glow, signifying its friendlyness
-    it travels at 30 whatevers, and has a small size of 50x50
+    it travels in the direction of the bad guys 
     
     """
     
@@ -571,28 +571,6 @@ class BadBullet(Bullet):
                  size = (25, 3), speed=-15):
         super(BadBullet, self).__init__(pos, color, size, speed)
 
-class MovingBackground(object):
-
-    """Controll the psuedo-3D moving background of the game.
-    
-    Uses the image length and position to blit a surface that moves dynamically
-    with the position of the player and the enemys
-
-    """
-
-    def __init__(self, forground, midground, background, screensize):
-        self.screensize = screensize
-        self.background_list = [forground, midground, background]
-        self.image = new_surface(self.screensize)
-        self.black.fill((0, 0, 0))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = [0, 0]
-        
-        if self.background_list[0] is not False:
-            self.forground = pygame.image.load(os.path.join('data', ))
-        
-
-        
 
 def keys(event, action):
     """A little hack to make it easier to use the other parts of the programs, I
@@ -745,7 +723,9 @@ def start_gm(gm, charecter = 1):
     gm.player_speed = 10
 
     gm.setup_hooks()
-    
+
+###############################################################################
+
 class PlayState(SubGame):
     
     def __init__(self):
@@ -754,6 +734,8 @@ class PlayState(SubGame):
         self.initialized = False
     
     def transition_in(self):
+        # This code is for the APH, to make sure that we do not transition 2
+        # times
         if self.initialized:
             return
         self.initialized = True
@@ -881,79 +863,5 @@ class PlayState(SubGame):
         
         
 
-def main():
-    """This will run at the startup of the game, and stop when the game 
-    over
-    """
-
-    pygame.init()
-    clock = pygame.time.Clock()
-    gm = globalgm
-    start_gm(gm)
-    gm.screen.blit(gm.background, (0, 0))
-    pygame.display.update()
-    gm.player_group.add(gm.player)
-    gm.player_group.add(gm.player_cannon)
-    running = True
-    while running:
-        rectlist = []
-        events = pygame.event.get( )
-        clock.tick(25)
-        # Now the main event-processing loop
-        if events:
-            for event in events:
-                if event.type == pygame.QUIT:
-                    running = False
-
-                elif event.type == pygame.KEYDOWN:
-                    if keys(event, 'escape'):
-                        running = False
-                    if keys(event, 'left'):
-                        gm.p.trigger(event='key_left_press')
-                    if keys(event, 'right'):
-                        gm.p.trigger(event='key_right_press')
-                    if keys(event, 'up'):
-                        gm.p.trigger(event='key_up_press')
-                    if keys(event, 'down'):
-                        gm.p.trigger(event='key_down_press')
-                    if keys(event, 'space'):
-                        gm.p.trigger(event='key_x_press')
-                        gm.player.shoot()
-                    if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        gm.opponent_manager.spawn_badguys((600, 600), 9, 1200,
-                                                          50)
-                    if event.key == pygame.K_KP9 or event.key == pygame.K_a:
-                        gm.opponent_manager.spawn_answerguys((600, 600), 9, 1200,
-                                                          50)
-
-
-                elif event.type == pygame.KEYUP:
-                    if keys(event, 'left'):
-                        gm.p.trigger(event='key_left_rel')
-                    if keys(event, 'right'):
-                        gm.p.trigger(event='key_right_rel')
-                    if keys(event, 'up'):
-                        gm.p.trigger(event='key_up_rel')
-                    if keys(event, 'down'):
-                        gm.p.trigger(event='key_down_rel')
-
-        
-#        gm.player_group.update()
-#        gm.friendly_bullet_group.update()
-#        gm.opponent_bullet_group.update()
-#        gm.opponent_group.update()
-        gm.straybullets.update()
-
-        rectlist.extend(gm.player_group.draw(gm.screen))
-        rectlist.extend(gm.opponent_group.draw(gm.screen))
-        rectlist.extend(gm.friendly_bullet_group.draw(gm.screen))
-        rectlist.extend(gm.opponent_bullet_group.draw(gm.screen))
-        rectlist.extend(gm.question_group.draw(gm.screen))
-        pygame.display.update(rectlist)
-
-    pygame.quit()
-#import cProfile
 if __name__ == '__main__':
-#    cProfile.run('main()', 'profile.p')
-
     main()

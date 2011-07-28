@@ -20,7 +20,11 @@ import os
 from optparse import OptionParser
 import csv
 
-def csvtolistoflists(file, db, force):
+def filetogameplay(file, db, force):
+    """convert from a enter seperated file to """
+    pass
+
+def csvtolevels(file, db, force):
     """docstring for csvtolistoflists"""
 
     createDb = sqlite3.connect(db)
@@ -78,7 +82,11 @@ if __name__ == '__main__':
     parser.add_option("-o", "--output", type="string", dest="db",
                       default='out.db',
                       help="The database to output to")
-    parser.add_option("-i", "--input", type="string", dest="file", default=None,
-                      help="The CSV to import")
+    parser.add_option("-g", "--gameplay", type="string", dest="gameplay", default=None,
+                      help="The Gameplay CSV to import")
+    parser.add_option("-l", "--levels", type="string", dest="levels", default=None,
+                      help="The Levels CSV to import")
+
     (options, args) = parser.parse_args()
-    csvtolistoflists(options.file, options.db, options.force)
+    csvtolevels(options.levels, options.db, options.force)
+    filetogameplay(options.gameplay, options.db, options.force)
