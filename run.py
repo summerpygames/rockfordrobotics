@@ -118,7 +118,7 @@ class MovingSvgObject(MaskSprite):
             self.sprite = copy.copy()
         else:
             data = open(svg).read()
-            self.sprite = svgsprite.SVGSprite(data=svg, size=size)
+            self.sprite = svgsprite.SVGSprite(svg=data, size=size)
 
         super(MovingSvgObject, self).__init__()
         self.image = new_surface(self.sprite.image.get_size())
@@ -250,7 +250,7 @@ class BadGuy(Enemy):
         self.bullets = []
         self.gm = gm
         super(BadGuy, self).__init__(position = self.pos, size = self.siz,
-                                     svg = os.path.join('data', 'enemy.svg'),
+                                     svg = os.path.join('data', 'enemy2.svg'),
                                      copy = copy)
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
@@ -499,7 +499,7 @@ class FlyingSaucer(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo.svg'),
+        super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo2.svg'),
                                            lasercannon = self.cannon)
 
     def shoot(self):
@@ -877,7 +877,6 @@ class PlayState(SubGame):
         self.gm.opponent_group.draw()
         self.gm.opponent_bullet_group.draw()
         self.gm.question_group.draw()
-
         GetScreen().draw()
         
         
