@@ -14,7 +14,7 @@ def generate_question():
     while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)[-1]):
         term11 = choice(range(1,10))
         term21 = choice(range(1,10))
-    term12 = choice(range(10,right/10))
+    term12 = choice(range(10,int(right/10)))
     term1 = 10*term12 + term11
     term22 = right - term1 - term21
     term2 = term22 + term21

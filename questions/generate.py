@@ -61,3 +61,4 @@ def main(): #This should only be run once: upon startup of the game.
         for i in range(1000):
             addQuestion(database, source)
         database.close()
+main()
