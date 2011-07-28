@@ -4,11 +4,11 @@ def put(num, denom):
     if int(num) > int(denom):
         front = str(int(num)/int(denom))
         num = str(int(num) % int(denom))
-        term = front+'and'+num+'/'+denom
+        term = front+'/'+num+'/'+denom
     elif int(num) < int(denom):
-        term = '0and'+num+'/'+denom
+        term = '0/'+num+'/'+denom
     else:
-        term = '1and0/0'
+        term = '1/0/0'
     return term
 
 def generate():
@@ -30,16 +30,16 @@ def generate_question():
 
 def generate_wrong(term1, term2, right, num1, denom1, num2, denom2, num3, denom3):
     wrongs = []
-    wrongs.append(str((int(num3)+2))+'/'+denom3)
-    wrongs.append(str((abs(int(num3)-2)))+'/'+denom3)
-    wrongs.append(str((int(num3)+4))+'/'+denom3)
-    wrongs.append(str((abs(int(num3)-4)))+'/'+denom3)
-    wrongs.append(str((int(num3)+8))+'/'+denom3)
-    wrongs.append(str((abs(int(num3)-8)))+'/'+denom3)
-    wrongs.append(str((int(num3)+4))+'/'+str(int(denom3)+2))
-    wrongs.append(str((abs(int(num3)-4)))+'/'+str(int(denom3)+4))
-    wrongs.append(str((int(num3)+4))+'/'+str(abs(int(denom3)-2)))
-    wrongs.append(str((abs(int(num3)-4)))+'/'+str(abs(int(denom3)-4)))
+    wrongs.append(put(str((int(num3)+2)),denom3))
+    wrongs.append(put(str((abs(int(num3)-2))),denom3))
+    wrongs.append(put(str((int(num3)+4)),denom3))
+    wrongs.append(put(str((abs(int(num3)-4))),denom3))
+    wrongs.append(put(str((int(num3)+8)),denom3))
+    wrongs.append(put(str((abs(int(num3)-8))),denom3))
+    wrongs.append(put(str((int(num3)+4)),str(int(denom3)+2)))
+    wrongs.append(put(str((abs(int(num3)-4))),str(int(denom3)+4)))
+    wrongs.append(put(str((int(num3)+4)),str(abs(int(denom3)-2))))
+    wrongs.append(put(str((abs(int(num3)-4))),str(abs(int(denom3)-4))))
     
     the_wrong_3 = []
 
