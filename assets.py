@@ -45,6 +45,20 @@ grades_3_sel = os.path.join(assets, button, 'gm3rdselect.svg')
 htpl_allign = os.path.join(assets, allign, 'howtoplay.svg')
 
 ###########################################
+##  For the Charecter Selection Menu     ##
+###########################################
+
+charecter_allign = os.path.join(assets, allign, 'chalign.svg')
+charecter_wilber_des = os.path.join(assets, button, 'chgimp.svg')
+charecter_tux_des = os.path.join(assets, button, 'chtux.svg')
+charecter_python_des = os.path.join(assets, button, 'chpython.svg')
+charecter_gnu_des = os.path.join(assets, button, 'chgnu.svg')
+charecter_wilber_sel = os.path.join(assets, button, 'chgimpselect.svg')
+charecter_tux_sel = os.path.join(assets, button, 'chtuxselect.svg')
+charecter_python_sel = os.path.join(assets, button, 'chpythonselect.svg')
+charecter_gnu_sel = os.path.join(assets, button, 'chgnuselect.svg')
+
+###########################################
 ##  For the Stage Selection Menu         ##
 ###########################################
 

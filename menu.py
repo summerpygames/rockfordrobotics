@@ -22,6 +22,7 @@ from APH.Utils import *
 from APH.Screen import *
 from APH.Sprite import *
 
+import run
 from assets import *
 from olpcgames import svgsprite, textsprite
 import olpcgames
@@ -49,6 +50,17 @@ grades = (
           (('resume', 'D'), ('resume', 'D'  ), ('resume', 'D')),
           (('first', 'RU'), ('second', 'RLU'), ('third', 'LU'))
          )
+
+###########################################
+##  For the Char Menu                    ##
+###########################################
+
+charmen = (
+           (('python','D'),),
+           (('tux',  'UD'),),
+           (('gnu',  'UD'),),
+           (('wilber','U'),)
+          )
 
 ###########################################
 ##  For the How to Play menu             ##
@@ -109,7 +121,7 @@ class Button(Sprite):
                  size=None, # only spec the vertical/hor size
                  callout='NO', # Name to respond to select
                  initsel=False, # Select this on start
-                 trigger=None):  # what should be done on a trigger
+                 trigger=[None, None]):  # what should be done on a trigger
         
         data_sel = open(sel_svg).read()
         data_des = open(des_svg).read()
@@ -128,12 +140,12 @@ class Button(Sprite):
         self.position = (position[0], position[1])
         self.position = position
         self.callout = callout
-        self.attrigger = trigger
+        self.attrigger, self.triggersender = trigger
 
     def trigger(self, callout):
         """What state to transfer to when the button is pressed"""
         if callout == self.callout:
-            return self.attrigger
+            return (self.attrigger, self.triggersender)
         else:
             return None
         
@@ -219,17 +231,16 @@ class AnyMenu(SubGame):
                     self.pop_state()
                     return
                 elif keys(event, 'next'):
-                    for sprite in self.group.sprites():
-                        trigger = sprite.trigger(list[self.cursor[0]][self.cursor[1]][0])
-                        if trigger is not None:
-                            self.newstate = trigger()
-                            self.newstate.push_state()
-                            return
+                    if list[self.cursor[0]][self.cursor[1]][0] != 'none':
+                        for sprite in self.group.sprites():
+                            trigger = sprite.trigger(list[self.cursor[0]][self.cursor[1]][0])
+                            if trigger is not None:
+                                trigger[1].triggers(trigger[0])
+                                return
                 elif keys(event, 'back'):
                     self.pop_state()
                     return
-
-
+                            
 ######################################################################
 # GRADE MENU                                                         #
 ######################################################################
@@ -269,25 +280,28 @@ class GradeMenu(AnyMenu):
                               size = ( 750, None ),
                               callout = 'resume',
                               initsel = True,
-                              trigger = None)
+                              trigger = [CharecterMenu, self])
+                              
         self.first = Button(  sel_svg = grades_1_sel,
                               des_svg = grades_1_des,
                               size = ( 275, None ),
                               callout = 'first',
                               initsel = False,
-                              trigger = None)
+                              trigger = [None, self])
+                              
         self.second = Button( sel_svg = grades_2_sel,
                               des_svg = grades_2_des,
                               size = ( 275, None ),
                               callout = 'second',
                               initsel = False,
-                              trigger = None)
+                              trigger = [None, self])
+                              
         self.third = Button(  sel_svg = grades_3_sel,
                               des_svg = grades_3_des,
                               size = ( 275, None ),
                               callout = 'third',
                               initsel = False,
-                              trigger = None)
+                              trigger = [None, self])
 
         positions = []
         sw, sh = self.screen_state.get_size()
@@ -300,7 +314,7 @@ class GradeMenu(AnyMenu):
                                      self.second.rect.midright[1])
 
         
-        self.allignment = Allignment(svg=main_allign, size = (0, sh))
+        self.allignment = Allignment(svg=grades_allign, size = (0, sh))
         self.allignment.rect.midtop = (sw/2, 0)
 
         #Sprite group initialization
@@ -310,7 +324,141 @@ class GradeMenu(AnyMenu):
     def main_loop(self):
         """Run the main loop"""
         super(GradeMenu, self).main_loop(grades)
+        
+    def triggers (self, trigger):
+        """ Callback for trigger usage """
+        if trigger is not None:
+            self.newstate = trigger()
+            self.newstate.push_state()
+            return
+        
+######################################################################
+# Charecter MENU                                                     #
+######################################################################
+class CharecterMenu(AnyMenu):
+    """Class for the instruction pages"""
+    def __init__(self):
+        super(CharecterMenu, self).__init__(self)
+        self.initialized = False
 
+    def transition_in(self):
+        #General initialization
+        if self.initialized:
+            return
+        self.cursor = [0, 0]
+        self.initialized = True
+        self.set_layers(['main', 'allignment'])
+        self.t = 0        
+        #Background initialization
+        bg = load_image(os.path.join('data', 'spacebg.jpg'))
+        self.screen_state.set_background(bg)
+        #Font & text initialization
+        pygame.font.init()
+        self.font = pygame.font.SysFont(None,80)
+        
+
+        #Sprite initialization
+#       self.play = Button(   sel_svg = main_play_sel, SVG for selected
+#                             des_svg = main_play_des, SVG for deselected
+#                             size = ( None, 50 ),     Starting Size
+#                             callout = 'play',        Name to respond to
+#                             initsel = True,          Start selected?
+#                             trigger = None)          What to launch on click
+
+        
+        self.snake = Button(  sel_svg = charecter_python_sel,
+                              des_svg = charecter_python_des,
+                              size = ( 400, None ),
+                              callout = 'python',
+                              initsel = True,
+                              trigger = ['python', self])
+                              
+        self.tux = Button(  sel_svg = charecter_tux_sel,
+                              des_svg = charecter_tux_des,
+                              size = ( 450, None ),
+                              callout = 'tux',
+                              initsel = False,
+                              trigger = ['tux', self])
+                              
+        self.gnu = Button( sel_svg = charecter_gnu_sel,
+                              des_svg = charecter_gnu_des,
+                              size = ( 530, None ),
+                              callout = 'gnu',
+                              initsel = False,
+                              trigger = ['gnu', self])
+                              
+        self.wilber = Button(  sel_svg = charecter_wilber_sel,
+                              des_svg = charecter_wilber_des,
+                              size = ( 610, None ),
+                              callout = 'wilber',
+                              initsel = False,
+                              trigger = ['wiber',self])
+
+        positions = []
+        sw, sh = self.screen_state.get_size()
+        
+        self.snake.rect.midtop= (sw/2, int(sh*.25))
+        self.tux.rect.midtop  = (sw/2, int(sh*.39))
+        self.gnu.rect.midbottom = (sw/2, int(sh - (sh*.17)))
+        self.wilber.rect.midbottom = (sw/2, int(sh - (sh*.05)))
+
+
+        
+        self.allignment = Allignment(svg=charecter_allign, size = (0, sh))
+        self.allignment.rect.midtop = (sw/2, 0)
+
+        #Sprite group initialization
+        self.group = Group(self.snake, self.tux, self.gnu, self.wilber,
+                           self.allignment)
+
+    def main_loop(self):
+        """Run the main loop"""
+        super(CharecterMenu, self).main_loop(charmen)
+        
+    def triggers (self, trigger):
+        """ Callback for trigger usage """
+        self.newstate = run.PlayState(trigger)
+        self.newstate.push_state()
+        return
+        
+
+######################################################################
+# How to Menu                                                        #
+######################################################################
+class HowToMenu(AnyMenu):
+    """Class for the instruction pages"""
+    def __init__(self):
+        super(HowToMenu, self).__init__(self)
+        self.initialized = False
+
+    def transition_in(self):
+        #General initialization
+        if self.initialized:
+            return
+        self.cursor = [0, 0]
+        self.initialized = True
+        self.set_layers(['main', 'allignment'])
+        self.t = 0        
+        #Background initialization
+        bg = load_image(os.path.join('data', 'spacebg.jpg'))
+        self.screen_state.set_background(bg)
+        sw, sh = self.screen_state.get_size()
+        self.allignment = Allignment(svg=htpl_allign, size = (0, sh))
+        self.allignment.rect.midtop = (sw/2, 0)
+
+        #Sprite group initialization
+        self.group = Group(self.allignment)
+
+    def main_loop(self):
+        """Run the main loop"""
+        super(HowToMenu, self).main_loop(how)
+        
+    def triggers (self, trigger):
+        """ Callback for trigger usage """
+        if trigger is not None:
+            self.newstate = trigger()
+            self.newstate.push_state()
+            return
             
 ######################################################################
 # Main Menu                                                          #
@@ -351,25 +499,28 @@ class MainMenu(AnyMenu):
                               size = ( 350, None ),
                               callout = 'play',
                               initsel = True,
-                              trigger = GradeMenu)
+                              trigger = [GradeMenu, self])
+                              
         self.howto = Button(  sel_svg = main_howto_sel,
                               des_svg = main_howto_des,
                               size = ( 562, None ),
                               callout = 'how',
                               initsel = False,
-                              trigger = None)
+                              trigger = [HowToMenu, self])
+                              
         self.credits = Button(sel_svg = main_credits_sel,
                               des_svg = main_credits_des,
                               size = ( 312, None ),
                               callout = 'cred',
                               initsel = False,
-                              trigger = None)
+                              trigger = [None, self])
+                              
         self.about = Button  (sel_svg = main_about_sel,
                               des_svg = main_about_des,
                               size = ( 312, None ),
                               callout = 'about',
                               initsel = False,
-                              trigger = None)
+                              trigger = [None, self])
 
         positions = []
         sw, sh = self.screen_state.get_size()
@@ -389,4 +540,11 @@ class MainMenu(AnyMenu):
     def main_loop(self):
         """Run the main loop"""
         super(MainMenu, self).main_loop(mainmen)
+        
+    def triggers (self, trigger):
+        """ Callback for trigger usage """
+        if trigger is not None:
+            self.newstate = trigger()
+            self.newstate.push_state()
+            return
 

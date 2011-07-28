@@ -117,19 +117,23 @@ if __name__ == '__main__':
             else:
                 game_loop()
                 
-            # Let's print some FPS information out
-            avg_fps = sum(game.fps_log) / float(len(game.fps_log))
-            stddev = sqrt(sum((avg_fps - x) ** 2 for x in game.fps_log) / float(len(game.fps_log)))
-            
-            output = [
-                ("Minimum fps:", str(min(game.fps_log))),
-                ("Maximum fps:", str(max(game.fps_log))),
-                ("Average fps:", str(avg_fps)),
-                ("Standard deviation:", str(stddev))
-                ]
-            format_columns(game.__class__.__name__ + " Framerate Statistics", output)
-            if options.profile:
-                format_columns(game.__class__.__name__ + " Framerate Statistics", output, os.path.join(output_dir, game.__class__.__module__, game.__class__.__name__ + "_" + str(profiles[game]) + ".framestats"))
+#            # Let's print some FPS information out
+#            try:
+#                avg_fps = sum(game.fps_log) / float(len(game.fps_log))
+#                stddev = sqrt(sum((avg_fps - x) ** 2 for x in game.fps_log) / float(len(game.fps_log)))
+#            except ZeroDivisionError, e:
+#                avg_fps = 5
+#                stddev = 2
+#                        
+#            output = [
+#                ("Minimum fps:", str(min(game.fps_log))),
+#                ("Maximum fps:", str(max(game.fps_log))),
+#                ("Average fps:", str(avg_fps)),
+#                ("Standard deviation:", str(stddev))
+#                ]
+#            format_columns(game.__class__.__name__ + " Framerate Statistics", output)
+#            if options.profile:
+#                format_columns(game.__class__.__name__ + " Framerate Statistics", output, os.path.join(output_dir, game.__class__.__module__, game.__class__.__name__ + "_" + str(profiles[game]) + ".framestats"))
         pygame.quit()
     except KeyboardInterrupt:
         pygame.quit()

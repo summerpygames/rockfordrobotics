@@ -498,12 +498,69 @@ class FlyingSaucer(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(FlyingSaucer, self).__init__(svg=os.path.join('data', 'ufo2.svg'),
+        super(FlyingSaucer, self).__init__(svg=os.path.join('data',
+                                                            'pythonsaucer.svg'),
                                            lasercannon = self.cannon)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
+
+class SpaceShuttle(Player):
+    
+    """Flying saucer is the vehical of choice for your favorite python.
+    
+    This is an extention of the Player, overriding the SVG that is displayed
+
+    """
+    
+    def __init__(self, gm):
+        self.cannon = gm.player_cannon
+        self.opponent_bulletgroup = gm.opponent_bullet_group
+        super(SpaceShuttle, self).__init__(svg=os.path.join('data',
+                                                            'tuxshuttle.svg'),
+                                           lasercannon = self.cannon)
+
+    def shoot(self):
+        """This is what you run when you want the thing to fire a laser"""
+        super(SpaceShuttle, self).shoot(self.rect.center)
+
+class ClassicRocket(Player):
+    
+    """Flying saucer is the vehical of choice for your favorite python.
+    
+    This is an extention of the Player, overriding the SVG that is displayed
+
+    """
+    
+    def __init__(self, gm):
+        self.cannon = gm.player_cannon
+        self.opponent_bulletgroup = gm.opponent_bullet_group
+        super(ClassicRocket, self).__init__(svg=os.path.join('data', 'gnurocket.svg'),
+                                           lasercannon = self.cannon)
+
+    def shoot(self):
+        """This is what you run when you want the thing to fire a laser"""
+        super(ClassicRocket, self).shoot(self.rect.center)
+
+class FighterJet(Player):
+    
+    """Flying saucer is the vehical of choice for your favorite python.
+    
+    This is an extention of the Player, overriding the SVG that is displayed
+
+    """
+    
+    def __init__(self, gm):
+        self.cannon = gm.player_cannon
+        self.opponent_bulletgroup = gm.opponent_bullet_group
+        super(FighterJet, self).__init__(svg=os.path.join('data', 'gimpfighter.svg'),
+                                           lasercannon = self.cannon)
+
+    def shoot(self):
+        """This is what you run when you want the thing to fire a laser"""
+        super(Fighterjet, self).shoot(self.rect.center)
+
 
 class Bullet(MaskSprite):
     
@@ -728,11 +785,12 @@ def start_gm(gm, charecter = 1):
 
 class PlayState(SubGame):
     
-    def __init__(self):
+    def __init__(self, charecter):
         
         SubGame.__init__(self)
         self.initialized = False
-    
+        self.charecterselection = charecter
+
     def transition_in(self):
         # This code is for the APH, to make sure that we do not transition 2
         # times
@@ -759,24 +817,24 @@ class PlayState(SubGame):
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
     #    self.gm.screen = pygame.display.set_mode(self.gm.size)
-        self.gm.background = my_load_image('deepspace.jpg')
-        charecter = 1
-        if charecter is 1:
+        self.gm.background = my_load_image('spacebg.jpg')
+        print self.charecterselection
+        if self.charecterselection is 'python':
             self.gm.player_cannon_offset = (-20, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = FlyingSaucer(self.gm)
-        elif charecter is 2:
+        elif self.charecterselection is 'tux':
             self.gm.player_cannon_offset = (-20, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
-            self.gm.player = FlyingSaucer(self.gm)
-        elif charecter is 3:
+            self.gm.player = SpaceShuttle(self.gm)
+        elif self.charecterselection is 'gnu':
             self.gm.player_cannon_offset = (-20, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
-            self.gm.player = FlyingSaucer(self.gm)
-        elif charecter is 4:
+            self.gm.player = ClassicRocket(self.gm)
+        elif self.charecterselection is 'wilber':
             self.gm.player_cannon_offset = (-20, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
-            self.gm.player = FlyingSaucer(self.gm)
+            self.gm.player = FighterJet(self.gm)
         else:
             self.gm.player_cannon_offset = (-20, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
