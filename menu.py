@@ -189,6 +189,9 @@ def keys(event, action):
             return True
     else:
         return False
+###########################################################################
+# Basic Menu to Extend                                                    #
+###########################################################################
 
 class AnyMenu(SubGame):
     """Extend this for any menu"""
@@ -197,12 +200,17 @@ class AnyMenu(SubGame):
         self.arg = arg
 
     def transition_in(self):
-        """Dummy"""
-        pass
-
-    def allign(self, allign):
-        """Setup the alligment graphic"""
-        
+        """Do things for every menu"""
+        self.cursor = [0, 0]        
+        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+        self.set_layers(['main', 'allignment'])
+        self.t = 0        
+        #Background initialization
+        bg = load_image(os.path.join('data', 'spacebg.jpg'))
+        self.screen_state.set_background(bg)
+        #Font & text initialization
+        pygame.font.init()
+        self.font = pygame.font.SysFont(None,80)
         
     def main_loop(self, list):
         self.t = self.t + 1
@@ -254,16 +262,9 @@ class GradeMenu(AnyMenu):
         #General initialization
         if self.initialized:
             return
-        self.cursor = [0, 0]
+        super(GradeMenu, self).transition_in()
         self.initialized = True
-        self.set_layers(['main', 'allignment'])
-        self.t = 0        
-        #Background initialization
-        bg = load_image(os.path.join('data', 'spacebg.jpg'))
-        self.screen_state.set_background(bg)
-        #Font & text initialization
-        pygame.font.init()
-        self.font = pygame.font.SysFont(None,80)
+
         
 
         #Sprite initialization
@@ -345,17 +346,8 @@ class CharecterMenu(AnyMenu):
         #General initialization
         if self.initialized:
             return
-        self.cursor = [0, 0]
+        super(CharecterMenu, self).transition_in()
         self.initialized = True
-        self.set_layers(['main', 'allignment'])
-        self.t = 0        
-        #Background initialization
-        bg = load_image(os.path.join('data', 'spacebg.jpg'))
-        self.screen_state.set_background(bg)
-        #Font & text initialization
-        pygame.font.init()
-        self.font = pygame.font.SysFont(None,80)
-        
 
         #Sprite initialization
 #       self.play = Button(   sel_svg = main_play_sel, SVG for selected
@@ -417,7 +409,7 @@ class CharecterMenu(AnyMenu):
         
     def triggers (self, trigger):
         """ Callback for trigger usage """
-        self.newstate = run.PlayState(trigger)
+        self.newstate = run.PlayState(trigger, 'none', 'none')
         self.newstate.push_state()
         return
         
@@ -435,14 +427,9 @@ class HowToMenu(AnyMenu):
         #General initialization
         if self.initialized:
             return
-        self.cursor = [0, 0]
+        super(HowToMenu, self).transition_in()
         self.initialized = True
-        self.set_layers(['main', 'allignment'])
-        self.t = 0        
-        #Background initialization
-        bg = load_image(os.path.join('data', 'spacebg.jpg'))
-        self.screen_state.set_background(bg)
-        sw, sh = self.screen_state.get_size()
+
         self.allignment = Allignment(svg=htpl_allign, size = (0, sh))
         self.allignment.rect.midtop = (sw/2, 0)
 
@@ -473,16 +460,9 @@ class MainMenu(AnyMenu):
         #General initialization
         if self.initialized:
             return
-        self.cursor = [0, 0]
+        super(MainMenu, self).transition_in()
         self.initialized = True
-        self.set_layers(['main', 'allignment'])
-        self.t = 0        
-        #Background initialization
-        bg = load_image(os.path.join('data', 'spacebg.jpg'))
-        self.screen_state.set_background(bg)
-        #Font & text initialization
-        pygame.font.init()
-        self.font = pygame.font.SysFont(None,80)
+
         
 
         #Sprite initialization

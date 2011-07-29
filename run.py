@@ -1,25 +1,19 @@
 #!/usr/bin/env python
+# Space Math
+# Copyright (C) 2011 Mark Amber and Lucas Morales
 #
-#       WhateverWeCallTheGame.py
-#       
-#       Copyright Contributors
-#       
-#       This program is free software; you can redistribute it and/or modify
-#       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 3 of the License, or
-#       (at your option) any later version.
-#       
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
-#       
-#       You should have received a copy of the GNU General Public License
-#       along with this program; if not, write to the Free Software
-#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#       MA 02110-1301, USA.
-#       
-# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #Import APH libraries
 from APH import *
 from APH.Game import *
@@ -43,7 +37,6 @@ log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 
 # Make a new global GameManager, persistant through levels
-globalgm = GameManager()
 
 class MaskSprite(Sprite):
     """ A sprite superclass which adds automatic generation of masks for
@@ -679,8 +672,11 @@ class TheOpponent():
             self.group.empty()
 
 
-    def spawn_badguys(self, screensize, number, x_offset, y_offset):
+    def spawn_badguys(self, number):
         """I will make more enemys for you"""
+        screensize = self.gm.opponent_size
+        x_offset = self.gm.opponent_xoffset
+        y_offset = self.gm.opponent_yoffset
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
         self.badguysvg = svgsprite.SVGSprite(open(os.path.join('data',
                                                                'enemy.svg')).read(),
@@ -695,8 +691,11 @@ class TheOpponent():
                                       copy = self.badguysvg))
             self.group.add(self.enemies[-1])
 
-    def spawn_answerguys(self, screensize, number, x_offset, y_offset):
+    def spawn_answerguys(self):
         """I will make more enemys for you"""
+        screensize = self.gm.opponent_size
+        x_offset = self.gm.opponent_xoffset
+        y_offset = self.gm.opponent_yoffset
         self.size, self.positions = answergen(x_offset, y_offset, screensize)
         self.answerguysvg = svgsprite.SVGSprite(open(os.path.join('data',
                                                                   'numenemy.svg')).read(),
@@ -716,6 +715,7 @@ class TheOpponent():
             self.group.add(self.enemies[-1])
 
         self.questionsprite = self.question.getquestion()
+
         self.questionsprite.add(self.question_group)
         
 
@@ -723,69 +723,12 @@ class TheOpponent():
         """This will update the positions of the bullets"""
         self.opponent_bulletgroup.update()
 
-def start_gm(gm, charecter = 1):
-    """Simple code to start everything for the global game manager, it also
-    sets up many of the hooks for panglery
-    """
-
-    gm.opponents = []
-    gm.opponent_group = Group()
-    gm.opponent_bullets = []
-    gm.opponent_bullet_group =  Group()
-    gm.question_group = Group()
-
-    
-    gm.player_group = Group()
-    gm.playable_bullets = []
-    gm.friend_bullets = []
-    gm.friendly_bullet_group = Group()
-
-    gm.size = (1200, 900)
-    if olpcgames.ACTIVITY:
-        gm.size = olpcgames.ACTIVITY.game_size
-#    gm.screen = pygame.display.set_mode(gm.size)
-    gm.background = my_load_image('deepspace.jpg')
-
-    if charecter is 1:
-        gm.player_cannon_offset = (-20, 0)
-        gm.player_cannon = LaserCannon(gm)
-        gm.player = FlyingSaucer(gm)
-    elif charecter is 2:
-        gm.player_cannon_offset = (-20, 0)
-        gm.player_cannon = LaserCannon(gm)
-        gm.player = FlyingSaucer(gm)
-    elif charecter is 3:
-        gm.player_cannon_offset = (-20, 0)
-        gm.player_cannon = LaserCannon(gm)
-        gm.player = FlyingSaucer(gm)
-    elif charecter is 4:
-        gm.player_cannon_offset = (-20, 0)
-        gm.player_cannon = LaserCannon(gm)
-        gm.player = FlyingSaucer(gm)
-    else:
-        gm.player_cannon_offset = (-20, 0)
-        gm.player_cannon = LaserCannon(gm)
-        gm.player = FlyingSaucer(gm)
-
-    gm.opponent_manager = TheOpponent(gm)
-
-    gm.playerlifes = 3
-    
-
-    gm.straybullets = StrayBulletManager(gm)
-
-    gm.play = True
-    gm.menu = False
-
-    gm.player_speed = 10
-
-    gm.setup_hooks()
 
 ###############################################################################
 
 class PlayState(SubGame):
     
-    def __init__(self, charecter):
+    def __init__(self, charecter, dbfile, gameplay):
         
         SubGame.__init__(self)
         self.initialized = False
@@ -797,9 +740,8 @@ class PlayState(SubGame):
         if self.initialized:
             return
         self.initialized = True
-        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
         pygame.init()
-        self.gm = globalgm
+        self.gm = GameManager()
         self.set_layers(['test'])
         self.gm.opponents = []
         self.gm.opponent_group = Group()
@@ -812,13 +754,21 @@ class PlayState(SubGame):
         self.gm.playable_bullets = []
         self.gm.friend_bullets = []
         self.gm.friendly_bullet_group = Group()
+        
+        self.gm.size = self.screen_state.get_size()
 
-        self.gm.size = (800, 600)
+
+        ## OPPONENT SIZING
+        self.gm.opponent_size = (600, 600)
+        self.gm.opponent_yoffset = (self.gm.size[0] - self.gm.opponent_size[1])/2
+        self.gm.opponent_xoffset = self.gm.size[0]
+
+        
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
-    #    self.gm.screen = pygame.display.set_mode(self.gm.size)
+
         self.gm.background = my_load_image('spacebg.jpg')
-        print self.charecterselection
+        
         if self.charecterselection is 'python':
             self.gm.player_cannon_offset = (-20, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
@@ -885,13 +835,9 @@ class PlayState(SubGame):
                         self.gm.p.trigger(event='key_x_press')
                         self.gm.player.shoot()
                     if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        self.gm.opponent_manager.spawn_badguys((600, 600), 9,
-                                                               700,
-                                                          50)
+                        self.gm.opponent_manager.spawn_badguys(9)
                     if event.key == pygame.K_KP9 or event.key == pygame.K_a:
-                        self.gm.opponent_manager.spawn_answerguys((600, 600), 9,
-                                                                  700,
-                                                          50)
+                        self.gm.opponent_manager.spawn_answerguys()
 
 
                 elif event.type == pygame.KEYUP:
@@ -918,8 +864,3 @@ class PlayState(SubGame):
         self.gm.opponent_bullet_group.draw()
         self.gm.question_group.draw()
         GetScreen().draw()
-        
-        
-
-if __name__ == '__main__':
-    main()

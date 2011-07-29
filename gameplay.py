@@ -18,6 +18,7 @@
 import math
 import sqlite3
 import pdb
+from random import choice
 
 class UserGame(object):
 
@@ -48,8 +49,32 @@ class UserGame(object):
     def __init__(self, db):
         super(UserGame, self).__init__()
         self.db = sqlite3.connect(db)
-        self.c = createDb.cursor()
+        self.c = self.db.cursor()
         
+    def get_db(self):
+        """returns the database"""
+        return self.db
+
+    def close(self):
+        self.c.close()
+
+    def get_gameplay(self):
+        gameplays = []
+        self.c.execute('''
+                        SELECT id from gameplay
+                       ''')
+        for row in self.c:
+            gameplays.append(row[0])
+
+        self.c.execute('''
+                       SELECT gameplay FROM gameplay
+                       WHERE id=?
+                       ''', (choice(gameplays),)
+                       )
+        for row in self.c:
+            gameplay = row[0]
+        
+        return list(str(gameplay))
 
     def get_game_levels(self, grade, stage):
         """This will return an ID, a Description of the level, and if its
@@ -61,8 +86,8 @@ class UserGame(object):
                        ''', (grade, stage)
                        )
         for row in self.c:
-            levels.append({id:row[0], level:row[1], description:row[2],
-                           playcount:row[3]})
+            levels.append({'id':row[0], 'level':row[1], 'description':row[2],
+                           'playcount':row[3]})
         
         return levels
 
@@ -76,8 +101,8 @@ class UserGame(object):
                        ''', (grade, stage)
                        )
         for row in self.c:
-            levels.append({id:row[0], level:row[1], description:row[2],
-                           playcount:row[3]})
+            levels.append({'id':row[0], 'level':row[1], 'description':row[2],
+                           'playcount':row[3]})
         
         return levels
 
@@ -85,11 +110,18 @@ class UserGame(object):
     def getlevel(self, id):
         """Get information on a certain level"""
         self.c.execute('''
-                       SELECT * FROM levels
-                       WHERE grade=? AND stage=?
-                       ''', (grade, stage)
+                       SELECT id, database, allmath FROM levels
+                       WHERE id=?
+                       ''', (str(id))
                        )
-        return (databasefile, gameplaylist)
+        for row in self.c:
+            print row[2]
+            id, databasefile, allmath = int(row[0]), str(row[1]),\
+                                            bool(int(row[2]))
+
+        gameplaylist = self.get_gameplay() if allmath else\
+        ['.','A','_','2','0','.'] # in the case that it is math
+        return (databasefile, gameplaylist) 
 
     def stageloop(self, l):
         """Make the stage for the user based one cornflaks"""

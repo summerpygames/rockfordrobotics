@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#code
 # This is a simple launcher for an APH game stored in a state
 
 import sys
@@ -31,8 +30,6 @@ import olpcgames
 
 import menu
 
-virtual_size = (1200,900)
-color = (0,0,0)
 
 def launch():
     # Here we go for where we can put some launching code
@@ -44,6 +41,9 @@ def main():
     resolution = (0, 0)
     fps = 30
     fullscreen = True
+    virtual_size = (1200,900)
+    color = (0,0,0)
+
 
     if olpcgames.ACTIVITY:
         resolution = olpcgames.ACTIVITY.game_size

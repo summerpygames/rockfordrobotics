@@ -22,7 +22,36 @@ import csv
 
 def filetogameplay(file, db, force):
     """convert from a enter seperated file to """
-    pass
+    createDb = sqlite3.connect(db)
+    queryCurs = createDb.cursor()
+    list = csv.reader(open(file))
+    dbmade = False
+    try:
+        queryCurs.execute('''create table gameplay(
+                             ID INTEGER PRIMARY KEY,
+                             gameplay Text)
+                          ''')
+
+    except sqlite3.OperationalError, e:
+        if force:
+            queryCurs.execute('''drop table gameplay''')
+            queryCurs.execute('''create table gameplay(
+                                 ID INTEGER PRIMARY KEY,
+                                 gameplay Text)
+                             ''')
+            dbmade = True
+        else:
+            print 'Cannot overwrite table, use --force (-f)'
+    else:
+        dbmade = True
+
+    if dbmade:
+        for i in list:
+            queryCurs.execute('''insert into gameplay (gameplay)values (?)''',i)
+        createDb.commit()
+        queryCurs.close()
+
+
 
 def csvtolevels(file, db, force):
     """docstring for csvtolistoflists"""
@@ -34,6 +63,7 @@ def csvtolevels(file, db, force):
     try:
         queryCurs.execute('''create table levels(
                             ID INTEGER PRIMARY KEY,
+                            description TEXT,
                             grade INTAGER,
                             stage INTAGER,
                             level INTAGER,
@@ -49,6 +79,7 @@ def csvtolevels(file, db, force):
             queryCurs.execute('''drop table levels''')
             queryCurs.execute('''create table levels(
                                 ID INTEGER PRIMARY KEY,
+                                description TEXT,
                                 grade INTAGER,
                                 stage INTAGER,
                                 level INTAGER,
@@ -66,9 +97,9 @@ def csvtolevels(file, db, force):
 
     if dbmade:
         for i in list:
-            queryCurs.execute('''insert into levels (grade, stage, level,
-                              allmath, database, acomplishment, acomcount,
-                              playcount)values (?, ?, ?, ?, ?, ?, ?, ?)''',i)
+            queryCurs.execute('''insert into levels (description, grade, stage,
+                              level, allmath, database, acomplishment, acomcount,
+                              playcount)values (?, ?, ?, ?, ?, ?, ?, ?, ?)''',i)
         createDb.commit()
         queryCurs.close()
 

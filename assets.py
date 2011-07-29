@@ -98,3 +98,5 @@ about_allign = os.path.join(assets, allign, '.svg')
 ###########################################
 
 credits_align = os.path.join(assets, allign, '.svg')
+
+gameplay_database = os.path.join(assets, 'test2.sqlite.db')

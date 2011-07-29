@@ -278,7 +278,7 @@ class VerticalQuestion(Question):
         cur_x += self.line.rect.width
         self.width = cur_x# sets the height to the fraction height
 
-        super(FlatQuestion, self).create(self.width, self.height)
+        super(VerticalQuestion, self).create(self.width, self.height)
 
 
                 
@@ -392,7 +392,7 @@ class Converter(object):
                     return FlatQuestion
             except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return FlatQuestion
+                    return VerticalQuestion
                 else:
                     return FlatQuestion
 
@@ -403,7 +403,7 @@ class Converter(object):
                     return FlatQuestion
             except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return FlatQuestion
+                    return VerticalQuestion
                 else:
                     return FlatQuestion
 
@@ -414,7 +414,7 @@ class Converter(object):
                     return FlatQuestion
             except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return FlatQuestion
+                    return VerticalQuestion
                 else:
                     return FlatQuestion
 
