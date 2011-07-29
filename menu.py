@@ -251,7 +251,7 @@ def keys(event, action):
         if event.key == pygame.K_KP1 or event.key == pygame.K_KP3 or event.key == pygame.K_SPACE:
             return True
     elif action == 'back':
-        if event.key == pygame.K_KP7 or event.key == pygame.K_KP5 or event.key == pygame.K_x:
+        if event.key == pygame.K_KP7 or event.key == pygame.K_KP9 or event.key == pygame.K_x:
             return True
     else:
         return False
@@ -268,7 +268,7 @@ class AnyMenu(SubGame):
     def transition_in(self):
         """Do things for every menu"""
         self.cursor = [0, 0]        
-        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+        pygame.mixer.init(frequency=22050, size=8, channels=2, buffer=512)
         self.set_layers(['main', 'allignment'])
         self.t = 0        
         #Background initialization
@@ -305,7 +305,6 @@ class AnyMenu(SubGame):
                     self.pop_state()
                     return
                 elif keys(event, 'next'):
-                    print 'Trigger:',list[self.cursor[0]][self.cursor[1]][0]
                     if list[self.cursor[0]][self.cursor[1]][0] != 'none':
                         for sprite in self.group.sprites():
                             trigger = sprite.trigger(list[self.cursor[0]][self.cursor[1]][0])
@@ -433,7 +432,6 @@ class LevelMenu(AnyMenu):
         self.maplist[-1][0][1]='UR'
         self.maplist[-1][1][1]='UL'
 
-        print self.maplist
 
         positions = []
 
@@ -451,7 +449,6 @@ class LevelMenu(AnyMenu):
         
     def triggers (self, trigger):
         """ Callback for trigger usage """
-        print 'Trigger MENU!!!', trigger
         if trigger is not None:
             self.newstate = CharecterMenu(self.gp, trigger[0], self.stage)
             self.group.empty()

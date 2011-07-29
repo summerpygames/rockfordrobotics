@@ -633,21 +633,30 @@ def keys(event, action):
     if action == 'escape':
         if event.key == pygame.K_ESCAPE:
             return True
-    if action == 'left':
+    elif action == 'left':
         if event.key == pygame.K_KP4 or event.key == pygame.K_LEFT:
             return True
-    if action == 'right':
+    elif action == 'right':
         if event.key == pygame.K_KP6 or event.key == pygame.K_RIGHT:
             return True
-    if action == 'up':
+    elif action == 'up':
         if event.key == pygame.K_KP8 or event.key == pygame.K_UP:
             return True
-    if action == 'down':
+    elif action == 'down':
         if event.key == pygame.K_KP2 or event.key == pygame.K_DOWN:
             return True
-    if action == 'space':
+    elif action == 'space':
         if event.key == pygame.K_KP1 or event.key == pygame.K_SPACE:
             return True
+    elif action == 'next':
+        if event.key == pygame.K_KP1 or event.key == pygame.K_KP3 or event.key == pygame.K_SPACE:
+            return True
+    elif action == 'back':
+        if event.key == pygame.K_KP7 or event.key == pygame.K_KP9 or event.key == pygame.K_x:
+            return True
+    else:
+        return False
+
 
 
 class TheOpponent():
@@ -821,9 +830,22 @@ class PlayState(SubGame):
         self.gm.play = True
         self.gm.menu = False
 
-        self.gm.player_speed = 10
-
+        self.gm.player_speed = 20
         self.gm.setup_hooks()
+        
+        ###########################
+        # Hood for game done
+        @self.gm.p.subscribe(event='end_game', needs=['clean'])
+        def example_hook(p, clean):
+            if clean:
+                self.gm.gp.mark_played(self.levelid)
+                self.newstate = self.gm.gp.get_next_level(self.gm.level)
+                return
+            else:
+                self.pop_state()
+                return
+
+
         self.screen_state.set_background(self.gm.background)
         self.gm.player_group.add(self.gm.player)
         self.gm.player_group.add(self.gm.player_cannon)
@@ -852,13 +874,10 @@ class PlayState(SubGame):
                         self.gm.p.trigger(event='key_up_press')
                     if keys(event, 'down'):
                         self.gm.p.trigger(event='key_down_press')
-                    if keys(event, 'space'):
-                        self.gm.p.trigger(event='key_x_press')
-                        self.gm.player.shoot()
-                    if event.key == pygame.K_KP3 or event.key == pygame.K_s:
-                        self.gm.opponent_manager.spawn_badguys(9)
-                    if event.key == pygame.K_KP9 or event.key == pygame.K_a:
-                        self.gm.opponent_manager.spawn_answerguys()
+                    if keys(event, 'next'):
+                        self.gm.p.trigger(event='button_next_press')
+                    if keys(event, 'back'):
+                        self.gm.p.trigger(event='button_back_press')
 
 
                 elif event.type == pygame.KEYUP:

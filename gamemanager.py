@@ -72,21 +72,32 @@ class GameManager(object):
             if self.play:
                 self.p.trigger(event='player_speed_change', more=False, dir='left')
     
-        @self.p.subscribe(event='button_check_press') # 1
+        @self.p.subscribe(event='button_back_press') # 1
         def button_check_press_hook(p):
-            pass
+            self.p.trigger(event='end_game', clean=False)
 
-        @self.p.subscribe(event='button_x_press') # 3
+        @self.p.subscribe(event='button_next_press') # 3
         def button_x_press_hook(p):
-            pass    
+            self.player.shoot()
 
-        @self.p.subscribe(event='button_square_press') # 7
-        def button_square_press_hook(p):
-            pass    
 
-        @self.p.subscribe(event='button_circle_press') # 5
-        def button_circle_hook(p):
-            pass
+
+        ###############################################################
+        # Start New level                                             #
+        ###############################################################
+        @self.p.subscribe(event='spawn_wave')
+        def example_hook(p):
+            try:
+                if self.gameplaylist.pop(-1) == 'A':
+                    self.opponent_manager.spawn_answerguys()
+                else:
+                    self.opponent_manager.spawn_badguys(int(self.gameplaylist.pop(-1)))
+            except IndexError:
+                self.p.trigger(event='end_game', clean=True)
+
+                
+
+        
 
         @self.p.subscribe(event='player_speed_change', needs=['more', 'dir'])
         def player_speed_change_hook(p, more, dir):

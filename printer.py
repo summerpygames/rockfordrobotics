@@ -152,9 +152,11 @@ def decideelement(element):
 
         if isinstance(element, int):
             return sprites.Letters(element)
+            print 'int'
         else:
             try:
                 if element.type == 'fint':
+                    print 'fraction'
                     r = sprites.FractionTerm
                 elif element.type == 'fmint':
                     r = sprites.FractionTerm
@@ -164,7 +166,9 @@ def decideelement(element):
                     r = sprites.Letters
             except AttributeError:
                 r = sprites.Letters
+                print 'error: int'
             finally:
+                print 'printerdecided'
                 return r(element)
 
 
@@ -275,7 +279,7 @@ class VerticalQuestion(Question):
         self.dests.append((self.line.image,
                            (cur_y, (dh - self.line.rect.height))
                           ))
-        cur_y += self.line.rect.width
+        cur_y += self.line.rect.height
         self.height = cur_y# sets the height to the fraction height
 
         super(VerticalQuestion, self).create(self.width, self.height)
@@ -347,13 +351,16 @@ class Converter(object):
     def extractor(self, string):
         """Find what kind of number we have using regex"""
         for r, x in zip(self.expressions, self.operations):
+            print r, x
             self.m = r.match(string) # Create a match object
                         
             try:
                 self.g = self.m.groups()
             except AttributeError:
+                print 'AERROR'
                 pass
             else:
+                print str(x)
                 return x(*self.g)
 
                 

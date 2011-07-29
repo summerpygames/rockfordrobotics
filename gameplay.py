@@ -107,6 +107,29 @@ class UserGame(object):
         
         return levels
 
+    def mark_played(self, id):
+        """Add to the playcount of a level"""
+        self.c.execute('''
+                       UPDATE levels
+                       set playcount = playcount+1
+                       WHERE id=?
+                       ''', (id)
+                      )
+    def get_next_level(self, id):
+        """Get information on a certain level"""
+        id +=2
+        self.c.execute('''
+                       SELECT id, database, allmath FROM levels
+                       WHERE id=?
+                       ''', (str(id))
+                       )
+        for row in self.c:
+            id, databasefile, allmath = int(row[0]), str(row[1]),\
+                                            bool(int(row[2]))
+
+        gameplaylist = self.get_gameplay() if allmath else\
+        ['.','A','_','2','0','.'] # in the case that it is math
+        return (databasefile, gameplaylist) 
 
     def getlevel(self, id):
         """Get information on a certain level"""
@@ -116,7 +139,6 @@ class UserGame(object):
                        ''', (str(id))
                        )
         for row in self.c:
-            print row[2]
             id, databasefile, allmath = int(row[0]), str(row[1]),\
                                             bool(int(row[2]))
 
