@@ -86,8 +86,9 @@ class UserGame(object):
                        ''', (grade, stage)
                        )
         for row in self.c:
-            levels.append({'id':row[0], 'level':row[1], 'description':row[2],
-                           'playcount':row[3]})
+            levels.append({'id':int(row[0]), 'level':int(row[1]),
+                           'description':str(row[2]),
+                           'playcount':int(row[3])})
         
         return levels
 

@@ -62,15 +62,17 @@ charecter_gnu_sel = os.path.join(assets, button, 'chgnuselect.svg')
 ##  For the Stage Selection Menu         ##
 ###########################################
 
-stage_allign = os.path.join(assets, allign, '.svg')
-stage_deep_des = os.path.join(assets, button, '.svg')
-stage_solar_des = os.path.join(assets, button, '.svg')
-stage_planet_des = os.path.join(assets, button, '.svg')
-stage_city_des = os.path.join(assets, button, '.svg')
-stage_deep_sel = os.path.join(assets, button, '.svg')
-stage_solar_sel = os.path.join(assets, button, '.svg')
-stage_planet_sel = os.path.join(assets, button, '.svg')
-stage_city_sel = os.path.join(assets, button, '.svg')
+stage_allign = os.path.join(assets, allign, 'stalign.svg')
+stage_deep_des = os.path.join(assets, button, 'stdeepstage.svg')
+stage_solar_des = os.path.join(assets, button, 'stsolar.svg')
+stage_planet_des = os.path.join(assets, button, 'stbarren.svg')
+stage_city_des = os.path.join(assets, button, 'sthome.svg')
+stage_locked_des = os.path.join(assets, button, 'stlocked.svg')
+stage_deep_sel = os.path.join(assets, button, 'stdeepstageselect.svg')
+stage_solar_sel = os.path.join(assets, button, 'stsolarselect.svg')
+stage_planet_sel = os.path.join(assets, button, 'stbarrenselect.svg')
+stage_city_sel = os.path.join(assets, button, 'sthomeselect.svg')
+stage_locked_sel = os.path.join(assets, button, 'stlockedselect.svg')
 
 ###########################################
 ##  For the Level Selection Menu         ##
@@ -99,4 +101,9 @@ about_allign = os.path.join(assets, allign, '.svg')
 
 credits_align = os.path.join(assets, allign, '.svg')
 
+###########################################
+## Databases                             ##
+###########################################
+
 gameplay_database = os.path.join(assets, 'test2.sqlite.db')
+

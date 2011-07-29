@@ -35,6 +35,8 @@ import printer
 import questions.getquestion
 log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
+import menu
+import assets
 
 # Make a new global GameManager, persistant through levels
 
@@ -405,6 +407,7 @@ class LaserCannon(Sprite):
             self.redness.fill((255, 0, 0))
         else:
             self.redness.fill(self.color_finder(self.heat))
+        self.image = new_surface([75, 15])
         self.image.blit(self.redness, (0, 0, self.heat, 15))
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                          self.heat, 0)) 
@@ -700,7 +703,8 @@ class TheOpponent():
         self.answerguysvg = svgsprite.SVGSprite(open(os.path.join('data',
                                                                   'numenemy.svg')).read(),
                                                 self.size)
-        self.question = printer.Converter(questions.getquestion.get('addition.upto10'))
+        self.question = printer.Converter(questions.getquestion.get(self.gm.dbfile))
+
         self.question.render()
         for i in range(len(self.positions)):
             response = choice(self.question.responses)
@@ -728,11 +732,20 @@ class TheOpponent():
 
 class PlayState(SubGame):
     
-    def __init__(self, charecter, dbfile, gameplay):
+    def __init__(self, charecter, gameplay, dbfile='additionupto20.shelve.db',
+                 gameplaylist = ['.', 'A', '_', 'E', '2', '_', 'E', '6', '_', 'E',
+                           '6', '.'],
+                 levelid = 1,
+                 stage = 'none',):
         
         SubGame.__init__(self)
         self.initialized = False
         self.charecterselection = charecter
+        self.gameplaylist = gameplaylist
+        self.gp = gameplay
+        self.dbfile = dbfile
+        self.levelid = levelid
+        self.stage = stage
 
     def transition_in(self):
         # This code is for the APH, to make sure that we do not transition 2
@@ -743,6 +756,14 @@ class PlayState(SubGame):
         pygame.init()
         self.gm = GameManager()
         self.set_layers(['test'])
+
+        ## From init
+        self.gm.dbfile = self.dbfile
+        self.gm.levelid = self.levelid
+        self.gm.gameplaylist = self.gameplaylist
+        self.gm.stage = self.stage
+        self.gm.gp = self.gp
+
         self.gm.opponents = []
         self.gm.opponent_group = Group()
         self.gm.opponent_bullets = []
@@ -763,7 +784,7 @@ class PlayState(SubGame):
         self.gm.opponent_yoffset = (self.gm.size[0] - self.gm.opponent_size[1])/2
         self.gm.opponent_xoffset = self.gm.size[0]
 
-        
+
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
 
