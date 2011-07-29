@@ -262,21 +262,21 @@ class VerticalQuestion(Question):
         srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,]
 
         cur_y = 0 # increments, how far from the left are we
-        dh = self.height # The width of the destination sprite
+        dh = self.width # The width of the destination sprite
         
         for src in srcs:
             self.dests.append( (src.image,
-                                ((dh - src.rect.height), cur_x)
+                                ((dh - src.rect.height), cur_y)
                                ))
             cur_y += src.rect.height + MARGIN
         
         self.line = sprites.Line(self.width)
 
         self.dests.append((self.line.image,
-                           (cur_x, (dh - self.line.rect.height))
+                           (cur_y, (dh - self.line.rect.height))
                           ))
-        cur_x += self.line.rect.width
-        self.width = cur_x# sets the height to the fraction height
+        cur_y += self.line.rect.width
+        self.height = cur_y# sets the height to the fraction height
 
         super(VerticalQuestion, self).create(self.width, self.height)
 
