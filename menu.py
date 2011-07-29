@@ -390,13 +390,14 @@ class LevelMenu(AnyMenu):
             # -----------------------------------------------------------------
 
 
-            self.sprites.append(   TextButton(sel_svg = sel_svg,
-                                              des_svg = des_svg,
-                                              size = ( 0, 150 ),
-                                              callout = str(level[0]['id']),
-                                              initsel = useonce,
-                                              trigger = gametrigger
-                                            )
+            self.sprites.append(TextButton(sel_svg = sel_svg,
+                                           des_svg = des_svg,
+                                           size = ( 0, 150 ),
+                                           callout = str(level[0]['id']),
+                                           initsel = useonce,
+                                           string = str(level[0]['description']),
+                                           trigger = gametrigger
+                                           )
                                )
 
             self.maplist[-1].append([str(level[0]['id']), 'UDR'])
@@ -603,7 +604,7 @@ class StageMenu(AnyMenu):
         self.deep.rect.bottomright = (wc - margin, hc + margin)
         self.solar.rect.bottomleft = (wc + margin, hc + margin)
         self.planet.rect.topright =  (wc - margin, hc - margin)
-        self.city.rect.midleft  =    (wc + margin, hc - margin)
+        self.city.rect.topleft  =    (wc + margin, hc - margin)
         
         self.allignment = Allignment(svg=grades_allign, size = (0, sh))
         self.allignment.rect.midtop = (sw/2, 0)
