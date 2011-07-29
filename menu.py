@@ -169,7 +169,8 @@ class TextButton(Sprite):
                  callout='NO', # Name to respond to select
                  initsel=False, # Select this on start
                  string='nostring', # What to say on the button
-                 trigger=[None, None]):  # what should be done on a trigger
+                 trigger=[None, None], # What should be done on a trigger
+                 offset = (0, 0)):  # offset for text
         
         data_sel = open(sel_svg).read()
         data_des = open(des_svg).read()
@@ -184,14 +185,15 @@ class TextButton(Sprite):
         Sprite.__init__(self)
         self.size = self.sprite_sel.image.get_size()
         self.image = new_surface(self.size)
-        
+        self.offset = offset
+
         if self.selected is True:
             self.image.blit(self.sprite_sel.image, (0, 0))
-            self.image.blit(self.text.image, (0, 0))
+            self.image.blit(self.text.image, self.offset)
 
         else:
             self.image.blit(self.sprite_des.image, (0, 0))
-            self.image.blit(self.text.image, (0, 0))
+            self.image.blit(self.text.image, self.offset)
         
         self.rect = self.sprite_sel.rect
         self.resolution = self.sprite_sel.resolution
@@ -213,12 +215,12 @@ class TextButton(Sprite):
         if callout == self.callout:
             self.image = new_surface(self.size)
             self.image.blit(self.sprite_sel.image, (0, 0))
-            self.image.blit(self.text.image, (0, 0))
+            self.image.blit(self.text.image, self.offset)
             self.selected = True
         else:
             self.image = new_surface(self.size)
             self.image.blit(self.sprite_des.image, (0, 0))
-            self.image.blit(self.text.image, (0, 0))
+            self.image.blit(self.text.image, self.offset)
             self.selected = False
 
         super(TextButton, self).update()
@@ -303,6 +305,7 @@ class AnyMenu(SubGame):
                     self.pop_state()
                     return
                 elif keys(event, 'next'):
+                    print 'Trigger:',list[self.cursor[0]][self.cursor[1]][0]
                     if list[self.cursor[0]][self.cursor[1]][0] != 'none':
                         for sprite in self.group.sprites():
                             trigger = sprite.trigger(list[self.cursor[0]][self.cursor[1]][0])
@@ -327,6 +330,8 @@ class LevelMenu(AnyMenu):
     def transition_in(self):
         #General initialization
         if self.initialized:
+            self.group = Group(*self.sprites)
+            self.allignment.add(self.group)
             return
         super(LevelMenu, self).transition_in()
         self.initialized = True
@@ -396,7 +401,8 @@ class LevelMenu(AnyMenu):
                                            callout = str(level[0]['id']),
                                            initsel = useonce,
                                            string = str(level[0]['description']),
-                                           trigger = gametrigger
+                                           trigger = gametrigger,
+                                           offset = ( 20, 45 )
                                            )
                                )
 
@@ -445,8 +451,12 @@ class LevelMenu(AnyMenu):
         
     def triggers (self, trigger):
         """ Callback for trigger usage """
+        print 'Trigger MENU!!!', trigger
         if trigger is not None:
             self.newstate = CharecterMenu(self.gp, trigger[0], self.stage)
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
             self.newstate.push_state()
             return
 
@@ -462,6 +472,8 @@ class GradeMenu(AnyMenu):
     def transition_in(self):
         #General initialization
         if self.initialized:
+            self.group = Group(self.resume, self.first, self.second, self.third,
+                           self.allignment)
             return
         super(GradeMenu, self).transition_in()
         self.initialized = True
@@ -536,6 +548,9 @@ class GradeMenu(AnyMenu):
                                               'stageid')
             else:
                 self.newstate = StageMenu(self.gp, trigger)
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
             self.newstate.push_state()
             return
 
@@ -554,6 +569,8 @@ class StageMenu(AnyMenu):
     def transition_in(self):
         #General initialization
         if self.initialized:
+            self.group = Group(self.deep, self.solar, self.planet, self.city,
+                           self.allignment)
             return
         super(StageMenu, self).transition_in()
         self.initialized = True
@@ -621,6 +638,9 @@ class StageMenu(AnyMenu):
         """ Callback for trigger usage """
         if trigger is not None:
             self.newstate = LevelMenu(self.gp, trigger[1], trigger[0])
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
             self.newstate.push_state()
             return
         
@@ -639,6 +659,8 @@ class CharecterMenu(AnyMenu):
     def transition_in(self):
         #General initialization
         if self.initialized:
+            self.group = Group(self.snake, self.tux, self.gnu, self.wilber,
+                           self.allignment)
             return
         super(CharecterMenu, self).transition_in()
         self.initialized = True
@@ -711,6 +733,9 @@ class CharecterMenu(AnyMenu):
                                       self.gameplay,
                                       self.levelid, 
                                       self.stage)
+        self.group.empty()
+        self.group.draw()
+        GetScreen().draw()
         self.newstate.swap_state()
         return
         
@@ -727,6 +752,7 @@ class HowToMenu(AnyMenu):
     def transition_in(self):
         #General initialization
         if self.initialized:
+            self.group = Group(self.allignment)
             return
         super(HowToMenu, self).transition_in()
         self.initialized = True
@@ -747,6 +773,9 @@ class HowToMenu(AnyMenu):
         """ Callback for trigger usage """
         if trigger is not None:
             self.newstate = trigger()
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
             self.newstate.push_state()
             return
             
@@ -762,6 +791,8 @@ class MainMenu(AnyMenu):
     def transition_in(self):
         #General initialization
         if self.initialized:
+            self.group = Group(self.play, self.howto, self.about, self.credits,
+                           self.allignment)
             return
         super(MainMenu, self).transition_in()
         self.initialized = True
@@ -828,6 +859,9 @@ class MainMenu(AnyMenu):
         """ Callback for trigger usage """
         if trigger is not None:
             self.newstate = trigger()
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
             self.newstate.push_state()
             return
 
