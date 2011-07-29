@@ -241,7 +241,7 @@ class FlatQuestion(Question):
 class VerticalQuestion(Question):
     """A question in the right to left format"""
     def __init__(self, term1, operation, term2):
-        super(FlatQuestion, self).__init__()
+        super(VerticalQuestion, self).__init__()
         self.term1 = term1
         self.term2 = term2
         self.operation = operation
