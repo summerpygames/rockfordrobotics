@@ -170,7 +170,13 @@ class AnswerPrinter(Sprite):
     def __init__(self):
         super(AnswerPrinter, self).__init__()
         
-    
+class LifeManager(object):
+    """docstring for LifeManager"""
+    def __init__(self, arg):
+        super(LifeManager, self).__init__()
+        self.arg = arg
+
+
 class AnswerGuy(MaskSprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
