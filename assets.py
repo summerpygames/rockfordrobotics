@@ -107,3 +107,10 @@ credits_align = os.path.join(assets, allign, '.svg')
 
 gameplay_database = os.path.join(assets, 'test2.sqlite.db')
 
+###########################################
+## Lifes                                 ##
+###########################################
+life_full = os.path.join(assets, 'wholeheart.svg')
+life_empty = os.path.join(assets, 'brokenheart.svg')
+
+question_box = os.path.join(assets, button, 'questionbox.svg')

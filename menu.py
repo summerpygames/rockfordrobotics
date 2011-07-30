@@ -698,7 +698,7 @@ class CharecterMenu(AnyMenu):
                               size = ( 610, None ),
                               callout = 'wilber',
                               initsel = False,
-                              trigger = ['wiber',self])
+                              trigger = ['wilber',self])
 
         positions = []
         sw, sh = self.screen_state.get_size()

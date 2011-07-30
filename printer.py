@@ -28,6 +28,7 @@ from APH.Utils import *
 from APH.Screen import *
 from APH.Sprite import *
 import pygame
+import assets
 #from olpcgames import pangofont
 import re
 import sprites
@@ -152,11 +153,9 @@ def decideelement(element):
 
         if isinstance(element, int):
             return sprites.Letters(element)
-            print 'int'
         else:
             try:
                 if element.type == 'fint':
-                    print 'fraction'
                     r = sprites.FractionTerm
                 elif element.type == 'fmint':
                     r = sprites.FractionTerm
@@ -166,9 +165,7 @@ def decideelement(element):
                     r = sprites.Letters
             except AttributeError:
                 r = sprites.Letters
-                print 'error: int'
             finally:
-                print 'printerdecided'
                 return r(element)
 
 
@@ -351,16 +348,13 @@ class Converter(object):
     def extractor(self, string):
         """Find what kind of number we have using regex"""
         for r, x in zip(self.expressions, self.operations):
-            print r, x
             self.m = r.match(string) # Create a match object
                         
             try:
                 self.g = self.m.groups()
             except AttributeError:
-                print 'AERROR'
                 pass
             else:
-                print str(x)
                 return x(*self.g)
 
                 

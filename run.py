@@ -37,6 +37,7 @@ log = logging.getLogger( 'HelloPygame run' )
 log.setLevel( logging.DEBUG )
 import menu
 import assets
+import config
 
 # Make a new global GameManager, persistant through levels
 
@@ -146,7 +147,7 @@ class Enemy(MovingSvgObject):
     
     """
     
-    def __init__(self, size, svg, position, speed = -20, copy = False):
+    def __init__(self, size, svg, position, speed = config.speed, copy = False):
         self.pos = position
         self.siz = size
         super(Enemy, self).__init__(position = self.pos, svg = svg, size =
@@ -172,7 +173,7 @@ class AnswerPrinter(Sprite):
 class LifeBlip(Sprite):
     """A simple SVG background allignment"""
     def __init__(self, svg=None, size=None):
-        super(Allignment, self).__init__()
+        super(LifeBlip, self).__init__()
         self.svg = svg
         data = open(svg).read()
         self.sprite = svgsprite.SVGSprite(svg=data, size=size)
@@ -186,37 +187,121 @@ class LifeBlip(Sprite):
         """do nothing"""
         pass
 
+class ComposeButton(Sprite):
+    """Base button class to be built upon"""
+    def __init__(self, position = (0, 0), #starting position?
+                 svg=None, # images
+                 otherimage=None,  # Image
+                 size=None, # only spec the vertical
+                 offset = (0, 0)):  # offset for text
+        
+        data_svg = open(svg).read()
+        self.sprite = svgsprite.SVGSprite(svg=data_svg, size=size)
+                                            
+        Sprite.__init__(self)
+        self.size = self.sprite.image.get_size()
+        self.image = new_surface(self.size)
+        self.offset = offset
+        self.other = otherimage
+
+        self.image.blit(self.sprite.image, (0, 0))
+        self.image.blit(self.other, self.offset)
+
+        self.rect = self.sprite.rect
+        self.resolution = self.sprite.resolution
+        self.rect.midtop = position
+
+    def update(self, callout):
+        """This will set the button to deselected if it was the thing
+        that is now selected, and it will make itself selected if it is"""
+        self.image = new_surface(self.size)
+        self.image.blit(self.sprite.image, (0, 0))
+        self.image.blit(self.other, self.offset)
+        self.selected = True
+
+        super(ComposeButton, self).update()
+
 class LifeManager(object):
-    """docstring for LifeManager"""
-    def __init__(self, arg):
+
+    """Manage life"""
+
+        
+    def __init__(self, gm):
+        self.gm = gm
         super(LifeManager, self).__init__()
         self.imagesize = 30
-        self.full = LifeBlip(svg='test', (self.imagesize, None))
-        self.empty = LifeBlip(svg='test')
+        self.ticker = 0
+        self.full = LifeBlip(svg=assets.life_full, size=(self.imagesize, None))
+        self.empty = LifeBlip(svg=assets.life_empty, size=(self.imagesize, None) )
+        self._lives = 3
+        self.group = self.gm.life_group
+
         f = self.full
         e = self.empty
         
-        map = [[e, e, e],
-               [f, e, e],
-               [f, f, e],
-               [f, f, f]]
+        self.map = [[e, e, e],
+                    [f, e, e],
+                    [f, f, e],
+                    [f, f, f]]
         
-        self.cursor = 3
-        
-        lifeblips = []
-        
-        for i in range(3):
-            lifeblips.append(new_surface((self.imagesize, self.imagesize)))
+        self.lifeblips = []
 
-        def loose(self, scope):
-            if scope == ''
+        ###########################
+        # Hook for life lost
+        @self.gm.p.subscribe(event='life_lost', needs=['scope'])
+        def example_hook(p, scope):
+            self.loose(scope)
+        ############################
+
+        for i in range(3):
+            self.lifeblips.append(LifeBlip(svg=assets.life_full, size=(self.imagesize, None)))
+            self.lifeblips[-1].rect.topleft = ((((i + 1) * 5) + ((i + 1) *
+                                                                 self.imagesize))
+                                               ,(self.gm.size[1] -
+                                                 self.imagesize - 5))
+
+        self.group.add(*self.lifeblips)
+
+        self.lives = 3
+
+    
+    def loose(self, scope):
+        if scope == 'shot':
+            self.lives -= 1
+        elif scope == 'slipped':
+            if self.ticker <= 0:
+                self.lives -= 1
+            self.ticker += 20
+        elif scope == 'incorrect':
+            self.lives -= 1 
+
+    def change(self):
+        """Change the screen so it shows the lifes"""
+        pass
             
-        def update(self):
-            """ Add the time to the ticker in case something needs to happen
-            with the life looser
-            """
-            if self.ticker > 0:
-                self.ticker -= 1
+    def get_lives(self):
+        """get the current number of lives"""
+        return self._lives
+
+    def set_lives(self, value):
+        """Set number of lives and update the screen"""
+        self._lives = value
+        if not self._lives < 0:
+            for minilife, life in zip(self.map[self._lives], self.lifeblips):
+                life.image = minilife.image
+        else:
+            self.gm.p.trigger(event='end_game', clean=False)
+
+    def update(self):
+        """ Add the time to the ticker in case something needs to happen
+        with the life looser
+        """
+        if self.ticker > 0:
+            self.ticker -= 1
+        self.group.update()
+
+    lives = property(get_lives, set_lives)
+
             
 class AnswerGuy(MaskSprite):
     
@@ -245,7 +330,7 @@ class AnswerGuy(MaskSprite):
 
         self.text = response
         super(AnswerGuy, self).__init__()
-        self.change_x = -20
+        self.change_x = config.speed
         self.change_y = 0
         self.image = new_surface(size)
         self.image.fill((0, 0, 0, 0))
@@ -334,6 +419,7 @@ class BadGuy(Enemy):
             self.kill()
             self.gm.p.trigger(event='strays', bulletlist = self.bullets,
                             bulletgroup = self.opponent_bulletgroup)
+            self.gm.p.trigger(event='life_lost', scope='slipped')
 
 
         for i in self.bullets:
@@ -421,8 +507,6 @@ class LaserCannon(Sprite):
             if self.heat >= 75:
                 self.overheat()
                 # If applicable, overheat the lasercannon
-        else:
-            print 'HOT'
 
     def color_finder(self, heat):
         """Perform a linear equation to find the color of the bar
@@ -458,7 +542,6 @@ class LaserCannon(Sprite):
             self.heat -= 1
         elif self.overheated == True:
             self.overheated = False
-            print 'COOL'
         if self.overheated:
             self.redness.fill((255, 0, 0))
         else:
@@ -512,11 +595,11 @@ class Player(MovingSvgObject):
     
     """
     
-    def __init__(self, svg, lasercannon, size):
+    def __init__(self, svg, lasercannon, size, gm):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
                                      size)
         self.cannon = lasercannon
-
+        self.gm = gm
     def shoot(self, position):
         """This will make the plater shoot"""
         self.cannon.shoot(position)
@@ -530,11 +613,7 @@ class Player(MovingSvgObject):
                                                  True,
                                                  pygame.sprite.collide_mask)
         if len(collisions) > 0:
-            print '''FAIL!!
-FAILURE!!!
-LOOOOSERRR!!!
-YOU STIIINNNK!!!
-'''
+           self.gm.p.trigger(event='life_lost', scope='shot') 
 
         super(Player, self).update()
 
@@ -553,7 +632,8 @@ class FlyingSaucer(Player):
         super(FlyingSaucer, self).__init__(svg=os.path.join('data',
                                                             'pythonsaucer.svg'),
                                            lasercannon = self.cannon,
-                                           size = (300, None))
+                                           size = (250, None), 
+                                           gm = gm)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
@@ -573,7 +653,8 @@ class SpaceShuttle(Player):
         super(SpaceShuttle, self).__init__(svg=os.path.join('data',
                                                             'tuxshuttle.svg'),
                                            lasercannon = self.cannon,
-                                           size = (300, None))
+                                           size = (250, None), 
+                                           gm = gm)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
@@ -592,7 +673,8 @@ class ClassicRocket(Player):
         self.opponent_bulletgroup = gm.opponent_bullet_group
         super(ClassicRocket, self).__init__(svg=os.path.join('data', 'gnurocket.svg'),
                                            lasercannon = self.cannon,
-                                           size = (400, None))
+                                           size = (300, None), 
+                                           gm = gm)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
@@ -611,11 +693,12 @@ class FighterJet(Player):
         self.opponent_bulletgroup = gm.opponent_bullet_group
         super(FighterJet, self).__init__(svg=os.path.join('data', 'gimpfighter.svg'),
                                            lasercannon = self.cannon,
-                                           size = (300, None))
+                                           size = (250, None), 
+                                           gm = gm)
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
-        super(Fighterjet, self).shoot(self.rect.center)
+        super(FighterJet, self).shoot(self.rect.center)
 
 
 class Bullet(MaskSprite):
@@ -789,7 +872,13 @@ class TheOpponent():
 
         self.questionsprite = self.question.getquestion()
 
-        self.questionsprite.add(self.question_group)
+        self.questionthing = ComposeButton(position = (self.gm.size[0]/2, 10), 
+                                           svg=assets.question_box,
+                                           otherimage=self.questionsprite.image,
+                                           size=( 200 , None ),
+                                           offset = (15, 20)
+                                          )
+        self.questionthing.add(self.question_group)
         
 
     def update(self):
@@ -841,7 +930,7 @@ class PlayState(SubGame):
         self.gm.opponent_bullets = []
         self.gm.opponent_bullet_group =  Group()
         self.gm.question_group = Group()
-
+        self.gm.life_group = Group()
         
         self.gm.player_group = Group()
         self.gm.playable_bullets = []
@@ -863,27 +952,28 @@ class PlayState(SubGame):
         self.gm.background = my_load_image('spacebg.jpg')
         
         if self.charecterselection is 'python':
-            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon_offset = (-20, 45)
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = FlyingSaucer(self.gm)
         elif self.charecterselection is 'tux':
-            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon_offset = ( 90, 30)
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = SpaceShuttle(self.gm)
         elif self.charecterselection is 'gnu':
-            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon_offset = ( 100, 0)
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = ClassicRocket(self.gm)
         elif self.charecterselection is 'wilber':
-            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon_offset = (10, 20)
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = FighterJet(self.gm)
         else:
-            self.gm.player_cannon_offset = (-20, 0)
+            self.gm.player_cannon_offset = (-20, -150)
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = FlyingSaucer(self.gm)
 
         self.gm.opponent_manager = TheOpponent(self.gm)
+        self.gm.lifemanager = LifeManager(self.gm)
 
         self.gm.playerlifes = 3
         
@@ -961,10 +1051,13 @@ class PlayState(SubGame):
         self.gm.opponent_group.update()
         self.gm.straybullets.update()
         self.gm.opponent_manager.update()
-
+        self.gm.lifemanager.update()
+        
         self.gm.player_group.draw()
         self.gm.friendly_bullet_group.draw()
         self.gm.opponent_group.draw()
         self.gm.opponent_bullet_group.draw()
         self.gm.question_group.draw()
+        self.gm.life_group.draw()
+
         GetScreen().draw()
