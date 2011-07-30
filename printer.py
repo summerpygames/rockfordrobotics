@@ -1,4 +1,32 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#       WhateverWeCallTheGame.py
+#       
+#       Copyright Contributors
+#       
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 3 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#       
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+#       
+# 
+#Import APH libraries
+from APH import *
+from APH.Game import *
+from APH.Utils import *
+from APH.Screen import *
+from APH.Sprite import *
 import pygame
 #from olpcgames import pangofont
 import re
@@ -6,7 +34,7 @@ import sprites
 
 class Rint(object):
 
-    """An intager with a remainder, for answering questions"""
+    """An intager with a remainder, for answering questions """
 
     def __init__(self, i, r):
         self.__i = i
@@ -124,9 +152,11 @@ def decideelement(element):
 
         if isinstance(element, int):
             return sprites.Letters(element)
+            print 'int'
         else:
             try:
                 if element.type == 'fint':
+                    print 'fraction'
                     r = sprites.FractionTerm
                 elif element.type == 'fmint':
                     r = sprites.FractionTerm
@@ -136,11 +166,13 @@ def decideelement(element):
                     r = sprites.Letters
             except AttributeError:
                 r = sprites.Letters
+                print 'error: int'
             finally:
+                print 'printerdecided'
                 return r(element)
 
 
-class Question(pygame.sprite.Sprite):
+class Question(Sprite):
 
     """This will make a surface using fonts from the olpc from a question
     
@@ -213,7 +245,7 @@ class FlatQuestion(Question):
 class VerticalQuestion(Question):
     """A question in the right to left format"""
     def __init__(self, term1, operation, term2):
-        super(FlatQuestion, self).__init__()
+        super(VerticalQuestion, self).__init__()
         self.term1 = term1
         self.term2 = term2
         self.operation = operation
@@ -234,23 +266,23 @@ class VerticalQuestion(Question):
         srcs = [self.term1_sprite, self.operation_sprite, self.term2_sprite,]
 
         cur_y = 0 # increments, how far from the left are we
-        dh = self.height # The width of the destination sprite
+        dh = self.width # The width of the destination sprite
         
         for src in srcs:
             self.dests.append( (src.image,
-                                ((dh - src.rect.height), cur_x)
+                                ((dh - src.rect.height), cur_y)
                                ))
             cur_y += src.rect.height + MARGIN
         
         self.line = sprites.Line(self.width)
 
         self.dests.append((self.line.image,
-                           (cur_x, (dh - self.line.rect.height))
+                           (cur_y, (dh - self.line.rect.height))
                           ))
-        cur_x += self.line.rect.width
-        self.width = cur_x# sets the height to the fraction height
+        cur_y += self.line.rect.height
+        self.height = cur_y# sets the height to the fraction height
 
-        super(FlatQuestion, self).create(self.width, self.height)
+        super(VerticalQuestion, self).create(self.width, self.height)
 
 
                 
@@ -259,7 +291,7 @@ class VerticalQuestion(Question):
 
 
 
-class Answer(pygame.sprite.Sprite):
+class Answer(Sprite):
 
     """docstring for DrawIt"""
     
@@ -319,13 +351,16 @@ class Converter(object):
     def extractor(self, string):
         """Find what kind of number we have using regex"""
         for r, x in zip(self.expressions, self.operations):
+            print r, x
             self.m = r.match(string) # Create a match object
                         
             try:
                 self.g = self.m.groups()
             except AttributeError:
+                print 'AERROR'
                 pass
             else:
+                print str(x)
                 return x(*self.g)
 
                 
@@ -364,7 +399,7 @@ class Converter(object):
                     return FlatQuestion
             except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return FlatQuestion
+                    return VerticalQuestion
                 else:
                     return FlatQuestion
 
@@ -375,7 +410,7 @@ class Converter(object):
                     return FlatQuestion
             except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return FlatQuestion
+                    return VerticalQuestion
                 else:
                     return FlatQuestion
 
@@ -386,7 +421,7 @@ class Converter(object):
                     return FlatQuestion
             except AttributeError:
                 if (self.term1 > 10 or self.term2 > 10):
-                    return FlatQuestion
+                    return VerticalQuestion
                 else:
                     return FlatQuestion
 

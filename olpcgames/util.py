@@ -29,18 +29,24 @@ def get_activity_root( ):
     If the activity is present, returns the activity's root,
     otherwise returns NON_SUGAR_ROOT as the directory.
     """
-    import olpcgames
-    if olpcgames.ACTIVITY:
-        return olpcgames.ACTIVITY.get_activity_root()
-    else:
-        return os.path.expanduser( NON_SUGAR_ROOT )
+    root = os.environ.get( 'SUGAR_ACTIVITY_ROOT' )
+    if not root:
+        root = NON_SUGAR_ROOT 
+    log.debug( 'Activity Root: %s', root )
+    return os.path.expanduser( root )
 
 def data_path(file_name):
     """Return the full path to a file in the data sub-directory of the bundle"""
-    return os.path.join(get_bundle_path(), 'data', file_name)
+    dirname = os.path.join(get_bundle_path(), 'data' )
+    if not os.path.isdir( dirname ):
+        os.makedirs( dirname )
+    return os.path.join( dirname, file_name )
 def tmp_path(file_name):
     """Return the full path to a file in the temporary directory"""
-    return os.path.join(get_activity_root(), 'tmp', file_name)
+    dirname = os.path.join(get_bundle_path(), 'tmp' )
+    if not os.path.isdir( dirname ):
+        os.makedirs( dirname )
+    return os.path.join(dirname, file_name)
 
 def get_traceback(error):
     """Get formatted traceback from current exception

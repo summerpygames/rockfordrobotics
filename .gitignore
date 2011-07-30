@@ -27,12 +27,17 @@
 *.log
 *.sql
 *.sqlite
+*shelve.db
 
 # OS generated files #
 ######################
 .DS_Store?
+Python.xcodeproj
 ehthumbs.db
 Icon?
 Thumbs.db
 .project
+<<<<<<< HEAD
 .pydevproject
+=======
+>>>>>>> b48b6a13200e9067cc7ffe6745293183588d87da
