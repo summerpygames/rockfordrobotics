@@ -88,10 +88,11 @@ class GameManager(object):
         @self.p.subscribe(event='spawn_wave')
         def example_hook(p):
             try:
-                if self.gameplaylist.pop(-1) == 'A':
+                popelement = self.gameplaylist.pop(-1)
+                if popelement == 'ask':
                     self.opponent_manager.spawn_answerguys()
                 else:
-                    self.opponent_manager.spawn_badguys(int(self.gameplaylist.pop(-1)))
+                    self.opponent_manager.spawn_badguys(int(popelement))
             except IndexError:
                 self.p.trigger(event='end_game', clean=True)
 

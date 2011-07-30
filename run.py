@@ -734,7 +734,10 @@ class TheOpponent():
 
     def update(self):
         """This will update the positions of the bullets"""
-        self.opponent_bulletgroup.update()
+        if len(self.group.sprites()) == 0:
+            self.gm.p.trigger(event='spawn_wave')
+
+
 
 
 ###############################################################################
@@ -850,7 +853,7 @@ class PlayState(SubGame):
         self.gm.player_group.add(self.gm.player)
         self.gm.player_group.add(self.gm.player_cannon)
         self.t = 0
-        
+        self.useonce = True
     def main_loop(self):
         
         events = pygame.event.get( )
@@ -897,6 +900,7 @@ class PlayState(SubGame):
         self.gm.opponent_bullet_group.update()
         self.gm.opponent_group.update()
         self.gm.straybullets.update()
+        self.gm.opponent_manager.update()
 
         self.gm.player_group.draw()
         self.gm.friendly_bullet_group.draw()

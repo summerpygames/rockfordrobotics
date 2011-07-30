@@ -74,7 +74,7 @@ class UserGame(object):
         for row in self.c:
             gameplay = row[0]
         
-        return list(str(gameplay))
+        return self.stageloop(str(gameplay))
 
     def get_game_levels(self, grade, stage):
         """This will return an ID, a Description of the level, and if its
@@ -127,8 +127,8 @@ class UserGame(object):
             id, databasefile, allmath = int(row[0]), str(row[1]),\
                                             bool(int(row[2]))
 
-        gameplaylist = self.get_gameplay() if allmath else\
-        ['.','A','_','2','0','.'] # in the case that it is math
+        gameplaylist = self.get_gameplay() if not allmath else\
+        self.stageloop(['.','A','.','2','0','.']) # in the case that it is mah
         return (databasefile, gameplaylist) 
 
     def getlevel(self, id):
@@ -142,8 +142,8 @@ class UserGame(object):
             id, databasefile, allmath = int(row[0]), str(row[1]),\
                                             bool(int(row[2]))
 
-        gameplaylist = self.get_gameplay() if allmath else\
-        ['.','A','_','2','0','.'] # in the case that it is math
+        gameplaylist = self.get_gameplay() if not allmath else\
+        self.stageloop(['.','A','.','2','0','.']) # in the case that it is mah
         return (databasefile, gameplaylist) 
 
     def stageloop(self, l):
