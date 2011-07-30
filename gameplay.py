@@ -113,7 +113,7 @@ class UserGame(object):
                        UPDATE levels
                        set playcount = playcount+1
                        WHERE id=?
-                       ''', (id)
+                       ''', (int(id))
                       )
     def get_next_level(self, id):
         """Get information on a certain level"""

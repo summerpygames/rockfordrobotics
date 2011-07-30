@@ -147,7 +147,7 @@ class Enemy(MovingSvgObject):
     
     """
     
-    def __init__(self, size, svg, position, speed = -1, copy = False):
+    def __init__(self, size, svg, position, speed = -20, copy = False):
         self.pos = position
         self.siz = size
         super(Enemy, self).__init__(position = self.pos, svg = svg, size =
@@ -198,7 +198,7 @@ class AnswerGuy(MaskSprite):
 
         self.text = response
         super(AnswerGuy, self).__init__()
-        self.change_x = -1
+        self.change_x = -20
         self.change_y = 0
         self.image = new_surface(size)
         self.image.fill((0, 0, 0, 0))
@@ -225,6 +225,9 @@ class AnswerGuy(MaskSprite):
             self.kill()
         self.rect.top += self.change_y
         self.rect.left += self.change_x
+
+        if self.rect.left < -100:
+            self.kill()
 
         super(AnswerGuy, self).update()
 
@@ -279,6 +282,12 @@ class BadGuy(Enemy):
                 self.onefire = True
         else:
             self.onefire = False
+
+        if self.rect.left < -100:
+            self.kill()
+            self.gm.p.trigger(event='strays', bulletlist = self.bullets,
+                            bulletgroup = self.opponent_bulletgroup)
+
 
         for i in self.bullets:
             if i.rect.left < -20:
@@ -456,9 +465,9 @@ class Player(MovingSvgObject):
     
     """
     
-    def __init__(self, svg, lasercannon):
+    def __init__(self, svg, lasercannon, size):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
-                                     (200, None))
+                                     size)
         self.cannon = lasercannon
 
     def shoot(self, position):
@@ -496,7 +505,8 @@ class FlyingSaucer(Player):
         self.opponent_bulletgroup = gm.opponent_bullet_group
         super(FlyingSaucer, self).__init__(svg=os.path.join('data',
                                                             'pythonsaucer.svg'),
-                                           lasercannon = self.cannon)
+                                           lasercannon = self.cannon,
+                                           size = (300, None))
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
@@ -515,7 +525,8 @@ class SpaceShuttle(Player):
         self.opponent_bulletgroup = gm.opponent_bullet_group
         super(SpaceShuttle, self).__init__(svg=os.path.join('data',
                                                             'tuxshuttle.svg'),
-                                           lasercannon = self.cannon)
+                                           lasercannon = self.cannon,
+                                           size = (300, None))
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
@@ -533,7 +544,8 @@ class ClassicRocket(Player):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
         super(ClassicRocket, self).__init__(svg=os.path.join('data', 'gnurocket.svg'),
-                                           lasercannon = self.cannon)
+                                           lasercannon = self.cannon,
+                                           size = (400, None))
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
@@ -551,7 +563,8 @@ class FighterJet(Player):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
         super(FighterJet, self).__init__(svg=os.path.join('data', 'gimpfighter.svg'),
-                                           lasercannon = self.cannon)
+                                           lasercannon = self.cannon,
+                                           size = (300, None))
 
     def shoot(self):
         """This is what you run when you want the thing to fire a laser"""
