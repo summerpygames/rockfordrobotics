@@ -124,7 +124,6 @@ class MovingSvgObject(MaskSprite):
         self.change_x = 0
         self.change_y = 0
         self.layer = 'test'
-       
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
         self.change_x+=x
@@ -170,13 +169,55 @@ class AnswerPrinter(Sprite):
     def __init__(self):
         super(AnswerPrinter, self).__init__()
         
+class LifeBlip(Sprite):
+    """A simple SVG background allignment"""
+    def __init__(self, svg=None, size=None):
+        super(Allignment, self).__init__()
+        self.svg = svg
+        data = open(svg).read()
+        self.sprite = svgsprite.SVGSprite(svg=data, size=size)
+        self.image = self.sprite.image 
+        self.rect = self.sprite.rect
+        self.resolution = self.sprite.resolution
+        self.position = (0, 0)
+        self.layer = 'allignment'
+
+    def update(self, *args):
+        """do nothing"""
+        pass
+
 class LifeManager(object):
     """docstring for LifeManager"""
     def __init__(self, arg):
         super(LifeManager, self).__init__()
-        self.arg = arg
+        self.imagesize = 30
+        self.full = LifeBlip(svg='test', (self.imagesize, None))
+        self.empty = LifeBlip(svg='test')
+        f = self.full
+        e = self.empty
+        
+        map = [[e, e, e],
+               [f, e, e],
+               [f, f, e],
+               [f, f, f]]
+        
+        self.cursor = 3
+        
+        lifeblips = []
+        
+        for i in range(3):
+            lifeblips.append(new_surface((self.imagesize, self.imagesize)))
 
-
+        def loose(self, scope):
+            if scope == ''
+            
+        def update(self):
+            """ Add the time to the ticker in case something needs to happen
+            with the life looser
+            """
+            if self.ticker > 0:
+                self.ticker -= 1
+            
 class AnswerGuy(MaskSprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
