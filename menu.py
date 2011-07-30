@@ -277,6 +277,7 @@ class AnyMenu(SubGame):
         #Font & text initialization
         pygame.font.init()
         self.font = pygame.font.SysFont(None,80)
+        pygame.mouse.set_visible(False)
         
     def main_loop(self, list):
         self.t = self.t + 1
