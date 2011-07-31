@@ -14,7 +14,7 @@
    inkscape:version="0.48.1 "
    width="900"
    height="900"
-   sodipodi:docname="levelmenu.svg">
+   sodipodi:docname="lmalign.svg">
   <metadata
      id="metadata2993">
     <rdf:RDF>
@@ -23,7 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -132,7 +132,7 @@
      id="namedview2989"
      showgrid="false"
      inkscape:zoom="0.81552983"
-     inkscape:cx="296.61199"
+     inkscape:cx="489.78117"
      inkscape:cy="188.29657"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
@@ -187,7 +187,7 @@
          id="path6160" />
     </g>
     <g
-       transform="translate(-34.352031,-147.93114)"
+       transform="translate(-19.042719,-132.97198)"
        id="layer1-4"
        inkscape:label="Layer 1">
       <g
@@ -278,7 +278,7 @@
     </g>
     <g
        id="g4323"
-       transform="matrix(0.37905347,0,0,0.37905347,162.31821,545.90499)">
+       transform="matrix(0.37905347,0,0,0.37905347,145.12685,560.86416)">
       <rect
          rx="46.011929"
          y="666.00958"

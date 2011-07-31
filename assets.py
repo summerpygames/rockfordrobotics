@@ -2,6 +2,7 @@ import os
 assets = 'data'
 button = 'button'
 allign = 'allign'
+message = 'message'
 
 ##########################
 ## To complete this file##
@@ -114,3 +115,11 @@ life_full = os.path.join(assets, 'wholeheart.svg')
 life_empty = os.path.join(assets, 'brokenheart.svg')
 
 question_box = os.path.join(assets, button, 'questionbox.svg')
+
+###########################################
+## OSD Messages                          ##
+###########################################
+great_job = os.path.join(assets, message, 'greatjob.svg')
+incorrect = os.path.join(assets, message, 'incorrect.svg')
+correct = os.path.join(assets, message, 'correct.svg')
+ouch = os.path.join(assets, message, 'ouch.svg')

@@ -169,9 +169,79 @@ class AnswerPrinter(Sprite):
 
     def __init__(self):
         super(AnswerPrinter, self).__init__()
+
+
+
+
+
+class ExclaimMessage(Sprite):
+    """Show something on the screen"""
+    def __init__(self, gm):
+        super(ExclaimMessage, self).__init__()
+        self.gm = gm
+
+        #================
+        # New empty image
+        self.empty = new_surface(350, 100)
+        self.image = self.empty
+        self.rect = self.image.get_rect()
         
-class LifeBlip(Sprite):
-    """A simple SVG background allignment"""
+        #=========================================
+        # Init some images for predefined messages
+        self.correct = StaticSVG(svg=assets.correct, size=(350, 100))
+        self.incorrect = StaticSVG(svg=assets.incorrect, size=(350, 100))
+        self.great_job = StaticSVG(svg=assets.great_job, size=(350, 100))
+        self.ouch = StaticSVG(svg=assets.ouch, size=(350, 100))
+        
+        #======================================================
+        # Setup ticker and displaying and cue for update method
+        self.ticker = 0
+        self.displaying = False
+        self.que = []
+
+        ###########################
+        # Hook for life lost
+        @self.gm.p.subscribe(event='exclaim', needs=['message'])
+        def example_hook(p, scope):
+            self.exclaim(message)
+        ############################
+
+    def exclaim(self, message):
+        #=============================
+        # Cases for different messages
+        if message == 'incorrect':
+            self.que.append(self.incorrect.image)
+        elif message == 'correct':
+            self.que.append(self.correct.image)
+        elif message == 'good_job':
+            self.que.append(self.great_job.image)
+        elif message == 'ouch':
+            self.que.append(self.ouch.image)
+
+    def update(self):
+        """Update the message and play all in que"""
+        #=========================================
+        # If the ticker is out at the que is full:
+        if self.ticker <= 0 and len(self.que) > 0:
+            self.image = self.que.pop(-1) # Set the image to the next in line
+            self.ticker += 15 # Refill the ticker
+            self.displaying = True # Set a temp variable becuse we are displying
+        #===============================================
+        # If the ticker is expired and there are no more
+        # things left in the que
+        elif self.ticker <= 0:
+            if self.displaying == True:
+                self.image = self.empty
+                self.displaying = False
+        elif self.ticker > 0:
+            self.ticker -= 1
+        else:
+            pass #currently showing a message
+        
+        
+
+class StaticSVG(Sprite):
+    """A simple static SVG"""
     def __init__(self, svg=None, size=None):
         super(LifeBlip, self).__init__()
         self.svg = svg
@@ -181,7 +251,6 @@ class LifeBlip(Sprite):
         self.rect = self.sprite.rect
         self.resolution = self.sprite.resolution
         self.position = (0, 0)
-        self.layer = 'allignment'
 
     def update(self, *args):
         """do nothing"""
@@ -192,17 +261,20 @@ class ComposeButton(Sprite):
     def __init__(self, position = (0, 0), #starting position?
                  svg=None, # images
                  otherimage=None,  # Image
-                 size=None, # only spec the vertical
                  offset = (0, 0)):  # offset for text
         
         data_svg = open(svg).read()
-        self.sprite = svgsprite.SVGSprite(svg=data_svg, size=size)
+        
                                             
         Sprite.__init__(self)
-        self.size = self.sprite.image.get_size()
-        self.image = new_surface(self.size)
-        self.offset = offset
         self.other = otherimage
+        self.size = self.other.get_size()[1] + (2*offset[1]) 
+        self.sprite = svgsprite.SVGSprite(svg=data_svg, size=( None,
+                                                              self.size))
+        self.image = new_surface(self.sprite.image.get_size())
+        print self.sprite.image.get_size()
+        self.offset = offset
+        
 
         self.image.blit(self.sprite.image, (0, 0))
         self.image.blit(self.other, self.offset)
@@ -254,7 +326,7 @@ class LifeManager(object):
         ############################
 
         for i in range(3):
-            self.lifeblips.append(LifeBlip(svg=assets.life_full, size=(self.imagesize, None)))
+            self.lifeblips.append(StaticSVG(svg=assets.life_full, size=(self.imagesize, None)))
             self.lifeblips[-1].rect.topleft = ((((i + 1) * 5) + ((i + 1) *
                                                                  self.imagesize))
                                                ,(self.gm.size[1] -
@@ -302,6 +374,7 @@ class LifeManager(object):
 
     lives = property(get_lives, set_lives)
 
+        
             
 class AnswerGuy(MaskSprite):
     
@@ -360,6 +433,7 @@ class AnswerGuy(MaskSprite):
 
         if self.rect.left < -100:
             self.kill()
+            self.gm.p.trigger(event='life_lost', scope='slipped')
 
         super(AnswerGuy, self).update()
 
@@ -875,7 +949,6 @@ class TheOpponent():
         self.questionthing = ComposeButton(position = (self.gm.size[0]/2, 10), 
                                            svg=assets.question_box,
                                            otherimage=self.questionsprite.image,
-                                           size=( 200 , None ),
                                            offset = (15, 20)
                                           )
         self.questionthing.add(self.question_group)

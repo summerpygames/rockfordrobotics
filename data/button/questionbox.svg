@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="200"
+   width="500"
    height="100"
    id="svg3028"
    version="1.1"
-   inkscape:version="0.48.1 "
-   sodipodi:docname="New document 3">
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="questionbox.svg">
   <defs
      id="defs3030" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.19"
-     inkscape:cx="100"
-     inkscape:cy="50"
+     inkscape:zoom="1.0475"
+     inkscape:cx="-230.24916"
+     inkscape:cy="49.848006"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -34,10 +34,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1280"
-     inkscape:window-height="738"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3033">
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -55,15 +55,15 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-240.71428,-400.21928)">
+     transform="translate(-240.71875,-400.21875)">
     <rect
-       style="opacity:0.7;fill:#4d4d4d;fill-opacity:1;stroke:#000000;stroke-width:4.46469355;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.7;fill:#4d4d4d;fill-opacity:1;stroke:#000000;stroke-width:6.99481821;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3036"
-       width="195.53531"
-       height="95.535309"
-       x="242.94662"
-       y="402.45163"
-       rx="2.9377987"
-       ry="4.358798" />
+       width="493.00519"
+       height="93.005188"
+       x="244.21169"
+       y="403.71671"
+       rx="7.4071021"
+       ry="4.243361" />
   </g>
 </svg>
