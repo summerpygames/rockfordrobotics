@@ -182,29 +182,32 @@ class ExclaimMessage(Sprite):
 
         #================
         # New empty image
-        self.empty = new_surface(350, 100)
+        self.empty = new_surface((350, 100))
         self.image = self.empty
         self.rect = self.image.get_rect()
+        self.group = self.gm.messages_group # Get the correct Group from GM
+        self.add(self.group) # Add to our own group
+        self.rect.midbottom = (self.gm.size[0]/2, self.gm.size[1]) #set to bottom mid of screen
         
         #=========================================
         # Init some images for predefined messages
-        self.correct = StaticSVG(svg=assets.correct, size=(350, 100))
-        self.incorrect = StaticSVG(svg=assets.incorrect, size=(350, 100))
-        self.great_job = StaticSVG(svg=assets.great_job, size=(350, 100))
-        self.ouch = StaticSVG(svg=assets.ouch, size=(350, 100))
+        self.correct = StaticSVG(svg=assets.correct, size=(350, None))
+        self.incorrect = StaticSVG(svg=assets.incorrect, size=(350, None))
+        self.great_job = StaticSVG(svg=assets.great_job, size=(350, None))
+        self.ouch = StaticSVG(svg=assets.ouch, size=(350, None))
         
         #======================================================
         # Setup ticker and displaying and cue for update method
         self.ticker = 0
         self.displaying = False
-        self.que = []
+        self.que = [] # Messages will go in the que
 
-        ###########################
+        #++++++++++++++++++++++
         # Hook for life lost
-        @self.gm.p.subscribe(event='exclaim', needs=['message'])
-        def example_hook(p, scope):
+        @self.gm.p.subscribe(event='message', needs=['message'])
+        def message_hook(p, message):
             self.exclaim(message)
-        ############################
+        #----------------------
 
     def exclaim(self, message):
         #=============================
@@ -230,11 +233,17 @@ class ExclaimMessage(Sprite):
         # If the ticker is expired and there are no more
         # things left in the que
         elif self.ticker <= 0:
+            #=============================
+            # If we have something showing
             if self.displaying == True:
-                self.image = self.empty
-                self.displaying = False
+                self.image = self.empty # Blank the message
+                self.displaying = False # Set temp variable back to False
+        #============================
+        # If the ticker is still full
         elif self.ticker > 0:
-            self.ticker -= 1
+            self.ticker -= 1 # Drain the ticker
+        #================================
+        # We must be displaying a message
         else:
             pass #currently showing a message
         
@@ -243,8 +252,11 @@ class ExclaimMessage(Sprite):
 class StaticSVG(Sprite):
     """A simple static SVG"""
     def __init__(self, svg=None, size=None):
-        super(LifeBlip, self).__init__()
+        super(StaticSVG, self).__init__()
         self.svg = svg
+
+        #==================================
+        # Open svg and set it to the sprite
         data = open(svg).read()
         self.sprite = svgsprite.SVGSprite(svg=data, size=size)
         self.image = self.sprite.image 
@@ -257,7 +269,12 @@ class StaticSVG(Sprite):
         pass
 
 class ComposeButton(Sprite):
-    """Base button class to be built upon"""
+
+    """SVG with an image composited on top of it
+    
+    Used in the question maker, 
+
+    """
     def __init__(self, position = (0, 0), #starting position?
                  svg=None, # images
                  otherimage=None,  # Image
@@ -303,8 +320,8 @@ class LifeManager(object):
         super(LifeManager, self).__init__()
         self.imagesize = 30
         self.ticker = 0
-        self.full = LifeBlip(svg=assets.life_full, size=(self.imagesize, None))
-        self.empty = LifeBlip(svg=assets.life_empty, size=(self.imagesize, None) )
+        self.full = StaticSVG(svg=assets.life_full, size=(self.imagesize, None))
+        self.empty = StaticSVG(svg=assets.life_empty, size=(self.imagesize, None) )
         self._lives = 3
         self.group = self.gm.life_group
 
@@ -688,7 +705,6 @@ class Player(MovingSvgObject):
                                                  pygame.sprite.collide_mask)
         if len(collisions) > 0:
            self.gm.p.trigger(event='life_lost', scope='shot') 
-
         super(Player, self).update()
 
         
@@ -1004,6 +1020,8 @@ class PlayState(SubGame):
         self.gm.opponent_bullet_group =  Group()
         self.gm.question_group = Group()
         self.gm.life_group = Group()
+        self.gm.messages_group = Group()
+       
         
         self.gm.player_group = Group()
         self.gm.playable_bullets = []
@@ -1045,22 +1063,21 @@ class PlayState(SubGame):
             self.gm.player_cannon = LaserCannon(self.gm)
             self.gm.player = FlyingSaucer(self.gm)
 
+        #=======================
+        # Setup all the managers
         self.gm.opponent_manager = TheOpponent(self.gm)
         self.gm.lifemanager = LifeManager(self.gm)
-
-        self.gm.playerlifes = 3
-        
-
+        self.gm.messages = ExclaimMessage(self.gm)
         self.gm.straybullets = StrayBulletManager(self.gm)
 
         self.gm.play = True
         self.gm.menu = False
 
-        self.gm.player_speed = 20
+        self.gm.player_speed = config.playerspeed
         self.gm.setup_hooks()
         
-        ###########################
-        # Hood for game done
+        #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # Hook for ending the game
         @self.gm.p.subscribe(event='end_game', needs=['clean'])
         def example_hook(p, clean):
             if clean:
@@ -1070,6 +1087,8 @@ class PlayState(SubGame):
             else:
                 self.pop_state()
                 return
+        #
+        #--------------------------------------------------------------
 
 
         self.screen_state.set_background(self.gm.background)
@@ -1077,11 +1096,13 @@ class PlayState(SubGame):
         self.gm.player_group.add(self.gm.player_cannon)
         self.t = 0
         self.useonce = True
+
     def main_loop(self):
         
         events = pygame.event.get( )
         
-        # Now the main event-processing loop
+        #==========================================================
+        # Main Event Loop
         if events:
             for event in events:
                 if event.type == pygame.QUIT:
@@ -1115,9 +1136,11 @@ class PlayState(SubGame):
                         self.gm.p.trigger(event='key_up_rel')
                     if keys(event, 'down'):
                         self.gm.p.trigger(event='key_down_rel')
-            
+        #
+        #------------------------------------------------------------
         
-        #Update various sprite groups
+        #=====================
+        # Update Sprite Groups
         self.gm.player_group.update()
         self.gm.friendly_bullet_group.update()
         self.gm.opponent_bullet_group.update()
@@ -1125,12 +1148,18 @@ class PlayState(SubGame):
         self.gm.straybullets.update()
         self.gm.opponent_manager.update()
         self.gm.lifemanager.update()
+        self.gm.messages_group.update()
         
+        #==========================
+        # Draw groups to the screen
         self.gm.player_group.draw()
         self.gm.friendly_bullet_group.draw()
         self.gm.opponent_group.draw()
         self.gm.opponent_bullet_group.draw()
         self.gm.question_group.draw()
         self.gm.life_group.draw()
+        self.gm.messages_group.draw()
 
+        #================
+        # Draw the screen
         GetScreen().draw()

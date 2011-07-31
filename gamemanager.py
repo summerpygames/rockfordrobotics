@@ -26,9 +26,10 @@ class GameManager(object):
         @self.p.subscribe(event='shot_answer', needs=['correct'])
         def example_hook(p, correct):
             if correct:
-                pass
+                self.p.trigger(event='message', message='correct')
             else:
                 self.p.trigger(event='life_lost', scope='incorrect')
+                self.p.trigger(event='message', message='incorrect')
 
         @self.p.subscribe(event='key_down_press')
         def key_down_press_hook(p):
