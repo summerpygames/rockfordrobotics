@@ -39,7 +39,6 @@ import menu
 import assets
 import config
 
-# Make a new global GameManager, persistant through levels
 
 class MaskSprite(Sprite):
     """ A sprite superclass which adds automatic generation of masks for
@@ -158,21 +157,6 @@ class Enemy(MovingSvgObject):
         """This just passes the update up the line"""
         super(Enemy, self).update()
 
-class AnswerPrinter(Sprite):
-
-    """Prints a math answer in different ways depending on what it is
-    
-    If the answer has a fraction in it, this will take that into account, if the
-    answer is a devision with a remainder, this will take that into accound too.
-    
-    """
-
-    def __init__(self):
-        super(AnswerPrinter, self).__init__()
-
-
-
-
 
 class ExclaimMessage(Sprite):
     """Show something on the screen"""
@@ -281,7 +265,6 @@ class ComposeButton(Sprite):
                  offset = (0, 0)):  # offset for text
         
         data_svg = open(svg).read()
-        
                                             
         Sprite.__init__(self)
         self.other = otherimage
@@ -318,77 +301,131 @@ class LifeManager(object):
     def __init__(self, gm):
         self.gm = gm
         super(LifeManager, self).__init__()
+
+        #======================
+        # Size of square hearts
         self.imagesize = 30
-        self.ticker = 0
+        
+        #===============================
+        # Setup images for little hearts
         self.full = StaticSVG(svg=assets.life_full, size=(self.imagesize, None))
         self.empty = StaticSVG(svg=assets.life_empty, size=(self.imagesize, None) )
-        self._lives = 3
+        
         self.group = self.gm.life_group
 
+                
+        #================================
+        # The relates how many lives with
+        # the picture of each life
         f = self.full
         e = self.empty
-        
-        self.map = [[e, e, e],
-                    [f, e, e],
-                    [f, f, e],
-                    [f, f, f]]
-        
-        self.lifeblips = []
+        self.map = [[e, e, e],  # No Lives left
+                    [f, e, e],  #  1 Lives left
+                    [f, f, e],  #  2 Lives left
+                    [f, f, f]]  #  3 Lives left
 
-        ###########################
+        #=============================================
+        # Lists and things for running of life manager
+        self.lifeblips = []
+        self._lives = 3
+        self.ticker = 0
+
+        #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # Hook for life lost
         @self.gm.p.subscribe(event='life_lost', needs=['scope'])
         def example_hook(p, scope):
             self.loose(scope)
-        ############################
+        #--------------------------------------------------------
 
+        #===============================
+        # Add a little heart three times
         for i in range(3):
-            self.lifeblips.append(StaticSVG(svg=assets.life_full, size=(self.imagesize, None)))
-            self.lifeblips[-1].rect.topleft = ((((i + 1) * 5) + ((i + 1) *
-                                                                 self.imagesize))
-                                               ,(self.gm.size[1] -
-                                                 self.imagesize - 5))
+            self.lifeblips.append(StaticSVG(svg=assets.life_full,
+                                            size=(self.imagesize, None)))
+            
+            self.lifeblips[-1].rect.topleft = ( # Get the latest entry
+                                                ( ((i + 1) * 5) + ((i + 1) * 
+                                                                   self.imagesize) ),
+                                               # (above) add margin for each   #
+                                               # and compensate for image size #
+                                               #===============================#
+                                               # (below) put them 5 pixils from#
+                                               # the bottom of the screen      #
+                                                (self.gm.size[1] -
+                                                 self.imagesize - 5)
+                                              )
+        
+        self.group.add(*self.lifeblips) # Add all the little heats to the group
 
-        self.group.add(*self.lifeblips)
+        self.lives = 3 # This is unneccecary, but set current lives to 3
 
-        self.lives = 3
-
-    
+    #=======================================================
+    # Called when a life is lost, assesses the situation and
+    # does the right action depending on why it was lost
     def loose(self, scope):
+        #==============
+        # You were shot
         if scope == 'shot':
             self.lives -= 1
+        #=================
+        # Enemy slipped by
         elif scope == 'slipped':
+            #=======================
+            # if the ticker is empty
             if self.ticker <= 0:
                 self.lives -= 1
-            self.ticker += 20
+                # Loose a life
+            self.ticker += 40
+            # and fill the ticker
+            # The ticker keeps the
+            # enemys from loosing you
+            # a life each time. 
+        #=========================
+        # You answered incorrectly
         elif scope == 'incorrect':
-            self.lives -= 1 
+            self.lives -= 1
+            # Just remove a life
 
-    def change(self):
-        """Change the screen so it shows the lifes"""
-        pass
-            
+    #=============================
+    # getter for the life property
     def get_lives(self):
         """get the current number of lives"""
         return self._lives
-
+    
+    #=============================
+    # setter for the life property
     def set_lives(self, value):
         """Set number of lives and update the screen"""
         self._lives = value
+        #=======================
+        # If we are not dead yet
         if not self._lives < 0:
+            #=============================
+            # for each little life picture
             for minilife, life in zip(self.map[self._lives], self.lifeblips):
-                life.image = minilife.image
+                life.image = minilife.image # Set them according to the map
+        #===============
+        # If we are dead
         else:
             self.gm.p.trigger(event='end_game', clean=False)
-
+            # Signal the end of game, with an unclean finish
+    
+    #=======================
+    # Called for every frame
     def update(self):
         """ Add the time to the ticker in case something needs to happen
         with the life looser
         """
+        #===========================
+        # if the ticker is not empty
         if self.ticker > 0:
             self.ticker -= 1
+            # tock the ticker
         self.group.update()
-
+        # Update the group
+    
+    #=========
+    # Property
     lives = property(get_lives, set_lives)
 
         
@@ -405,29 +442,43 @@ class AnswerGuy(MaskSprite):
     
     def __init__(self, position, size, friendly_bulletgroup, friendly_player,
                  correct,  gm, response, copy =  False):
+
+        #================================
+        # set the values from initisation
         self.pos = position
         self.siz = size
         self.friendly_bulletgroup = friendly_bulletgroup
         self.gm = gm
         self.correct = correct
-                
+        self.text = response
+
+        #===================================
+        # Check to see if we have a copy SVG
         if copy is not False and copy.__class__ == svgsprite.SVGSprite:
             self.svg = copy.copy()
+            # Use that copy for our svg
+        #==================================
+        # if we were not given a valid copy
         else:
             self.data = open(os.path.join("data", "numenemy.svg")).read()
             self.svg = svgsprite.SVGSprite(svg = self.data,
                                            size = self.siz)
+            # Open our SVG and set it to our svg
 
-        self.text = response
-        super(AnswerGuy, self).__init__()
-        self.change_x = config.speed
+                super(AnswerGuy, self).__init__()
+        self.change_x = config.speed # Speed in x, set to setting in config file
         self.change_y = 0
+
+        #=============================
+        # Create our sprite attributes
         self.image = new_surface(size)
         self.image.fill((0, 0, 0, 0))
         self.rect = self.image.get_rect()
         self.position = (self.pos[0], self.pos[1])
+        
         self.image.blit(self.svg.image, (0, 0))
         self.image.blit(self.text.image, (self.siz[0] / 3, self.siz[1] / 3))
+        # Blit our svg background, then the right/wrong answer on top
         self.mask = pygame.mask.from_surface(self.image, 127)
         self.friendly_player = friendly_player
 

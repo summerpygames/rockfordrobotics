@@ -115,6 +115,8 @@ class UserGame(object):
                        WHERE id=?
                        ''', (int(id))
                       )
+        self.c.commit()
+
     def get_next_level(self, id):
         """Get information on a certain level"""
         id +=2
