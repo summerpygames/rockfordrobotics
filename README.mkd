@@ -3,7 +3,15 @@ SpaceMath
 
 The Game
 --------
-In the game Space Math you, the hero, has to destroy the swarms of alian combatants from the planet. But as an advanced species, you know the only way to truly crush the others is to do so diplomaticly, not with your laser cannon. Your mission is simple: Make your way to the alien city to talk to their leader and negociate an intergalactic peace aggreement. This is no small task, and will require the loss of enemy alians on the way, but that loss is nothing compared to the descruction that these alians could cause to our planet if peace is not reached. But be warned, the alians are quite weary of invaders, you will have to prove your skills in the only universal language, Math!
+In the game Space Math you, the hero, has to destroy the swarms of alian
+combatants from the planet. But as an advanced species, you know the only way
+to truly crush the others is to do so diplomaticly, not with your laser cannon.
+Your mission is simple: Make your way to the alien city to talk to their leader
+and negociate an intergalactic peace aggreement. This is no small task,
+and will require the loss of enemy alians on the way, but that loss is nothing
+compared to the descruction that these alians could cause to our planet if peace
+is not reached. But be warned, the alians are quite weary of invaders,
+you will have to prove your skills in the only universal language, Math!
 
 How to run
 ----------
@@ -13,28 +21,55 @@ the easiest way to run the game is to (after downloading it) run
 	cd SpaceMath.activity	
 	./launcher.py
 
-Or, if you are on an XO, put the SpaceMath.activity folder in your ~/Activities folder and restart the XO to see the game in your list.
+Or, if you are on an XO, put the SpaceMath.activity folder in your ~/Activities
+folder and restart the XO to see the game in your list.
+
+About the Code
+--------------
+
+The code was also commented heavily so anyone can read through it an understand
+what different sections do using the pydocs, or understanding if conditions with
+all the block commenting.
+
+    #==========================         
+    # Comments
+
+in the code to learn more about what the following block does
 
 About the authors
 -----------------
 [Mark Amber][markamber] : Game Programmer
 
-> Mark Amber wrote the game code, for everything you see on the screen, the code
-was also commented heavily so anyone can read through it an understand what
-different sections do using the pydocs, or understanding if conditions with
-all the block commenting, look for:
+> Mark Amber wrote the game code, bringing his object oriented background into
+the game, abstracting everything and enabling anyone to use the game as a starting
+point for their SummerPyGame, or any other PyGame.
+Mark wrote the code for everything you see on the screen, from the menu
+to the cooldown timer durring gameplay (his favorite). Mark is also behind this
+website, using elements from the game to create a web site using new web
+elements built in to the latest, and only the latest browser (you should only be
+using the latests browsers to view this page)
 
->> \#==========================         
->> \# Comments
+[Lucas Morales][lukedmor] : Math Programmer + Music Creator
+> Lucas Moales created all the question generation algorithims and the enemy
+generation algorithim. His skill with math allows the game to adapt the location
+and size of the enemies from just one number. The question generation algorighims
+create questions of the best quality with plausibly wrong answers.
 
-> in the code to learn more about what the following block does
+Eli Ball : Vector artist + Level designer
+> Eli Ball created all the vector graphics, in Laser Math, the team made a decision
+to saccrifice speed of loading for the flexibility of svgs, and Eli brought that
+decision to life. Skilled at inkscape, Eli took ideas and turned them into
+XML, learing how to please the svg rendering engine as we went along the way.
 
-[Lucas Morales][lukedmor] : Math Programmer
-
-Eli Ball : Vector artist
+> Eli also designed the levels, or what we call the gamplay lists, to be fun, 
+challenging, and unpredictable. That along with designing the database of game
+levels for first through third graders allows people to enjoy nonstop gameplay
+and good replay for quite some time.
 
 John Moye : Bitmap artist
-
+> Jon Moye, now skilled at The GIMP, created some of the backgrounds for our game
+he used the SummerPyGame experiance to learn about graphics and game making off
+closed source platforms and without propritary tools.
 
 [markamber]: http://markamber.co "Mark Amber"
 [lukedmor]: https://plus.google.com/116612911731859210066/posts "Lucas Morales"
