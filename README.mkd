@@ -11,19 +11,27 @@ How to run
 the easiest way to run the game is to (after downloading it) run
 
 	cd SpaceMath.activity	
-	python ./run.py
+	./launcher.py
 
 Or, if you are on an XO, put the SpaceMath.activity folder in your ~/Activities folder and restart the XO to see the game in your list.
 
 About the authors
 -----------------
-[Mark Amber][markamber] : Team Programmer
+[Mark Amber][markamber] : Game Programmer
+> Mark Amber wrote the game code, for everything you see on the screen, the code
+was also commented heavily so anyone can read through it an understand what
+different sections do using the pydocs, or understanding if conditions with
+all the block commenting, look for:
+>> #=============================
+>> # Comments
+> in the code to learn more about what the following block does
 
-[Lucas Morales][lukedmor] : Team Programmer
+[Lucas Morales][lukedmor] : Math Programmer
 
-others will be added...
+Eli Ball : Vector artist
 
-soon and sonn
+John Moye : Bitmap artist
+
 
 [markamber]: http://markamber.co "Mark Amber"
 [lukedmor]: https://plus.google.com/116612911731859210066/posts "Lucas Morales"
