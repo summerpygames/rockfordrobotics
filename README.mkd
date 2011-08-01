@@ -57,6 +57,7 @@ and size of the enemies from just one number. The question generation algorighim
 create questions of the best quality with plausibly wrong answers.
 
 Eli Ball : Vector artist + Level designer
+
 > Eli Ball created all the vector graphics, in Laser Math, the team made a decision
 to saccrifice speed of loading for the flexibility of svgs, and Eli brought that
 decision to life. Skilled at inkscape, Eli took ideas and turned them into
