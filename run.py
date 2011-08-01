@@ -116,6 +116,9 @@ class MovingSvgObject(MaskSprite):
             self.sprite = svgsprite.SVGSprite(svg=data, size=size)
 
         super(MovingSvgObject, self).__init__()
+        
+        #==================
+        # Setup init values
         self.image = new_surface(self.sprite.image.get_size())
         self.image.blit(self.sprite.image, (0, 0))
         self.rect = self.sprite.rect
@@ -136,26 +139,7 @@ class MovingSvgObject(MaskSprite):
         self.rect.left += self.change_x
         super(MovingSvgObject, self).update()
 
-class Enemy(MovingSvgObject):
-    
-    """Enemy is the basic non-friendly thing in the game
-    
-    An Enemy is something in general that you want to shoow, although if it is a
-    wrong answer it is something that you do not want to shoot, but in any case
-    still some remain that you do want to shoot
-    
-    """
-    
-    def __init__(self, size, svg, position, speed = config.speed, copy = False):
-        self.pos = position
-        self.siz = size
-        super(Enemy, self).__init__(position = self.pos, svg = svg, size =
-                                    self.siz, copy = copy)
-        self.change_x = speed
 
-    def update(self):
-        """This just passes the update up the line"""
-        super(Enemy, self).update()
 
 
 class ExclaimMessage(Sprite):
@@ -252,46 +236,7 @@ class StaticSVG(Sprite):
         """do nothing"""
         pass
 
-class ComposeButton(Sprite):
 
-    """SVG with an image composited on top of it
-    
-    Used in the question maker, 
-
-    """
-    def __init__(self, position = (0, 0), #starting position?
-                 svg=None, # images
-                 otherimage=None,  # Image
-                 offset = (0, 0)):  # offset for text
-        
-        data_svg = open(svg).read()
-                                            
-        Sprite.__init__(self)
-        self.other = otherimage
-        self.size = self.other.get_size()[1] + (2*offset[1]) 
-        self.sprite = svgsprite.SVGSprite(svg=data_svg, size=( None,
-                                                              self.size))
-        self.image = new_surface(self.sprite.image.get_size())
-        print self.sprite.image.get_size()
-        self.offset = offset
-        
-
-        self.image.blit(self.sprite.image, (0, 0))
-        self.image.blit(self.other, self.offset)
-
-        self.rect = self.sprite.rect
-        self.resolution = self.sprite.resolution
-        self.rect.midtop = position
-
-    def update(self, callout):
-        """This will set the button to deselected if it was the thing
-        that is now selected, and it will make itself selected if it is"""
-        self.image = new_surface(self.size)
-        self.image.blit(self.sprite.image, (0, 0))
-        self.image.blit(self.other, self.offset)
-        self.selected = True
-
-        super(ComposeButton, self).update()
 
 class LifeManager(object):
 
@@ -428,7 +373,28 @@ class LifeManager(object):
     # Property
     lives = property(get_lives, set_lives)
 
+############ THE ENEMYS #######################################################        
+
+class Enemy(MovingSvgObject):
+    
+    """Enemy is the basic non-friendly thing in the game
         
+        An Enemy is something in general that you want to shoow, although if it is a
+        wrong answer it is something that you do not want to shoot, but in any case
+        still some remain that you do want to shoot
+        
+        """
+    
+    def __init__(self, size, svg, position, speed = config.speed, copy = False):
+        self.pos = position
+        self.siz = size
+        super(Enemy, self).__init__(position = self.pos, svg = svg, size =
+                                    self.siz, copy = copy)
+        self.change_x = speed
+    
+    def update(self):
+        """This just passes the update up the line"""
+        super(Enemy, self).update()            
             
 class AnswerGuy(MaskSprite):
     
@@ -489,16 +455,22 @@ class AnswerGuy(MaskSprite):
         case that it is an incorrect answer will do that plus show the correct
         answer on the screen then subtract a life.
         """
+        #====================================
+        # Find all the colisions with bullets
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
                                                  pygame.sprite.collide_mask)
+        #=====================
+        # if we were just shot
         if len(collisions) > 0:
             self.gm.p.trigger(event='shot_answer', correct=self.correct)
             self.kill()
         self.rect.top += self.change_y
         self.rect.left += self.change_x
-
+        
+        #=================================
+        # If the guys have left the screen
         if self.rect.left < -100:
             self.kill()
             self.gm.p.trigger(event='life_lost', scope='slipped')
@@ -569,6 +541,33 @@ class BadGuy(Enemy):
                 i.remove(self.opponent_bulletgroup)
                 self.bullets.remove(i)
 
+class StrayBulletManager(object):
+    """Cleans up stray bullets left behind by enemies that have died
+        
+        A pangler trigger is used to signal this class that it should be monitoring
+        stray bullets for a perticular bullet list. Pass a list of bullets along
+        with the panglery trigger and let the stray bullet manager update and
+        monitor the positions of the lost bullets. after a list of bullets is fully
+        depleted, the list will be removed from the que
+        
+        """
+    
+    def __init__(self, gm):
+        self.straylists = []
+        self.gm = gm
+        @self.gm.p.subscribe(event='strays', needs=['bulletlist', 'bulletgroup'])
+        def strays_hook(p, bulletlist, bulletgroup):
+            self.straylists.append([bulletlist, bulletgroup])
+    
+    def update(self):
+        """Update the lists of stray bullets"""
+        for i in self.straylists:
+            for g in i[0]:
+                if g.rect.left < -25:
+                    g.remove(i[1])
+                    i[0].remove(g)
+
+###### THIS IS THE MOST AMAZING CLASS EVER ###################################
 
 class LaserCannon(Sprite):
 
@@ -699,34 +698,10 @@ class LaserCannon(Sprite):
 
         super(LaserCannon, self).update()
 
-class StrayBulletManager(object):
-    """Cleans up stray bullets left behind by enemies that have died
-    
-    A pangler trigger is used to signal this class that it should be monitoring
-    stray bullets for a perticular bullet list. Pass a list of bullets along
-    with the panglery trigger and let the stray bullet manager update and
-    monitor the positions of the lost bullets. after a list of bullets is fully
-    depleted, the list will be removed from the que
-    
-    """
-
-    def __init__(self, gm):
-        self.straylists = []
-        self.gm = gm
-        @self.gm.p.subscribe(event='strays', needs=['bulletlist', 'bulletgroup'])
-        def strays_hook(p, bulletlist, bulletgroup):
-             self.straylists.append([bulletlist, bulletgroup])
-
-    def update(self):
-        """Update the lists of stray bullets"""
-        for i in self.straylists:
-            for g in i[0]:
-                if g.rect.left < -25:
-                    g.remove(i[1])
-                    i[0].remove(g)
 
 
 
+############ PLAYERS ###########################################################
 
 class Player(MovingSvgObject):
     
@@ -782,7 +757,7 @@ class FlyingSaucer(Player):
 
 class SpaceShuttle(Player):
     
-    """Flying saucer is the vehical of choice for your favorite python.
+    """Space Shuttle is the vehical of choice for your favorite linux mascot.
     
     This is an extention of the Player, overriding the SVG that is displayed
 
@@ -803,7 +778,7 @@ class SpaceShuttle(Player):
 
 class ClassicRocket(Player):
     
-    """Flying saucer is the vehical of choice for your favorite python.
+    """The Classic Rocket is the vehical of choice for your favorite gnu mascot.
     
     This is an extention of the Player, overriding the SVG that is displayed
 
@@ -823,7 +798,7 @@ class ClassicRocket(Player):
 
 class FighterJet(Player):
     
-    """Flying saucer is the vehical of choice for your favorite python.
+    """The Fighter Jet is the vehical of choice for your favorite gimp.
     
     This is an extention of the Player, overriding the SVG that is displayed
 
@@ -841,7 +816,7 @@ class FighterJet(Player):
         """This is what you run when you want the thing to fire a laser"""
         super(FighterJet, self).shoot(self.rect.center)
 
-
+############ BULLETS ############################################################
 class Bullet(MaskSprite):
     
     """A generic bullet, should be extended.
@@ -908,11 +883,18 @@ class BadBullet(Bullet):
                  size = (25, 3), speed=-15):
         super(BadBullet, self).__init__(pos, color, size, speed)
 
+###############################################################################
 
 def keys(event, action):
     """A little hack to make it easier to use the other parts of the programs, I
     think it is a little unneccecary, but it is OK, just shows how you can make
     the program take more room or something
+    
+    use:
+    if event.type == something:
+        if keys(event, 'down'):
+            do_whatever = or ()
+    
     """
     if action == 'escape':
         if event.key == pygame.K_ESCAPE:
@@ -941,7 +923,47 @@ def keys(event, action):
     else:
         return False
 
+############# THE OPPONENT #####################################################
 
+class ComposeButton(Sprite):
+    
+    """SVG with an image composited on top of it
+        
+        Used in the question maker, 
+        
+        """
+    def __init__(self, position = (0, 0), #starting position?
+                 svg=None, # images
+                 otherimage=None,  # Image
+                 offset = (0, 0)):  # offset for text
+        
+        data_svg = open(svg).read()
+        
+        Sprite.__init__(self)
+        #==============================
+        # Put the options in the object
+        self.other = otherimage
+        self.size = self.other.get_size()[1] + (2*offset[1]) 
+        self.sprite = svgsprite.SVGSprite(svg=data_svg, size=( None,
+                                                              self.size))
+        self.image = new_surface(self.sprite.image.get_size())
+        self.offset = offset
+        
+        #==================
+        # Comose the images
+        self.image.blit(self.sprite.image, (0, 0))
+        self.image.blit(self.other, self.offset)
+        
+        #===================
+        # Setup the position
+        self.rect = self.sprite.rect
+        self.resolution = self.sprite.resolution
+        self.rect.midtop = position
+    
+    def update(self, callout):
+        """This is called whenever the group is updated"""
+        
+        super(ComposeButton, self).update()
 
 class TheOpponent():
     
@@ -954,6 +976,9 @@ class TheOpponent():
     """
     
     def __init__(self, gm):
+    
+        #========================================
+        # init values, store to this class object
         self.gm = gm
         self.enemies = gm.opponents
         self.group = gm.opponent_group
@@ -970,13 +995,24 @@ class TheOpponent():
 
     def spawn_badguys(self, number):
         """I will make more enemys for you"""
+        
+        #=============
+        # bad style :{
         screensize = self.gm.opponent_size
         x_offset = self.gm.opponent_xoffset
         y_offset = self.gm.opponent_yoffset
         self.size, self.positions = egen(screensize, number, x_offset, y_offset)
+        
+        #=========================================
+        # make the master svg, less rendering time
         self.badguysvg = svgsprite.SVGSprite(open(os.path.join('data',
                                                                'enemy.svg')).read(),
                                              self.size)
+                                             
+        #===============================================
+        # For the number of enemies we requested, make a
+        # copy of the master svg and position it and 
+        # add it to the group                                     
         for i in range(len(self.positions)):
             self.enemies.append(BadGuy(self.positions[i], self.size,
                                       self.friendly_bullet_group,
@@ -989,16 +1025,24 @@ class TheOpponent():
 
     def spawn_answerguys(self):
         """I will make more enemys for you"""
+        
+        #=============
+        # Bad style :P
         screensize = self.gm.opponent_size
         x_offset = self.gm.opponent_xoffset
         y_offset = self.gm.opponent_yoffset
         self.size, self.positions = answergen(x_offset, y_offset, screensize)
+        
+        #=========================================
+        # make the master svg, less rendering time
         self.answerguysvg = svgsprite.SVGSprite(open(os.path.join('data',
                                                                   'numenemy.svg')).read(),
                                                 self.size)
         self.question = printer.Converter(questions.getquestion.get(self.gm.dbfile))
-
         self.question.render()
+        
+        #===========================================================
+        # add one response for each answer we get from the generator
         for i in range(len(self.positions)):
             response = choice(self.question.responses)
             self.question.responses.remove(response)
@@ -1010,9 +1054,11 @@ class TheOpponent():
                                           response[0],
                                           copy = self.answerguysvg))
             self.group.add(self.enemies[-1])
-
+        
+        #==============================================
+        # Add the question to the top of the screen,
+        # Under the poorly worded name of questionthing
         self.questionsprite = self.question.getquestion()
-
         self.questionthing = ComposeButton(position = (self.gm.size[0]/2, 10), 
                                            svg=assets.question_box,
                                            otherimage=self.questionsprite.image,
@@ -1023,6 +1069,8 @@ class TheOpponent():
 
     def update(self):
         """This will update the positions of the bullets"""
+        #===============================
+        # If there are no oppenents left
         if len(self.group.sprites()) == 0:
             self.gm.p.trigger(event='spawn_wave')
 
@@ -1058,22 +1106,29 @@ class PlayState(SubGame):
         self.gm = GameManager()
         self.set_layers(['test'])
 
-        ## From init
+        #====================
+        # set values from init
         self.gm.dbfile = self.dbfile
         self.gm.levelid = self.levelid
         self.gm.gameplaylist = self.gameplaylist
         self.gm.stage = self.stage
         self.gm.gp = self.gp
-
+        
+        #====================
+        # setup bad guy stuff
         self.gm.opponents = []
         self.gm.opponent_group = Group()
         self.gm.opponent_bullets = []
         self.gm.opponent_bullet_group =  Group()
+        
+        #======================
+        # setup math game stuff
         self.gm.question_group = Group()
         self.gm.life_group = Group()
         self.gm.messages_group = Group()
        
-        
+        #======================
+        # friendly groups setup
         self.gm.player_group = Group()
         self.gm.playable_bullets = []
         self.gm.friend_bullets = []
@@ -1082,17 +1137,23 @@ class PlayState(SubGame):
         self.gm.size = self.screen_state.get_size()
 
 
-        ## OPPONENT SIZING
+        #====================
+        # set opponent sizing
         self.gm.opponent_size = (600, 600)
         self.gm.opponent_yoffset = (self.gm.size[0] - self.gm.opponent_size[1])/2
         self.gm.opponent_xoffset = self.gm.size[0]
 
 
+        #========================
+        # if we are using an olpc
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
 
         self.gm.background = my_load_image('spacebg.jpg')
         
+    
+        #============================
+        # Select the proper charecter
         if self.charecterselection is 'python':
             self.gm.player_cannon_offset = (-20, 45)
             self.gm.player_cannon = LaserCannon(self.gm)
