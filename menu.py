@@ -123,18 +123,29 @@ class Button(Sprite):
                  initsel=False, # Select this on start
                  trigger=[None, None]):  # what should be done on a trigger
         
+        #===========================================
+        # selected and deselected sprites you get it
         data_sel = open(sel_svg).read()
         data_des = open(des_svg).read()
         self.sprite_sel = svgsprite.SVGSprite(svg=data_sel, size=size)
         self.sprite_des = svgsprite.SVGSprite(svg=data_des, size=size)
-
+        
+        #====================================================================
+        # init some stuff to know if the sprite should be selected at startup
         self.selected = initsel
         Sprite.__init__(self)
+        
+        #=================================
+        # if it is supposet to be selected
         if self.selected is True:
             self.image = self.sprite_sel.image
+        #===================================
+        # if it is supposed to be deselected
         else:
             self.image = self.sprite_des.image
         
+        #============================
+        # finish settup up the sprite
         self.rect = self.sprite_sel.rect
         self.resolution = self.sprite_sel.resolution
         self.position = (position[0], position[1])
@@ -144,20 +155,31 @@ class Button(Sprite):
 
     def trigger(self, callout):
         """What state to transfer to when the button is pressed"""
+        #================================
+        # if the callout we heard is ours
         if callout == self.callout:
             return (self.attrigger, self.triggersender)
+        #=============
+        # if it is not
         else:
             return None
         
     def update(self, callout):
         """This will set the button to deselected if it was the thing
         that is now selected, and it will make itself selected if it is"""
+        
+        #===============================
+        # if the callout we hear is ours
         if callout == self.callout:
             self.image = self.sprite_sel.image
             self.selected = True
+            # set the image to selected
+        #=======
+        # if not
         else:
             self.image = self.sprite_des.image
             self.selected = False
+            #set the image to deselected
 
         super(Button, self).update()
 
@@ -172,6 +194,8 @@ class TextButton(Sprite):
                  trigger=[None, None], # What should be done on a trigger
                  offset = (0, 0)):  # offset for text
         
+        #===================================
+        # setup selected and deselected svgs
         data_sel = open(sel_svg).read()
         data_des = open(des_svg).read()
         self.sprite_sel = svgsprite.SVGSprite(svg=data_sel, size=size)
@@ -181,20 +205,27 @@ class TextButton(Sprite):
                                             
         self.text.render()
 
+        #========================
+        # init special parameters
         self.selected = initsel
         Sprite.__init__(self)
         self.size = self.sprite_sel.image.get_size()
         self.image = new_surface(self.size)
         self.offset = offset
 
+        #=========================
+        # if we start out selected
         if self.selected is True:
             self.image.blit(self.sprite_sel.image, (0, 0))
             self.image.blit(self.text.image, self.offset)
-
+        #==========================
+        # if we start out deslected
         else:
             self.image.blit(self.sprite_des.image, (0, 0))
             self.image.blit(self.text.image, self.offset)
         
+        #===================
+        # finnish settimg up
         self.rect = self.sprite_sel.rect
         self.resolution = self.sprite_sel.resolution
         self.position = (position[0], position[1])
@@ -212,11 +243,17 @@ class TextButton(Sprite):
     def update(self, callout):
         """This will set the button to deselected if it was the thing
         that is now selected, and it will make itself selected if it is"""
+        #===============================
+        # if the callout we hear is ours
         if callout == self.callout:
             self.image = new_surface(self.size)
             self.image.blit(self.sprite_sel.image, (0, 0))
             self.image.blit(self.text.image, self.offset)
             self.selected = True
+            # composit a text image of selected
+        
+        #===========================
+        # if the callout is not ours
         else:
             self.image = new_surface(self.size)
             self.image.blit(self.sprite_des.image, (0, 0))
@@ -255,6 +292,24 @@ def keys(event, action):
             return True
     else:
         return False
+##########################################################################                                                                               
+#           /-------------Main Menu ----------------\                                                        
+#           | gameplay                              [about]
+#       [grade menu]---------                       [how to play]                                             
+#           | grade level    |                      [credots]                                 
+#           | gameplay       |< most recent                                                  
+#       [stage menu]          \                                                     
+#           | grade level       \                                                    
+#           | requested stage    |                                                       
+#           | gameplay           |                                               
+#       [level selector]         |
+#           | selected level     |                                                      
+#           | grade level        |                                                   
+#           | stage selection    |
+#           \                   /                                        
+#             \                /
+#               \             /                                          
+#                 [ Game State                                                     
 ###########################################################################
 # Basic Menu to Extend                                                    #
 ###########################################################################
@@ -280,10 +335,16 @@ class AnyMenu(SubGame):
         pygame.mouse.set_visible(False)
         
     def main_loop(self, list):
+        #==============
+        # tick and draw
         self.t = self.t + 1
         self.group.draw()
         GetScreen().draw()
-        #Handle Other Events
+        #===============================================================
+        # events, dont worry about this prart, basically it maps a map
+        # to the current position of the cursor, that means that the
+        # maps defined above have the location of the cursor on top
+        # of them whenever a menu is running in a way
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if (keys(event, 'up') and
@@ -479,7 +540,7 @@ class GradeMenu(AnyMenu):
 
         
 
-        #Sprite initialization
+#       Add all the buttons, like this
 #       self.play = Button(   sel_svg = main_play_sel, SVG for selected
 #                             des_svg = main_play_des, SVG for deselected
 #                             size = ( None, 50 ),     Starting Size
@@ -521,12 +582,13 @@ class GradeMenu(AnyMenu):
         
         self.resume.rect.midtop = (sw/2, int(sh*.2))
         self.second.rect.midtop = (sw/2, int(sh*.36))
-        self.first.rect.midright =  (int(self.second.rect.midleft[0] - (sw*.01)),
-                                     self.second.rect.midleft[1])
-        self.third.rect.midleft  =  (int(self.second.rect.midright[0] + (sw*.01)),
-                                     self.second.rect.midright[1])
+        self.first.rect.midright = (int(self.second.rect.midleft[0] - (sw*.01)),
+                                    self.second.rect.midleft[1])
+        self.third.rect.midleft = (int(self.second.rect.midright[0] + (sw*.01)),
+                                   self.second.rect.midright[1])
 
-        
+        #===========================================
+        # setup the background allignment as we say
         self.allignment = Allignment(svg=grades_allign, size = (0, sh))
         self.allignment.rect.midtop = (sw/2, 0)
 
@@ -541,11 +603,17 @@ class GradeMenu(AnyMenu):
     def triggers (self, trigger):
         """ Callback for trigger usage """
         if trigger is not None:
+            #========================
+            # if we hit resume button
             if trigger == 'charecters':
                 self.newstate = CharecterMenu(self.gp, 1,
                                               'stageid')
+                                              
+            #============================
+            # if this is a normal trigger
             else:
                 self.newstate = StageMenu(self.gp, trigger)
+                # run a stage meu with the option trigger passed
             self.group.empty()
             self.group.draw()
             GetScreen().draw()

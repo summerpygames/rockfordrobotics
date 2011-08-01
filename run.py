@@ -84,15 +84,13 @@ class MovingTextObject(textsprite.TextSprite):
         self.change_x = 0
 
     def changespeed(self, x, y):
-        """Change the speed of the text
-        
-        Arguments:
-        x -- movement to the left
-        y -- movement to the top
-        """
+        """Change the speed of the text"""
+        # @x add speed to the x direction
+        # @y add speed to the y direction
         self.change_x+=x
         self.change_y+=y
         
+    # Update the location
     def update(self):
         """Remap the new position of the text"""
         self.rect.top += self.change_y
@@ -487,6 +485,15 @@ class BadGuy(Enemy):
     """
     def __init__(self, position, size, friendly_bulletgroup,
                  opponent_bulletgroup, bullets, friendly_player, gm, copy = False):
+        # @position position to start at
+        # @size iterable size
+        # @friendly_bulletgroup the bullet group that is shooting at it
+        # @bullets a list of bullets, unused, for some reason
+        # @friendly_player the player
+        # @the game manager
+        # @copy is this a copy, if so give it one
+        #==================
+        # Setup init values
         self.pos = position
         self.siz = size
         self.friendly_bulletgroup = friendly_bulletgroup
@@ -506,16 +513,23 @@ class BadGuy(Enemy):
         something is in its way, it will also check to see if it is hit and
         destroy itself if that is the case.
         """
+        #===============================================
+        # Check for collisions with the good bulletgroup
         collisions = pygame.sprite.spritecollide(self,
                                                  self.friendly_bulletgroup,
                                                  True,
                                                  pygame.sprite.collide_mask)
+        #===============
+        # If it was shot
         if len(collisions) > 0:
             self.kill()
             self.gm.p.trigger(event='strays', bulletlist = self.bullets,
                             bulletgroup = self.opponent_bulletgroup)
 
         super(BadGuy, self).update()
+        
+        #==============================================================
+        # If the player is just coming in view and is not there already
         if ((self.rect.midleft[1] >= self.friendly_player.rect.topright[1])
         and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])
         and (self.rect.midleft[0] < self.gm.size[0] - 30)):
@@ -529,13 +543,16 @@ class BadGuy(Enemy):
         else:
             self.onefire = False
 
+        #==========================
+        # if we have left the stage
         if self.rect.left < -100:
             self.kill()
             self.gm.p.trigger(event='strays', bulletlist = self.bullets,
                             bulletgroup = self.opponent_bulletgroup)
             self.gm.p.trigger(event='life_lost', scope='slipped')
 
-
+        #===========================================
+        # pop the bullets if they are off the screen
         for i in self.bullets:
             if i.rect.left < -20:
                 i.remove(self.opponent_bulletgroup)
@@ -553,19 +570,35 @@ class StrayBulletManager(object):
         """
     
     def __init__(self, gm):
+        
+        #==================
+        # setup init values
         self.straylists = []
         self.gm = gm
+        
+        #+++++++++++++++++++++++++++++++++
+        # Hook for stray bullet management
         @self.gm.p.subscribe(event='strays', needs=['bulletlist', 'bulletgroup'])
         def strays_hook(p, bulletlist, bulletgroup):
             self.straylists.append([bulletlist, bulletgroup])
-    
+        #---------------------------------
+        
     def update(self):
         """Update the lists of stray bullets"""
+        
+        #=============================
+        # for each of the bullet lists
         for i in self.straylists:
+            #========================
+            # for each of the bullets
             for g in i[0]:
+                #========================
+                # if they left the screen
                 if g.rect.left < -25:
                     g.remove(i[1])
                     i[0].remove(g)
+                    # Remove them from the
+                    # list and the screen
 
 ###### THIS IS THE MOST AMAZING CLASS EVER ###################################
 
@@ -609,12 +642,15 @@ class LaserCannon(Sprite):
         Sprite.__init__(self)
         self.sounds = []
         self.offset = gm.player_cannon_offset
-        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-                                                           'highlaser.wav')))
-        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-                                                           'midlaser.wav')))
-        self.sounds.append(pygame.mixer.Sound(os.path.join('data',
-                                                           'lowlaser.wav')))
+        
+        #======================================
+        # add sound objects to a list of sounds
+        self.sounds.append(pygame.mixer.Sound(assets.laser1))
+        self.sounds.append(pygame.mixer.Sound(assets.laser2))
+        self.sounds.append(pygame.mixer.Sound(assets.laser3))
+        
+        #======================
+        # finish initialization
         self.bulletgroup = gm.friendly_bullet_group
         self.blackness = new_surface([75, 15])
         self.blackness.fill((0, 0, 0))
@@ -679,19 +715,37 @@ class LaserCannon(Sprite):
         every tick, as well as display the temperature in the corner of the
         screen
         """
+        #================================
+        # if the heat is greater than one
         if self.heat > 0:
             self.heat -= 1
+        #=================================
+        # if it just happens to be at zero
+        # and the overheated alarm is on
         elif self.overheated == True:
             self.overheated = False
+            
+        
+        #==============================
+        # if the overheated alarm is on
         if self.overheated:
             self.redness.fill((255, 0, 0))
+        #====================
+        # if it is all normal
         else:
             self.redness.fill(self.color_finder(self.heat))
+            
+        #===========================
+        # Refresh the image
         self.image = new_surface([75, 15])
         self.image.blit(self.redness, (0, 0, self.heat, 15))
         self.image.blit(self.blackness, (self.heat, 0, 75 -
                                          self.heat, 0)) 
+        #===================================
+        # for each of the bullets in th list
         for i in self.bullets:
+            #==================================
+            # if the bullets are off the screen
             if i.rect.left > self.gm.size[0]:
                 i.remove(self.bulletgroup)
                 self.bullets.remove(i)
@@ -715,8 +769,16 @@ class Player(MovingSvgObject):
     def __init__(self, svg, lasercannon, size, gm):
         super(Player, self).__init__(position = (10, 10), svg = svg, size =
                                      size)
+        # @svg the icon of the player
+        # @lasercannon the lasercannon object
+        # @size an iterable size
+        # @gm the game manager
+        
+        #==================
+        # setup init values
         self.cannon = lasercannon
         self.gm = gm
+        
     def shoot(self, position):
         """This will make the plater shoot"""
         self.cannon.shoot(position)
@@ -725,12 +787,18 @@ class Player(MovingSvgObject):
         """This is an extention of the update that is used for the movind
         object
         """
+        #===========================================
+        # get a list of collisions with the opponent
         collisions = pygame.sprite.spritecollide(self,
                                                  self.opponent_bulletgroup,
                                                  True,
                                                  pygame.sprite.collide_mask)
+                                                 
+        #=========================================
+        # if we have any collisions with the enemy
         if len(collisions) > 0:
-           self.gm.p.trigger(event='life_lost', scope='shot') 
+           self.gm.p.trigger(event='life_lost', scope='shot')
+           
         super(Player, self).update()
 
         
@@ -745,8 +813,7 @@ class FlyingSaucer(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(FlyingSaucer, self).__init__(svg=os.path.join('data',
-                                                            'pythonsaucer.svg'),
+        super(FlyingSaucer, self).__init__(svg=assets.charecter_flying_saucer,
                                            lasercannon = self.cannon,
                                            size = (250, None), 
                                            gm = gm)
@@ -766,8 +833,7 @@ class SpaceShuttle(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(SpaceShuttle, self).__init__(svg=os.path.join('data',
-                                                            'tuxshuttle.svg'),
+        super(SpaceShuttle, self).__init__(svg=assets.charecter_classic_rocket,
                                            lasercannon = self.cannon,
                                            size = (250, None), 
                                            gm = gm)
@@ -787,7 +853,7 @@ class ClassicRocket(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(ClassicRocket, self).__init__(svg=os.path.join('data', 'gnurocket.svg'),
+        super(ClassicRocket, self).__init__(svg=assets.charecter_classic_rocket,
                                            lasercannon = self.cannon,
                                            size = (300, None), 
                                            gm = gm)
@@ -807,7 +873,7 @@ class FighterJet(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(FighterJet, self).__init__(svg=os.path.join('data', 'gimpfighter.svg'),
+        super(FighterJet, self).__init__(svg=assets.charecter_fighter_jet,
                                            lasercannon = self.cannon,
                                            size = (250, None), 
                                            gm = gm)
@@ -829,6 +895,8 @@ class Bullet(MaskSprite):
 
     def __init__(self, pos, color, size, speed):
         MaskSprite.__init__(self)
+        #==================
+        # setup init values
         self.change_x = speed
         self.change_y = 0
         self.image = new_surface(size)
@@ -839,12 +907,16 @@ class Bullet(MaskSprite):
         self.rect.top = pos[1]
         self.rect.left = pos[0]
         self.mask = pygame.mask.from_surface(self.image)
-
+        
+        #===============================
+        # hack in case we are on on olpc
         if not olpcgames.ACTIVITY:
             self.mask.fill()
 
     def changespeed(self, x, y):
         """Change the speed of the SVG"""
+        # @x add this much to the x direction
+        # @y add this much to the y direction
         self.change_x+=x
         self.change_y+=y
         
