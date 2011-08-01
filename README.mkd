@@ -50,6 +50,7 @@ elements built in to the latest, and only the latest browser (you should only be
 using the latests browsers to view this page)
 
 [Lucas Morales][lukedmor] : Math Programmer + Music Creator
+
 > Lucas Moales created all the question generation algorithims and the enemy
 generation algorithim. His skill with math allows the game to adapt the location
 and size of the enemies from just one number. The question generation algorighims
@@ -67,6 +68,7 @@ levels for first through third graders allows people to enjoy nonstop gameplay
 and good replay for quite some time.
 
 John Moye : Bitmap artist
+
 > Jon Moye, now skilled at The GIMP, created some of the backgrounds for our game
 he used the SummerPyGame experiance to learn about graphics and game making off
 closed source platforms and without propritary tools.
