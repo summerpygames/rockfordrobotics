@@ -24,8 +24,8 @@ was also commented heavily so anyone can read through it an understand what
 different sections do using the pydocs, or understanding if conditions with
 all the block commenting, look for:
 
->> \#==========================\
->> \# Comments\
+>> \#==========================
+>> \# Comments
 
 > in the code to learn more about what the following block does
 
