@@ -22,8 +22,10 @@ About the authors
 was also commented heavily so anyone can read through it an understand what
 different sections do using the pydocs, or understanding if conditions with
 all the block commenting, look for:
+
 >> #=============================
 >> # Comments
+
 > in the code to learn more about what the following block does
 
 [Lucas Morales][lukedmor] : Math Programmer
