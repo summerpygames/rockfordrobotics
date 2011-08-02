@@ -430,7 +430,7 @@ class AnswerGuy(MaskSprite):
                                            size = self.siz)
             # Open our SVG and set it to our svg
 
-                super(AnswerGuy, self).__init__()
+            super(AnswerGuy, self).__init__()
         self.change_x = config.speed # Speed in x, set to setting in config file
         self.change_y = 0
 
