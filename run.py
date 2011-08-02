@@ -1213,7 +1213,7 @@ class PlayState(SubGame):
         #====================
         # set opponent sizing
         self.gm.opponent_size = (600, 600)
-        self.gm.opponent_yoffset = (self.gm.size[0] - self.gm.opponent_size[1])/2
+        self.gm.opponent_yoffset = (self.gm.size[1] - self.gm.opponent_size[1])/2
         self.gm.opponent_xoffset = self.gm.size[0]
 
 
