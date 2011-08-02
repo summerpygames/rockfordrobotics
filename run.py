@@ -98,7 +98,7 @@ class MovingTextObject(textsprite.TextSprite):
         self.rect.left += self.change_x
         super(MovingTextObject, self).update()
 
-class MovingSvgObject(MaskSprite):
+class MovingSvgObject(Sprite):
 
     """Moving SVG Object extends SVGSprite to allow it to move.
     
@@ -395,7 +395,7 @@ class Enemy(MovingSvgObject):
         """This just passes the update up the line"""
         super(Enemy, self).update()            
             
-class AnswerGuy(MaskSprite):
+class AnswerGuy(Sprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
@@ -884,7 +884,7 @@ class FighterJet(Player):
         super(FighterJet, self).shoot(self.rect.center)
 
 ############ BULLETS ############################################################
-class Bullet(MaskSprite):
+class Bullet(Sprite):
     
     """A generic bullet, should be extended.
     
@@ -895,7 +895,7 @@ class Bullet(MaskSprite):
     """
 
     def __init__(self, pos, color, size, speed):
-        MaskSprite.__init__(self)
+        Sprite.__init__(self)
         #==================
         # setup init values
         self.change_x = speed
