@@ -185,7 +185,7 @@ class UserGame(object):
                        SELECT id, database, allmath FROM levels
                        WHERE id=?
                        ''', (str(id),)
-                       )
+                      )
         for row in self.c:
             id, databasefile, allmath = int(row[0]), str(row[1]),\
                                             bool(int(row[2]))

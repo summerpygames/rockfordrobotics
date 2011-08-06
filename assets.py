@@ -3,6 +3,7 @@ assets = 'data'
 button = 'button'
 allign = 'allign'
 message = 'message'
+sounds = 'sounds'
 
 ##########################
 ## To complete this file##
@@ -94,13 +95,13 @@ level_lock_sel = os.path.join(assets, button, 'lmlockedselect.svg')
 ##  For the About the Team Menu          ##
 ###########################################
 
-about_allign = os.path.join(assets, allign, '.svg')
+about_allign = os.path.join(assets, allign, 'aboutmenu.svg')
 
 ###########################################
 ##  For the Credits Menu                 ##
 ###########################################
 
-credits_align = os.path.join(assets, allign, '.svg')
+credits_allign = os.path.join(assets, allign, 'creditsmenu.svg')
 
 ###########################################
 ## Databases                             ##
@@ -127,9 +128,20 @@ ouch = os.path.join(assets, message, 'ouch.svg')
 ###########################################
 ## Sounds                                ##
 ###########################################
-laser1 = os.path.join(assets, 'highlaser.wav')
-laser2 = os.path.join(assets, 'midlaser.wav')
-laser3 = os.path.join(assets, 'lowlaser.wav')
+laser1 = os.path.join(assets, sounds, 'highlaser.ogg')
+laser2 = os.path.join(assets, sounds, 'midlaser.ogg')
+laser3 = os.path.join(assets, sounds, 'lowlaser.ogg')
+
+sound_correct = os.path.join(assets, sounds, 'correct.ogg')
+sound_gameover = os.path.join(assets, sounds, 'gameover.ogg')
+sound_homeworld = os.path.join(assets, sounds, 'homeworld.ogg')
+sound_lifeless = os.path.join(assets, sounds, 'life-1.ogg')
+sound_mainmenu = os.path.join(assets, sounds, 'mainmenu.ogg')
+sound_planet = os.path.join(assets, sounds, 'planet.ogg')
+sound_solarsystem = os.path.join(assets, sounds, 'solarsystem.ogg')
+sound_space = os.path.join(assets, sounds, 'space.ogg')
+
+
 
 ###########################################
 ## Charecters                            ##

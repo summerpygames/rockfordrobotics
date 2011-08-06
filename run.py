@@ -1222,21 +1222,35 @@ class PlayState(SubGame):
         # if we are using an olpc
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
-        
+            pygame.mixer.music.load(sound_mainmenu)
+            pygame.mixer.music.play(-1)
+
         if self.stage == 1:
             self.gm.background = load_image(assets.background_deepspace)
+            pygame.mixer.music.load(assets.sound_space)
+            pygame.mixer.music.play(-1)
+
         elif self.stage == 2:
             self.gm.background = load_image(assets.background_solarsystem)
+            pygame.mixer.music.load(assets.sound_solarsystem)
+            pygame.mixer.music.play(-1)
+
         elif self.stage == 3:
             self.gm.background = load_image(assets.background_barrenplanet)
+            pygame.mixer.music.load(assets.sound_planet)
+            pygame.mixer.music.play(-1)
+
         elif self.stage == 4:
             self.gm.background = load_image(assets.background_homeworld)
+            pygame.mixer.music.load(assets.sound_homeworld)
+            pygame.mixer.music.play(-1)
+
         else:
             self.gm.background = load_image(assets.background_deepspace)
-
-
-
+            pygame.mixer.music.load(assets.sound_space)
+            pygame.mixer.music.play(-1)
         
+        pygame.mixer.music.set_volume(.4) 
     
         #============================
         # Select the proper charecter
@@ -1296,7 +1310,11 @@ class PlayState(SubGame):
         self.gm.player_group.add(self.gm.player_cannon)
         self.t = 0
         self.useonce = True
-
+    
+    def transition_out(self):
+        """This is what happens when you go out of this level"""
+        pygame.mixer.music.stop()
+    
     def main_loop(self):
         
         events = pygame.event.get( )

@@ -27,7 +27,7 @@
 *.log
 *.sql
 *.sqlite
-*shelve.db
+#*shelve.db
 
 # OS generated files #
 ######################

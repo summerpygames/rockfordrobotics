@@ -100,6 +100,9 @@ how = ((('none', ''),),)
 # No buttons
 how = ((('none', ''),),)
 
+
+changemusic = True
+
 ###Classes shared between states###
 class Allignment(Sprite):
     """A simple SVG background allignment"""
@@ -331,7 +334,15 @@ class AnyMenu(SubGame):
     def transition_in(self, bg=os.path.join('data', 'spacebg.jpg')):
         """Do things for every menu"""
         self.cursor = [0, 0]        
-        pygame.mixer.init(frequency=22050, size=8, channels=2, buffer=512)
+        if  changemusic:
+            pygame.mixer.music.load(sound_mainmenu)
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(.4) 
+            global changemusic
+            changemusic = False
+
+        if self.initialized:
+            return
         self.set_layers(['main', 'allignment'])
         self.t = 0        
         #Background initialization
@@ -419,10 +430,11 @@ class MovieMenu(AnyMenu):
 
     def transition_in(self):
         #General initialization
+        super(MovieMenu, self).transition_in()
         if self.initialized:
             self.group = Group(self.allignment)
             return
-        super(MovieMenu, self).transition_in()
+        
         self.initialized = True
         sw, sh = self.screen_state.get_size()
         
@@ -460,6 +472,8 @@ class MovieMenu(AnyMenu):
                                                   self.stage)
                     self.group.empty()
                     GetScreen().draw()
+                    global changemusic
+                    changemusic = True
                     self.newstate.swap_state()
                     return
                 elif keys(event, 'back'):
@@ -480,11 +494,11 @@ class LevelMenu(AnyMenu):
         self.gp = gameplay
     def transition_in(self):
         #General initialization
+        super(LevelMenu, self).transition_in()
         if self.initialized:
             self.group = Group(*self.sprites)
             self.allignment.add(self.group)
             return
-        super(LevelMenu, self).transition_in()
         self.initialized = True
 
         self.gamelevels = self.gp.get_game_levels(self.grade, self.stage)
@@ -626,11 +640,11 @@ class GradeMenu(AnyMenu):
 
     def transition_in(self):
         #General initialization
+        super(GradeMenu, self).transition_in()
         if self.initialized:
             self.group = Group(self.resume, self.first, self.second, self.third,
                            self.allignment)
             return
-        super(GradeMenu, self).transition_in()
         self.initialized = True
         self.gp = gameplay.UserGame(gameplay_database)
 
@@ -732,11 +746,11 @@ class StageMenu(AnyMenu):
 
     def transition_in(self):
         #General initialization
+        super(StageMenu, self).transition_in()
         if self.initialized:
             self.group = Group(self.deep, self.solar, self.planet, self.city,
                            self.allignment)
             return
-        super(StageMenu, self).transition_in()
         self.initialized = True
                 
 
@@ -823,11 +837,12 @@ class CharecterMenu(AnyMenu):
 
     def transition_in(self):
         #General initialization
+        super(CharecterMenu, self).transition_in()
         if self.initialized:
             self.group = Group(self.snake, self.tux, self.gnu, self.wilber,
                            self.allignment)
             return
-        super(CharecterMenu, self).transition_in()
+        
         self.initialized = True
 
         #Sprite initialization
@@ -902,6 +917,9 @@ class CharecterMenu(AnyMenu):
                                       self.stage)
  
         else:
+            global changemusic
+            changemusic = True
+
             self.newstate = run.PlayState(trigger,
                                           self.gp,
                                           self.dbfile,
@@ -926,10 +944,11 @@ class HowToMenu(AnyMenu):
 
     def transition_in(self):
         #General initialization
+        super(HowToMenu, self).transition_in()
+
         if self.initialized:
             self.group = Group(self.allignment)
             return
-        super(HowToMenu, self).transition_in()
         self.initialized = True
         sw, sh = self.screen_state.get_size()
 
@@ -953,6 +972,86 @@ class HowToMenu(AnyMenu):
             GetScreen().draw()
             self.newstate.push_state()
             return
+
+######################################################################
+# About Menu                                                         #
+######################################################################
+class AboutMenu(AnyMenu):
+    """Class for the instruction pages"""
+    def __init__(self):
+        super(AboutMenu, self).__init__(self)
+        self.initialized = False
+
+    def transition_in(self):
+        #General initialization
+        super(AboutMenu, self).transition_in()
+
+        if self.initialized:
+            self.group = Group(self.allignment)
+            return
+        self.initialized = True
+        sw, sh = self.screen_state.get_size()
+
+
+        self.allignment = Allignment(svg=about_allign, size = (0, sh))
+        self.allignment.rect.midtop = (sw/2, 0)
+
+        #Sprite group initialization
+        self.group = Group(self.allignment)
+
+    def main_loop(self):
+        """Run the main loop"""
+        super(AboutMenu, self).main_loop(how)
+        
+    def triggers (self, trigger):
+        """ Callback for trigger usage """
+        if trigger is not None:
+            self.newstate = trigger()
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
+            self.newstate.push_state()
+            return
+
+######################################################################
+# Credits Menu                                                       #
+######################################################################
+class CreditsMenu(AnyMenu):
+    """Class for the instruction pages"""
+    def __init__(self):
+        super(CreditsMenu, self).__init__(self)
+        self.initialized = False
+
+    def transition_in(self):
+        #General initialization
+        super(CreditsMenu, self).transition_in()
+
+        if self.initialized:
+            self.group = Group(self.allignment)
+            return
+        self.initialized = True
+        sw, sh = self.screen_state.get_size()
+
+
+        self.allignment = Allignment(svg=credits_allign, size = (0, sh))
+        self.allignment.rect.midtop = (sw/2, 0)
+
+        #Sprite group initialization
+        self.group = Group(self.allignment)
+
+    def main_loop(self):
+        """Run the main loop"""
+        super(CreditsMenu, self).main_loop(how)
+        
+    def triggers (self, trigger):
+        """ Callback for trigger usage """
+        if trigger is not None:
+            self.newstate = trigger()
+            self.group.empty()
+            self.group.draw()
+            GetScreen().draw()
+            self.newstate.push_state()
+            return
             
 ######################################################################
 # Main Menu                                                          #
@@ -965,11 +1064,12 @@ class MainMenu(AnyMenu):
 
     def transition_in(self):
         #General initialization
+        super(MainMenu, self).transition_in()
+
         if self.initialized:
             self.group = Group(self.play, self.howto, self.about, self.credits,
                            self.allignment)
             return
-        super(MainMenu, self).transition_in()
         self.initialized = True
 
         
@@ -1002,14 +1102,14 @@ class MainMenu(AnyMenu):
                               size = ( 312, None ),
                               callout = 'cred',
                               initsel = False,
-                              trigger = [None, self])
+                              trigger = [CreditsMenu, self])
                               
         self.about = Button  (sel_svg = main_about_sel,
                               des_svg = main_about_des,
                               size = ( 312, None ),
                               callout = 'about',
                               initsel = False,
-                              trigger = [None, self])
+                              trigger = [AboutMenu, self])
 
         positions = []
         sw, sh = self.screen_state.get_size()

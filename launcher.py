@@ -43,6 +43,7 @@ def main():
     fullscreen = True
     virtual_size = (1200,900)
     color = (0,0,0)
+    pygame.mixer.init(frequency=22050, size=8, channels=2, buffer=512)
 
 
     if olpcgames.ACTIVITY:
