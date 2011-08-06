@@ -138,3 +138,11 @@ charecter_flying_saucer = os.path.join(assets, 'pythonsaucer.svg')
 charecter_space_shuttle = os.path.join(assets, 'tuxshuttle.svg')
 charecter_classic_rocket = os.path.join(assets, 'gnurocket.svg')
 charecter_fighter_jet = os.path.join(assets, 'gimpfighter.svg')
+
+###########################################
+## Backgrounds                           ##
+###########################################
+background_deepspace = os.path.join(assets, 'spacebg.jpg')
+background_solarsystem = os.path.join(assets, 'solarsystem.jpg')
+background_barrenplanet = os.path.join(assets, 'barrenplanet.jpg')
+background_homeworld = os.path.join(assets, 'homeworld.jpg')

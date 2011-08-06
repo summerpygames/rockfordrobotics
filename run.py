@@ -1222,8 +1222,20 @@ class PlayState(SubGame):
         # if we are using an olpc
         if olpcgames.ACTIVITY:
             self.gm.size = olpcgames.ACTIVITY.game_size
+        
+        if self.stage == 1:
+            self.gm.background = load_image(assets.background_deepspace)
+        elif self.stage == 2:
+            self.gm.background = load_image(assets.background_solarsystem)
+        elif self.stage == 3:
+            self.gm.background = load_image(assets.background_barrenplanet)
+        elif self.stage == 4:
+            self.gm.background = load_image(assets.background_homewold)
+        else:
+            self.gm.background = load_image(assets.background_deepspace)
 
-        self.gm.background = my_load_image('spacebg.jpg')
+
+
         
     
         #============================
