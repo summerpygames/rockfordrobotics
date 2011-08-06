@@ -1,5 +1,5 @@
 from random import choice, randint
-from math import sqrt, ceil
+from math import sqrt
 
 def generate():
     """Adding two numbers to a maximum sum of 1000."""
@@ -9,12 +9,12 @@ def generate():
     
 def generate_question():
     """This is generating the three terms involved in the sum."""
-    right = choice(range(101,1001))
+    right = choice(range(100,1001))
     term11, term21 = [0,0]
     while term11 + term21 < 10 and int(str(term11+term21)[-1]) != int(str(right)[-1]):
         term11 = choice(range(1,10))
         term21 = choice(range(1,10))
-    term12 = choice(range(10,int(ceil(float(right)/10))))
+    term12 = choice(range(10,int(right/10)))
     term1 = 10*term12 + term11
     term22 = right - term1 - term21
     term2 = term22 + term21

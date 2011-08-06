@@ -52,7 +52,7 @@ def addQuestion(database, source):
     database[str(questionNum)] = question
     return question
     
-def main(index): #This should only be run once: upon startup of the game.
+def main(): #This should only be run once: upon startup of the game.
     for sourceString in sourceStrings:
         global questionNum
         questionNum = 0
