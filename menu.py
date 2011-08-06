@@ -612,7 +612,7 @@ class LevelMenu(AnyMenu):
             self.group.empty()
             self.group.draw()
             GetScreen().draw()
-            self.newstate.push_state()
+            self.newstate.swap_state()
             return
 
 ######################################################################
@@ -702,8 +702,10 @@ class GradeMenu(AnyMenu):
             #========================
             # if we hit resume button
             if trigger == 'charecters':
-                self.newstate = CharecterMenu(self.gp, 1,
-                                              'stageid')
+                recentlevel = self.gp.get_most_recent()
+                self.newstate = CharecterMenu(self.gp,
+                                              recentlevel[0],
+                                              recentlevel[1])
                                               
             #============================
             # if this is a normal trigger

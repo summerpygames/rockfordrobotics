@@ -834,7 +834,7 @@ class SpaceShuttle(Player):
     def __init__(self, gm):
         self.cannon = gm.player_cannon
         self.opponent_bulletgroup = gm.opponent_bullet_group
-        super(SpaceShuttle, self).__init__(svg=assets.charecter_classic_rocket,
+        super(SpaceShuttle, self).__init__(svg=assets.charecter_space_shuttle,
                                            lasercannon = self.cannon,
                                            size = (250, None), 
                                            gm = gm)
@@ -1230,7 +1230,7 @@ class PlayState(SubGame):
         elif self.stage == 3:
             self.gm.background = load_image(assets.background_barrenplanet)
         elif self.stage == 4:
-            self.gm.background = load_image(assets.background_homewold)
+            self.gm.background = load_image(assets.background_homeworld)
         else:
             self.gm.background = load_image(assets.background_deepspace)
 
@@ -1280,9 +1280,11 @@ class PlayState(SubGame):
         def example_hook(p, clean):
             if clean:
                 self.gm.gp.mark_played(self.gm.levelid)
-                self.newstate = self.gm.gp.get_next_level(self.gm.level)
+                self.gm.gp.set_most_recent(self.gm.levelid, self.gm.stage) 
+                self.pop_state()
                 return
             else:
+                self.gm.gp.set_most_recent(self.gm.levelid, self.gm.stage)
                 self.pop_state()
                 return
         #

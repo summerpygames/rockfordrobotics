@@ -19,6 +19,7 @@ import math
 import sqlite3
 import pdb
 from random import choice
+import pickle
 
 class UserGame(object):
 
@@ -46,7 +47,7 @@ class UserGame(object):
         self.c.execute('''
                        SELECT story from storys
                        WHERE stage=? and suborder=1
-                       ''', (str(stage))
+                       ''', (str(stage),)
                        )
         for row in self.c:
             background = str(row[0])
@@ -69,7 +70,7 @@ class UserGame(object):
                        FROM levels
                        WHERE grade=? AND allmath=0
                        GROUP BY stage
-                       ''', (str(grade))
+                       ''', (str(grade),)
                       )
         #=========================
         # we extract the data from
@@ -123,6 +124,19 @@ class UserGame(object):
         
         return self.stageloop(str(gameplay))
 
+    def set_most_recent(self, levelid, stage):
+        """store the level id of the last level and stage played"""
+        file = open('lastlevel', 'w')
+        pickle.dump((levelid, stage), file)
+
+    def get_most_recent(self):
+        try:
+            file = open('lastlevel', 'r')
+        except IOError:
+            return (1, 1)
+        else:
+            return pickle.load(file)
+
     def get_game_levels(self, grade, stage):
         """This will return an ID, a Description of the level, and if its
         unlocked, and if it is played"""
@@ -160,9 +174,9 @@ class UserGame(object):
                        UPDATE levels
                        set playcount = playcount+1
                        WHERE id=?
-                       ''', (int(id))
+                       ''', (int(id),)
                       )
-        self.c.commit()
+        self.db.commit()
 
     def get_next_level(self, id):
         """Get information on a certain level"""
@@ -170,7 +184,7 @@ class UserGame(object):
         self.c.execute('''
                        SELECT id, database, allmath FROM levels
                        WHERE id=?
-                       ''', (str(id))
+                       ''', (str(id),)
                        )
         for row in self.c:
             id, databasefile, allmath = int(row[0]), str(row[1]),\
@@ -185,7 +199,7 @@ class UserGame(object):
         self.c.execute('''
                        SELECT id, database, allmath FROM levels
                        WHERE id=?
-                       ''', (str(id))
+                       ''', (str(id),)
                        )
         for row in self.c:
             id, databasefile, allmath = int(row[0]), str(row[1]),\
