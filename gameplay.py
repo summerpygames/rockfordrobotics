@@ -1,19 +1,19 @@
 #!/usr/bin/env python
-# gameplay.py
-# Copyright (C) 2011 Mark Amber
 #
-# This program is free software: you can redistribute it and/or modify
+# This file is part of Laser Math.
+#
+# Laser Math is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# Laser Math is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# you should have received a copy of the GNU General Public License
+# along with Laser Math.  If not, see <http://www.gnu.org/licenses/>.
 
 import math
 import sqlite3
@@ -27,23 +27,6 @@ class UserGame(object):
     Allows game engine to set values on certain levels and returns values in a
     form the game can read.
 
-    Initilize the object and set what random things stand for, this module
-    excepts all errors from sqlite and converts them to one for initilizing:
-        DatabaseError
-    and one for more spesific things:
-        QueryError
-    If you reach a database error, that means that you are unable to open the
-    database, this is bad, because no further options can be performed, except
-    ensure the database is intact
-    On the other hand QueryError is quite usefull, because in most cases you
-    just want to skip the current operation and try a different one, but in some
-    cases you will need to quit.
-
-    Next, when you init the object, you can expect a DatabaseError, but since
-    once you open it once you can expect it to open again, the next time you
-    will get a query error even if you are unable to reach the database, but
-    DatabaseError will be part of that error
-    
     """
 
     def __init__(self, db):
@@ -57,6 +40,55 @@ class UserGame(object):
 
     def close(self):
         self.c.close()
+
+    def get_unlock_stage(self, grade):
+        """This method will simply return a tuple of the stages that are
+        unlocked at the moment according to the database"""
+        results = []
+        test = []
+
+        #===================================
+        # run some really nice SQL made with
+        # the help of some of the really 
+        # nice people over at #sql, thanks!
+        self.c.execute('''
+                       SELECT stage ,MAX(playcount) as 'unlocked'
+                       FROM levels WHERE grade=? group by stage
+
+                       SELECT stage ,case when MAX(playcount) > 0 then 'True' else 'False' end as 'unlocked'
+                       FROM levels WHERE grade=?
+                       group by stage
+                       ''', (grade, grade)
+                      )
+        #=========================
+        # we extract the data from
+        # the different rows
+        for row in self.c:
+            test.append(row[0], row[1])
+
+        #===================================
+        # now we try to make it into a dict
+        # I dont know why I chose a dict
+        # maybe because we do not use enough
+        # of them in this program, idk
+        try:
+            results = {l[0][0]:l[0][1], l[1][0]:l[1][1], l[2][0]:l[2][1], l[3][0]:l[3][1]}
+
+        #===========================
+        # if something goes horrible
+        except IndexError:
+            return {1:True, 2:True, 3:True, 4:True}
+
+        #=============================
+        # if all was bright and cheery
+        # well at least there was no
+        # exceptions raised, so it is
+        # safe to assume that is is
+        # all good
+        else:
+            return results
+            # Return something like this:
+            # {1:True, 2:True, 3:False, 4:False}
 
     def get_gameplay(self):
         gameplays = []

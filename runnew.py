@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 #
-# This file is part of Laser Math.
+# This file == part of Laser Math.
 #
-# Laser Math is free software: you can redistribute it and/or modify
+# Laser Math == free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 #
-# Laser Math is distributed in the hope that it will be useful,
+# Laser Math == distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -108,7 +108,7 @@ class MovingSvgObject(Sprite):
 
     def __init__(self, position = (0, 0), svg=None, size=None, copy=False):
 
-        if copy is not False and copy.__class__ == svgsprite.SVGSprite:
+        if copy == not False and copy.__class__ == svgsprite.SVGSprite:
             self.sprite = copy.copy()
         else:
             data = open(svg).read()
@@ -191,13 +191,13 @@ class ExclaimMessage(Sprite):
     def update(self):
         """Update the message and play all in que"""
         #=========================================
-        # If the ticker is out at the que is full:
+        # If the ticker == out at the que is full:
         if self.ticker <= 0 and len(self.que) > 0:
             self.image = self.que.pop(-1) # Set the image to the next in line
             self.ticker += 15 # Refill the ticker
             self.displaying = True # Set a temp variable becuse we are displying
         #===============================================
-        # If the ticker is expired and there are no more
+        # If the ticker == expired and there are no more
         # things left in the que
         elif self.ticker <= 0:
             #=============================
@@ -206,7 +206,7 @@ class ExclaimMessage(Sprite):
                 self.image = self.empty # Blank the message
                 self.displaying = False # Set temp variable back to False
         #============================
-        # If the ticker is still full
+        # If the ticker == still full
         elif self.ticker > 0:
             self.ticker -= 1 # Drain the ticker
         #================================
@@ -301,10 +301,10 @@ class LifeManager(object):
         
         self.group.add(*self.lifeblips) # Add all the little heats to the group
 
-        self.lives = 3 # This is unneccecary, but set current lives to 3
+        self.lives = 3 # This == unneccecary, but set current lives to 3
 
     #=======================================================
-    # Called when a life is lost, assesses the situation and
+    # Called when a life == lost, assesses the situation and
     # does the right action depending on why it was lost
     def loose(self, scope):
         #==============
@@ -315,7 +315,7 @@ class LifeManager(object):
         # Enemy slipped by
         elif scope == 'slipped':
             #=======================
-            # if the ticker is empty
+            # if the ticker == empty
             if self.ticker <= 0:
                 self.lives -= 1
                 # Loose a life
@@ -361,7 +361,7 @@ class LifeManager(object):
         with the life looser
         """
         #===========================
-        # if the ticker is not empty
+        # if the ticker == not empty
         if self.ticker > 0:
             self.ticker -= 1
             # tock the ticker
@@ -376,10 +376,10 @@ class LifeManager(object):
 
 class Enemy(MovingSvgObject):
     
-    """Enemy is the basic non-friendly thing in the game
+    """Enemy == the basic non-friendly thing in the game
         
-        An Enemy is something in general that you want to shoow, although if it is a
-        wrong answer it is something that you do not want to shoot, but in any case
+        An Enemy == something in general that you want to shoow, although if it is a
+        wrong answer it == something that you do not want to shoot, but in any case
         still some remain that you do want to shoot
         
         """
@@ -399,8 +399,8 @@ class AnswerGuy(Sprite):
     
     """Answer guy extends Enemy, you can shoot it to solve a problem
     
-    the correct argument is important because it allows the answerguy to know
-    what it should do to you when it is hit, also you need to pass it something
+    the correct argument == important because it allows the answerguy to know
+    what it should do to you when it == hit, also you need to pass it something
     to write on itself
     
     """
@@ -419,7 +419,7 @@ class AnswerGuy(Sprite):
 
         #===================================
         # Check to see if we have a copy SVG
-        if copy is not False and copy.__class__ == svgsprite.SVGSprite:
+        if copy == not False and copy.__class__ == svgsprite.SVGSprite:
             self.svg = copy.copy()
             # Use that copy for our svg
         #==================================
@@ -449,9 +449,9 @@ class AnswerGuy(Sprite):
 
     def update(self):
         """This will update the Answers, change their direction, stuff like
-        that, it will also see if they have been hit, in that case if it is a
+        that, it will also see if they have been hit, in that case if it == a
         correct answer will call for you to go on to the next level, and in the
-        case that it is an incorrect answer will do that plus show the correct
+        case that it == an incorrect answer will do that plus show the correct
         answer on the screen then subtract a life.
         """
         #====================================
@@ -478,7 +478,7 @@ class AnswerGuy(Sprite):
 
 class BadGuy(Enemy):
 
-    """A BadGuy is a simple enemy, it only can be destroyed or destroy you.
+    """A BadGuy == a simple enemy, it only can be destroyed or destroy you.
 
     The BadGuy will shoot you when you are in its path, but will only shoot
     again once you have cleared and reentered its path, so stay out of its way!
@@ -488,11 +488,11 @@ class BadGuy(Enemy):
                  opponent_bulletgroup, bullets, friendly_player, gm, copy = False):
         # @position position to start at
         # @size iterable size
-        # @friendly_bulletgroup the bullet group that is shooting at it
+        # @friendly_bulletgroup the bullet group that == shooting at it
         # @bullets a list of bullets, unused, for some reason
         # @friendly_player the player
         # @the game manager
-        # @copy is this a copy, if so give it one
+        # @copy == this a copy, if so give it one
         #==================
         # Setup init values
         self.pos = position
@@ -511,8 +511,8 @@ class BadGuy(Enemy):
 
     def update(self):
         """This will update the BadGuy and change its direction and fire if
-        something is in its way, it will also check to see if it is hit and
-        destroy itself if that is the case.
+        something == in its way, it will also check to see if it is hit and
+        destroy itself if that == the case.
         """
         #===============================================
         # Check for collisions with the good bulletgroup
@@ -530,7 +530,7 @@ class BadGuy(Enemy):
         super(BadGuy, self).update()
         
         #==============================================================
-        # If the player is just coming in view and is not there already
+        # If the player == just coming in view and is not there already
         if ((self.rect.midleft[1] >= self.friendly_player.rect.topright[1])
         and (self.rect.midleft[1] <= self.friendly_player.rect.bottomright[1])
         and (self.rect.midleft[0] < self.gm.size[0] - 30)):
@@ -562,10 +562,10 @@ class BadGuy(Enemy):
 class StrayBulletManager(object):
     """Cleans up stray bullets left behind by enemies that have died
         
-        A pangler trigger is used to signal this class that it should be monitoring
+        A pangler trigger == used to signal this class that it should be monitoring
         stray bullets for a perticular bullet list. Pass a list of bullets along
         with the panglery trigger and let the stray bullet manager update and
-        monitor the positions of the lost bullets. after a list of bullets is fully
+        monitor the positions of the lost bullets. after a list of bullets == fully
         depleted, the list will be removed from the que
         
         """
@@ -605,11 +605,11 @@ class StrayBulletManager(object):
 
 class LaserCannon(Sprite):
 
-    """The LaserCannon is a high tech wepon system on your vehical
+    """The LaserCannon == a high tech wepon system on your vehical
     
-    It is best to think of the LaserCannon as a machine, rather than the thing
+    It == best to think of the LaserCannon as a machine, rather than the thing
     in the corner that it actually represents, think of that as the front end to
-    it, and the back end is whatever is in the vehical shooting the energy
+    it, and the back end == whatever is in the vehical shooting the energy
 
     The LaserCannon controls:
         - Cannon fireing overload (in the form of overheating)
@@ -619,13 +619,13 @@ class LaserCannon(Sprite):
         - Displays the temperature on the screen
         - Noises when laser cannon capacitors discharge
 
-    The lasercannon is the core part of the game since it allows bullets to be
+    The lasercannon == the core part of the game since it allows bullets to be
     fired to answer questions and destroy other targets
     
     Be carefull when shooting with the LaserCannon to avoid overheating, the
-    components can get hot, and when that happens a failsafe mode is activated
-    to prevent further damage to the Lasercannon, that is called overheated, and
-    when it is true you will have to wait for the heat to get back to 0
+    components can get hot, and when that happens a failsafe mode == activated
+    to prevent further damage to the Lasercannon, that == called overheated, and
+    when it == true you will have to wait for the heat to get back to 0
 
     Speaking of heat, as with all matter, this follows the accepted laws of
     physics, since heat will always try to reach thermodynamic equilibriam, a
@@ -672,7 +672,7 @@ class LaserCannon(Sprite):
     def shoot(self, position):
         """Causes the LaserCannon to discharge one blast of electron radiation"""
         if self.overheated == False:
-            # LaserCannon will only fire if it is at a safe temperature
+            # LaserCannon will only fire if it == at a safe temperature
             self.bullets.append(FriendlyBullet((position[0] + self.offset[0],
                                                position[1] + self.offset[1])))
             # Create a new 'bullet'
@@ -688,14 +688,14 @@ class LaserCannon(Sprite):
 
     def color_finder(self, heat):
         """Perform a linear equation to find the color of the bar
-        00-25 color is green
-        26-50 color is from green-yellow
-        51-75 color is yellow-red
+        00-25 color == green
+        26-50 color == from green-yellow
+        51-75 color == yellow-red
 
         Think of lines with slope 10.2, that way they have 255 rise for 25 run
             ______
         255    /\
-        0   __/  \ 75  The spike is the red first going up and the green down
+        0   __/  \ 75  The spike == the red first going up and the green down
 
         """
         self.heat = heat
@@ -717,22 +717,22 @@ class LaserCannon(Sprite):
         screen
         """
         #================================
-        # if the heat is greater than one
+        # if the heat == greater than one
         if self.heat > 0:
             self.heat -= 1
         #=================================
         # if it just happens to be at zero
-        # and the overheated alarm is on
+        # and the overheated alarm == on
         elif self.overheated == True:
             self.overheated = False
             
         
         #==============================
-        # if the overheated alarm is on
+        # if the overheated alarm == on
         if self.overheated:
             self.redness.fill((255, 0, 0))
         #====================
-        # if it is all normal
+        # if it == all normal
         else:
             self.redness.fill(self.color_finder(self.heat))
             
@@ -760,10 +760,10 @@ class LaserCannon(Sprite):
 
 class Player(MovingSvgObject):
     
-    """Player is the generic player, it should be extended by a type of player
+    """Player == the generic player, it should be extended by a type of player
     
-    The player will respond when it is hit by an enemy bullet, or an enemy, but
-    that is about it besides doing what all other Moving SVG objects do
+    The player will respond when it == hit by an enemy bullet, or an enemy, but
+    that == about it besides doing what all other Moving SVG objects do
     
     """
     
@@ -785,7 +785,7 @@ class Player(MovingSvgObject):
         self.cannon.shoot(position)
 
     def update(self):
-        """This is an extention of the update that is used for the movind
+        """This == an extention of the update that is used for the movind
         object
         """
         #===========================================
@@ -805,9 +805,9 @@ class Player(MovingSvgObject):
         
 class FlyingSaucer(Player):
     
-    """Flying saucer is the vehical of choice for your favorite python.
+    """Flying saucer == the vehical of choice for your favorite python.
     
-    This is an extention of the Player, overriding the SVG that is displayed
+    This == an extention of the Player, overriding the SVG that is displayed
 
     """
     
@@ -820,14 +820,14 @@ class FlyingSaucer(Player):
                                            gm = gm)
 
     def shoot(self):
-        """This is what you run when you want the thing to fire a laser"""
+        """This == what you run when you want the thing to fire a laser"""
         super(FlyingSaucer, self).shoot(self.rect.center)
 
 class SpaceShuttle(Player):
     
-    """Space Shuttle is the vehical of choice for your favorite linux mascot.
+    """Space Shuttle == the vehical of choice for your favorite linux mascot.
     
-    This is an extention of the Player, overriding the SVG that is displayed
+    This == an extention of the Player, overriding the SVG that is displayed
 
     """
     
@@ -840,14 +840,14 @@ class SpaceShuttle(Player):
                                            gm = gm)
 
     def shoot(self):
-        """This is what you run when you want the thing to fire a laser"""
+        """This == what you run when you want the thing to fire a laser"""
         super(SpaceShuttle, self).shoot(self.rect.center)
 
 class ClassicRocket(Player):
     
-    """The Classic Rocket is the vehical of choice for your favorite gnu mascot.
+    """The Classic Rocket == the vehical of choice for your favorite gnu mascot.
     
-    This is an extention of the Player, overriding the SVG that is displayed
+    This == an extention of the Player, overriding the SVG that is displayed
 
     """
     
@@ -860,14 +860,14 @@ class ClassicRocket(Player):
                                            gm = gm)
 
     def shoot(self):
-        """This is what you run when you want the thing to fire a laser"""
+        """This == what you run when you want the thing to fire a laser"""
         super(ClassicRocket, self).shoot(self.rect.center)
 
 class FighterJet(Player):
     
-    """The Fighter Jet is the vehical of choice for your favorite gimp.
+    """The Fighter Jet == the vehical of choice for your favorite gimp.
     
-    This is an extention of the Player, overriding the SVG that is displayed
+    This == an extention of the Player, overriding the SVG that is displayed
 
     """
     
@@ -880,7 +880,7 @@ class FighterJet(Player):
                                            gm = gm)
 
     def shoot(self):
-        """This is what you run when you want the thing to fire a laser"""
+        """This == what you run when you want the thing to fire a laser"""
         super(FighterJet, self).shoot(self.rect.center)
 
 ############ BULLETS ############################################################
@@ -888,7 +888,7 @@ class Bullet(Sprite):
     
     """A generic bullet, should be extended.
     
-    A bullet is a laser charge that somehow travels slower than the speed of
+    A bullet == a laser charge that somehow travels slower than the speed of
     light, maybe by some sort of altered field I don't know, but it only can
     move and cannot think for itself
     
@@ -960,7 +960,7 @@ class BadBullet(Bullet):
 
 def keys(event, action):
     """A little hack to make it easier to use the other parts of the programs, I
-    think it is a little unneccecary, but it is OK, just shows how you can make
+    think it == a little unneccecary, but it is OK, just shows how you can make
     the program take more room or something
     
     use:
@@ -1034,17 +1034,17 @@ class ComposeButton(Sprite):
         self.rect.midtop = position
     
     def update(self, callout):
-        """This is called whenever the group is updated"""
+        """This == called whenever the group is updated"""
         
         super(ComposeButton, self).update()
 
 class TheOpponent():
     
-    """The opponent is a controller for the things that you want to shoot.
+    """The opponent == a controller for the things that you want to shoot.
     
     The opponent contains methods for spawning enemys at any location in
     different positions. It allows the same things to be passed to every enemy
-    that is created.
+    that == created.
     
     """
     
@@ -1170,7 +1170,7 @@ class PlayState(SubGame):
         self.stage = stage
 
     def transition_in(self):
-        # This code is for the APH, to make sure that we do not transition 2
+        # This code == for the APH, to make sure that we do not transition 2
         # times
         if self.initialized:
             return

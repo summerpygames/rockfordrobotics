@@ -19,6 +19,72 @@ import sqlite3
 import os
 from optparse import OptionParser
 import csv
+import re
+
+match_3_col = re.compile(r"([^,]+),\s+([^,]+),\s+(.+)")
+
+def filetostory(csvfile, db, force):
+    """
+    This will change a file in the format of:
+    grade, number, this is where you can put, text!
+        
+    that means that the third two column can have as many commas that you
+    want, it is just that you can only one comma can seperate the first two
+    columns
+
+    """
+
+    createDb = sqlite3.connect(db)
+    queryCurs = createDb.cursor()
+    list = []
+    
+    filedone = False
+    file = open(csvfile, 'r')
+    file.seek(0)
+
+    while good == True:
+        storyslides.append(file.readline())
+        if list[-1] == '':
+            storyslides.remove(storyslides[-1])
+            good = False
+
+    thelist = []
+    for i in storyslides:
+        m = match_3_col.match(i)
+        thelist.append(m.groups())
+
+    dbmade = False
+    try:
+        queryCurs.execute('''create table storys(
+                            ID INTEGER PRIMARY KEY,
+                            grade INTAGER,
+                            suborder INTAGER,
+                            story TEXT)
+                          ''')
+
+    except sqlite3.OperationalError, e:
+        if force:
+            queryCurs.execute('''drop table storys''')
+            queryCurs.execute('''create table storys(
+                            ID INTEGER PRIMARY KEY,
+                            grade INTAGER,
+                            suborder INTAGER,
+                            story TEXT)
+                          ''')
+
+            dbmade = True
+        else:
+            print 'Cannot overwrite table, use --force (-f)'
+    else:
+        dbmade = True
+
+    if dbmade:
+        for i in list:
+            queryCurs.execute('''insert into storys (grade, suborder, story)
+                              values (?, ?, ?)''',i)
+        createDb.commit()
+        queryCurs.close()
+
 
 def filetogameplay(file, db, force):
     """convert from a enter seperated file to """
@@ -51,6 +117,7 @@ def filetogameplay(file, db, force):
         createDb.commit()
         queryCurs.close()
 
+    
 
 
 def csvtolevels(file, db, force):
@@ -117,7 +184,11 @@ if __name__ == '__main__':
                       help="The Gameplay CSV to import")
     parser.add_option("-l", "--levels", type="string", dest="levels", default=None,
                       help="The Levels CSV to import")
+    parser.add_option("-s", "--story", type="string", dest="story", default=None,
+                      help="The Story 2 column CSV to import")
+
 
     (options, args) = parser.parse_args()
     csvtolevels(options.levels, options.db, options.force)
     filetogameplay(options.gameplay, options.db, options.force)
+    filetostory(options.story, options.db, options.force)
