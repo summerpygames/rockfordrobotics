@@ -1169,6 +1169,7 @@ class PlayState(SubGame):
         self.levelid = levelid
         self.stage = stage
 
+
     def transition_in(self):
         # This code is for the APH, to make sure that we do not transition 2
         # times

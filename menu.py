@@ -70,6 +70,14 @@ charmen = (
 how = ((('none', ''),),)
 
 ###########################################
+##  For the Movie Menu                   ##
+###########################################
+
+# No buttons
+how = ((('continue', ''),),)
+
+
+###########################################
 ##  For the Stage Selection Menu         ##
 ###########################################
 
@@ -320,15 +328,16 @@ class AnyMenu(SubGame):
         super(AnyMenu, self).__init__()
         self.arg = arg
 
-    def transition_in(self):
+    def transition_in(self, bg=os.path.join('data', 'spacebg.jpg')):
         """Do things for every menu"""
         self.cursor = [0, 0]        
         pygame.mixer.init(frequency=22050, size=8, channels=2, buffer=512)
         self.set_layers(['main', 'allignment'])
         self.t = 0        
         #Background initialization
-        bg = load_image(os.path.join('data', 'spacebg.jpg'))
-        self.screen_state.set_background(bg)
+        back = load_image(bg)
+        print bg
+        self.screen_state.set_background(back)
         #Font & text initialization
         pygame.font.init()
         self.font = pygame.font.SysFont(None,80)
@@ -378,7 +387,7 @@ class AnyMenu(SubGame):
                     return
 
 ######################################################################
-# Movie level                                                        #
+# Movie menu                                                         #
 ######################################################################
 class MovieMenu(AnyMenu):
     
@@ -394,9 +403,19 @@ class MovieMenu(AnyMenu):
 
     """
 
-    def __init__(self):
+    def __init__(self, charecter, gameplay, dbfile,
+                 gameplaylist,
+                 levelid,
+                 stage):
         super(MovieMenu, self).__init__(self)
         self.initialized = False
+        
+        self.charecter = charecter
+        self.gp = gameplay
+        self.dbfile = dbfile
+        self.gameplay = gameplaylist
+        self.levelid = levelid
+        self.stage = stage
 
     def transition_in(self):
         #General initialization
@@ -406,28 +425,48 @@ class MovieMenu(AnyMenu):
         super(MovieMenu, self).transition_in()
         self.initialized = True
         sw, sh = self.screen_state.get_size()
+        
+        self.allignsvg = os.path.join('data', self.gp.get_story(self.stage))
 
-
-        self.allignment = Allignment(svg=htpl_allign, size = (0, sh))
+        self.allignment = Allignment(svg=self.allignsvg, size = (0, sh))
         self.allignment.rect.midtop = (sw/2, 0)
 
         #Sprite group initialization
         self.group = Group(self.allignment)
-
+        
     def main_loop(self):
         """Run the main loop"""
-        super(HowToMenu, self).main_loop(how)
+        #==============
+        # tick and draw
+        self.t = self.t + 1
+        self.group.draw()
+        GetScreen().draw()
+        #===============================================================
+        # events, dont worry about this prart, basically it maps a map
+        # to the current position of the cursor, that means that the
+        # maps defined above have the location of the cursor on top
+        # of them whenever a menu is running in a way
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    self.pop_state()
+                    return
+                elif keys(event, 'next'):
+                    self.newstate = run.PlayState(self.charecter,
+                                                  self.gp,
+                                                  self.dbfile,
+                                                  self.gameplay,
+                                                  self.levelid, 
+                                                  self.stage)
+                    self.group.empty()
+                    GetScreen().draw()
+                    self.newstate.swap_state()
+                    return
+                elif keys(event, 'back'):
+                    self.pop_state()
+                    return
         
-    def triggers (self, trigger):
-        """ Callback for trigger usage """
-        if trigger is not None:
-            self.newstate = trigger()
-            self.group.empty()
-            self.group.draw()
-            GetScreen().draw()
-            self.newstate.push_state()
-            return
-
+                
 ######################################################################
 # Level Selector Menu                                                #
 ######################################################################
@@ -478,26 +517,31 @@ class LevelMenu(AnyMenu):
                     sel_svg = level_unlock_sel
                     des_svg = level_unlock_des
                     gametrigger = ((level[0]['id'], False), self)
+                    print 'hello'
             # So, if the current level is one, just make it unlocked by default,
             # preventing anything from happening with the next steps and
             # indexerrors
+            # -----------------------------------------------------------------
+            
+            elif level[0]['playcount'] > 0:
+                sel_svg = level_played_sel
+                des_svg = level_played_des
+                gametrigger = ((level[0]['id'], False), self)
+            # for any others that are not the first one and have been
+            # played, set them to played
             # -----------------------------------------------------------------
 
             elif currentstage[currentstage.index(level)-1][0]['playcount'] > 0:
                 sel_svg = level_unlock_sel
                 des_svg = level_unlock_des
                 gametrigger = ((level[0]['id'], False), self)
-            # And if the level before this one was played, this one is unlocked
-            # -------------------------------------------------------------ovie
-            # level                                                        #
-            ######################################################################
-            elif level[0]['playcount'] > 0:
-                sel_svg = level_played_sel
-                des_svg = level_played_des
-                gametrigger = ((level[0]['id'], False), self)
-            # Finally for any others that are not the first one and have been
-            # played, set them to played
+                print 'yo'
+
+            # Finally if the level before this one was played, this one will be
+            # unlocked
             # -----------------------------------------------------------------
+
+            
 
 
             else:
@@ -711,22 +755,22 @@ class StageMenu(AnyMenu):
                               initsel = True,
                               trigger = [(self.grade, 1), self])
                               
-        self.solar = Button(  sel_svg = stage_solar_sel if locks[1] else stage_locked_sel,
-                              des_svg = stage_solar_des if locks[1] else stage_locked_des,
+        self.solar = Button(  sel_svg = stage_solar_sel if locks[2] else stage_locked_sel,
+                              des_svg = stage_solar_des if locks[2] else stage_locked_des,
                               size = ( 300, None ),
                               callout = 'solar',
                               initsel = False,
                               trigger = [(self.grade, 2), self])
                               
-        self.planet = Button( sel_svg = stage_planet_sel if locks[1] else stage_locked_sel,
-                              des_svg = stage_planet_des if locks[1] else stage_locked_des,
+        self.planet = Button( sel_svg = stage_planet_sel if locks[3] else stage_locked_sel,
+                              des_svg = stage_planet_des if locks[3] else stage_locked_des,
                               size = ( 300, None ),
                               callout = 'planet',
                               initsel = False,
                               trigger = [(self.grade, 3), self])
                               
-        self.city = Button(   sel_svg = stage_city_sel if locks[1] else stage_locked_sel,
-                              des_svg = stage_city_des if locks[1] else stage_locked_des,
+        self.city = Button(   sel_svg = stage_city_sel if locks[4] else stage_locked_sel,
+                              des_svg = stage_city_des if locks[4] else stage_locked_des,
                               size = ( 300, None ),
                               callout = 'city',
                               initsel = False,
@@ -846,12 +890,22 @@ class CharecterMenu(AnyMenu):
         
     def triggers (self, trigger):
         """ Callback for trigger usage """
-        self.newstate = run.PlayState(trigger,
+        # trigger is the charecter selection
+        if self.levelid == 1:
+            self.newstate = MovieMenu(trigger,
                                       self.gp,
                                       self.dbfile,
                                       self.gameplay,
                                       self.levelid, 
                                       self.stage)
+ 
+        else:
+            self.newstate = run.PlayState(trigger,
+                                          self.gp,
+                                          self.dbfile,
+                                          self.gameplay,
+                                          self.levelid, 
+                                          self.stage)
         self.group.empty()
         self.group.draw()
         GetScreen().draw()

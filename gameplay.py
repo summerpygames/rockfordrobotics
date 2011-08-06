@@ -41,43 +41,57 @@ class UserGame(object):
     def close(self):
         self.c.close()
 
+    def get_story(self, stage):
+        """Get the background image for the story"""
+        self.c.execute('''
+                       SELECT story from storys
+                       WHERE stage=? and suborder=1
+                       ''', (str(stage))
+                       )
+        for row in self.c:
+            background = str(row[0])
+
+        return (background) 
+
     def get_unlock_stage(self, grade):
         """This method will simply return a tuple of the stages that are
         unlocked at the moment according to the database"""
-        results = []
-        test = []
+        l = []
 
         #===================================
         # run some really nice SQL made with
         # the help of some of the really 
         # nice people over at #sql, thanks!
         self.c.execute('''
-                       SELECT stage ,MAX(playcount) as 'unlocked'
-                       FROM levels WHERE grade=? group by stage
-
-                       SELECT stage ,case when MAX(playcount) > 0 then 'True' else 'False' end as 'unlocked'
-                       FROM levels WHERE grade=?
-                       group by stage
-                       ''', (grade, grade)
+                       SELECT 
+                           MAX(id), stage
+                           , CASE WHEN playcount > 0 then 'True' else 'False' end as 'unlocked'
+                       FROM levels
+                       WHERE grade=? AND allmath=0
+                       GROUP BY stage
+                       ''', (str(grade))
                       )
         #=========================
         # we extract the data from
         # the different rows
         for row in self.c:
-            test.append(row[0], row[1])
-
+            print row
+            if row[1] in [1, 2, 3]:
+                l.append([row[1] + 1, True if (row[2] == 'True') else False])
+        
         #===================================
         # now we try to make it into a dict
         # I dont know why I chose a dict
         # maybe because we do not use enough
         # of them in this program, idk
         try:
-            results = {l[0][0]:l[0][1], l[1][0]:l[1][1], l[2][0]:l[2][1], l[3][0]:l[3][1]}
+            results = {1:True, l[0][0]:l[0][1], l[1][0]:l[1][1], l[2][0]:l[2][1]}
 
         #===========================
         # if something goes horrible
         except IndexError:
             return {1:True, 2:True, 3:True, 4:True}
+            
 
         #=============================
         # if all was bright and cheery
@@ -89,6 +103,7 @@ class UserGame(object):
             return results
             # Return something like this:
             # {1:True, 2:True, 3:False, 4:False}
+
 
     def get_gameplay(self):
         gameplays = []

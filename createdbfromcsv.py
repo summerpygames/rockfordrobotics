@@ -21,7 +21,6 @@ from optparse import OptionParser
 import csv
 import re
 
-match_3_col = re.compile(r"([^,]+),\s+([^,]+),\s+(.+)")
 
 def filetostory(csvfile, db, force):
     """
@@ -37,27 +36,16 @@ def filetostory(csvfile, db, force):
     createDb = sqlite3.connect(db)
     queryCurs = createDb.cursor()
     list = []
+    storyslides = []
     
     filedone = False
-    file = open(csvfile, 'r')
-    file.seek(0)
-
-    while good == True:
-        storyslides.append(file.readline())
-        if list[-1] == '':
-            storyslides.remove(storyslides[-1])
-            good = False
-
-    thelist = []
-    for i in storyslides:
-        m = match_3_col.match(i)
-        thelist.append(m.groups())
-
+    list = csv.reader(open(csvfile))
+  
     dbmade = False
     try:
         queryCurs.execute('''create table storys(
                             ID INTEGER PRIMARY KEY,
-                            grade INTAGER,
+                            stage INTAGER,
                             suborder INTAGER,
                             story TEXT)
                           ''')
@@ -67,7 +55,7 @@ def filetostory(csvfile, db, force):
             queryCurs.execute('''drop table storys''')
             queryCurs.execute('''create table storys(
                             ID INTEGER PRIMARY KEY,
-                            grade INTAGER,
+                            stage INTAGER,
                             suborder INTAGER,
                             story TEXT)
                           ''')
@@ -80,7 +68,7 @@ def filetostory(csvfile, db, force):
 
     if dbmade:
         for i in list:
-            queryCurs.execute('''insert into storys (grade, suborder, story)
+            queryCurs.execute('''insert into storys (stage, suborder, story)
                               values (?, ?, ?)''',i)
         createDb.commit()
         queryCurs.close()
@@ -189,6 +177,10 @@ if __name__ == '__main__':
 
 
     (options, args) = parser.parse_args()
-    csvtolevels(options.levels, options.db, options.force)
-    filetogameplay(options.gameplay, options.db, options.force)
-    filetostory(options.story, options.db, options.force)
+
+    if options.levels != None:
+        csvtolevels(options.levels, options.db, options.force)
+    if options.gameplay != None:
+        filetogameplay(options.gameplay, options.db, options.force)
+    if options.story != None:
+        filetostory(options.story, options.db, options.force)

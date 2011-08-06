@@ -106,7 +106,7 @@ credits_align = os.path.join(assets, allign, '.svg')
 ## Databases                             ##
 ###########################################
 
-gameplay_database = os.path.join(assets, 'test2.sqlite.db')
+gameplay_database = os.path.join(assets, 'gamedatabase.db')
 
 ###########################################
 ## Lifes                                 ##
@@ -124,4 +124,17 @@ incorrect = os.path.join(assets, message, 'incorrect.svg')
 correct = os.path.join(assets, message, 'correct.svg')
 ouch = os.path.join(assets, message, 'ouch.svg')
 
-################## END ####################
+###########################################
+## Sounds                                ##
+###########################################
+laser1 = os.path.join(assets, 'highlaser.wav')
+laser2 = os.path.join(assets, 'midlaser.wav')
+laser3 = os.path.join(assets, 'lowlaser.wav')
+
+###########################################
+## Charecters                            ##
+###########################################
+charecter_flying_saucer = os.path.join(assets, 'pythonsaucer.svg')
+charecter_space_shuttle = os.path.join(assets, 'tuxshuttle.svg')
+charecter_classic_rocket = os.path.join(assets, 'gnurocket.svg')
+charecter_fighter_jet = os.path.join(assets, 'gimpfighter.svg')
