@@ -18,7 +18,7 @@ How to run
 
 the easiest way to run the game is to (after downloading it) run
 
-	cd SpaceMath.activity	
+	cd rockfordrobotics	(or the folder you extracted it to)
 	./launcher.py
 
 Or, if you are on an XO, put the SpaceMath.activity folder in your ~/Activities
